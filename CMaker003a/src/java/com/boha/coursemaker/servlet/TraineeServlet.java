@@ -30,7 +30,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- *
+ *  All the requests from the Trainee mobile app are handled by this servlet
+ * 
  * @author aubreyM
  */
 @WebServlet(name = "Trainee Services", urlPatterns = {"/trainee"})

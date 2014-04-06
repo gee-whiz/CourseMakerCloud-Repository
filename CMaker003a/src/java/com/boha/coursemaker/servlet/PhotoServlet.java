@@ -34,7 +34,8 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.util.Streams;
 
 /**
- *
+ *  This servlet accepts image files uploaded from CourseMaker devices and saves them on disk according to the requestor's role.
+ * 
  * @author aubreyM
  */
 @WebServlet(name = "PhotoServlet", urlPatterns = {"/photo"})
