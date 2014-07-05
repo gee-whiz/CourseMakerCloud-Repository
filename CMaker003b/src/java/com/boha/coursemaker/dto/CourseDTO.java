@@ -6,7 +6,6 @@
 package com.boha.coursemaker.dto;
 
 import com.boha.coursemaker.data.Course;
-import java.math.BigInteger;
 import java.util.List;
 
 /**
@@ -15,16 +14,16 @@ import java.util.List;
  */
 public class CourseDTO {
 
-    private Integer courseID, activeFlag, shareFlag;
+    private int courseID, activeFlag, shareFlag;
     private long dateUpdated;
     private String courseName, description;
-    private Integer categoryID;
+    private int categoryID;
     private String categoryName;
-    private Integer companyID;
-    private BigInteger localID;
+    private int companyID;
     private long syncDate;
-    private List<LessonDTO> lessonList;
+    private List<ActivityDTO> activityList;
     private List<ObjectiveDTO> objectiveList;
+    private List<LessonResourceDTO> lessonResourceList;
 
     public CourseDTO(Course a) {
         courseID = a.getCourseID();
@@ -36,9 +35,7 @@ public class CourseDTO {
         categoryID = a.getCategory().getCategoryID();
         categoryName = a.getCategory().getCategoryName();
         companyID = a.getCompany().getCompanyID();
-        
-       
-
+ 
     }
 
     public CourseDTO() {
@@ -48,22 +45,25 @@ public class CourseDTO {
         return dateUpdated;
     }
 
-    public BigInteger getLocalID() {
-        return localID;
-    }
+ 
 
     public List<ObjectiveDTO> getObjectiveList() {
         return objectiveList;
+    }
+
+    public List<LessonResourceDTO> getLessonResourceList() {
+        return lessonResourceList;
+    }
+
+    public void setLessonResourceList(List<LessonResourceDTO> lessonResourceList) {
+        this.lessonResourceList = lessonResourceList;
     }
 
     public void setObjectiveList(List<ObjectiveDTO> objectiveList) {
         this.objectiveList = objectiveList;
     }
 
-    public void setLocalID(BigInteger localID) {
-        this.localID = localID;
-    }
-
+   
     public long getSyncDate() {
         return syncDate;
     }
@@ -72,23 +72,17 @@ public class CourseDTO {
         this.syncDate = syncDate;
     }
 
-    public List<LessonDTO> getLessonList() {
-        return lessonList;
-    }
+  
 
-    public void setLessonList(List<LessonDTO> lessonList) {
-        this.lessonList = lessonList;
-    }
-
-    public Integer getShareFlag() {
+    public int getShareFlag() {
         return shareFlag;
     }
 
-    public Integer getCategoryID() {
+    public int getCategoryID() {
         return categoryID;
     }
 
-    public void setCategoryID(Integer categoryID) {
+    public void setCategoryID(int categoryID) {
         this.categoryID = categoryID;
     }
 
@@ -100,7 +94,7 @@ public class CourseDTO {
         this.categoryName = categoryName;
     }
 
-    public void setShareFlag(Integer shareFlag) {
+    public void setShareFlag(int shareFlag) {
         this.shareFlag = shareFlag;
     }
 
@@ -120,11 +114,19 @@ public class CourseDTO {
         this.description = description;
     }
 
-    public Integer getActiveFlag() {
+    public List<ActivityDTO> getActivityList() {
+        return activityList;
+    }
+
+    public void setActivityList(List<ActivityDTO> activityList) {
+        this.activityList = activityList;
+    }
+
+    public int getActiveFlag() {
         return activeFlag;
     }
 
-    public void setActiveFlag(Integer activeFlag) {
+    public void setActiveFlag(int activeFlag) {
         this.activeFlag = activeFlag;
     }
 
@@ -132,19 +134,19 @@ public class CourseDTO {
         this.dateUpdated = dateUpdated;
     }
 
-    public Integer getCourseID() {
+    public int getCourseID() {
         return courseID;
     }
 
-    public void setCourseID(Integer courseID) {
+    public void setCourseID(int courseID) {
         this.courseID = courseID;
     }
 
-    public Integer getCompanyID() {
+    public int getCompanyID() {
         return companyID;
     }
 
-    public void setCompanyID(Integer companyID) {
+    public void setCompanyID(int companyID) {
         this.companyID = companyID;
     }
 }

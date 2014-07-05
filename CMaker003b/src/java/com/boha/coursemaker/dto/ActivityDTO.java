@@ -6,7 +6,7 @@
 package com.boha.coursemaker.dto;
 
 import com.boha.coursemaker.data.Activity;
-import java.math.BigInteger;
+import java.util.List;
 
 /**
  *
@@ -14,40 +14,50 @@ import java.math.BigInteger;
  */
 public class ActivityDTO {
 
-    private Integer activityID;
+    private int activityID;
     private Double durationInDays;
     private String activityName;
-    private String description;
-    private Integer priorityFlag;
-    private BigInteger localID;
+    private String description, courseName;
+    private int priorityFlag;
+    private long localID;
     private long syncDate;
-    private Integer lessonID;
+    private int courseID;
+    
 
     public ActivityDTO(Activity a) {
         activityID = a.getActivityID();
         activityName = a.getActivityName();
         description = a.getDescription();
         priorityFlag = a.getPriorityFlag();
-        lessonID = a.getLesson().getLessonID();
+        courseID = a.getCourse().getCourseID();
+        courseName = a.getCourse().getCourseName();
         durationInDays = a.getDurationInDays();
-        if (a.getLocalID() != null) {
-            localID = a.getLocalID();
-        }
+        localID = a.getLocalID();
+
         if (a.getSyncDate() != null) {
             syncDate = a.getSyncDate().getTime();
         }
 
     }
 
-    public Integer getActivityID() {
+    public int getCourseID() {
+        return courseID;
+    }
+
+  
+    public void setCourseID(int courseID) {
+        this.courseID = courseID;
+    }
+
+    public int getActivityID() {
         return activityID;
     }
 
-    public BigInteger getLocalID() {
+    public long getLocalID() {
         return localID;
     }
 
-    public void setLocalID(BigInteger localID) {
+    public void setLocalID(long localID) {
         this.localID = localID;
     }
 
@@ -59,8 +69,6 @@ public class ActivityDTO {
         this.durationInDays = durationInDays;
     }
 
-    
-
     public long getSyncDate() {
         return syncDate;
     }
@@ -69,7 +77,7 @@ public class ActivityDTO {
         this.syncDate = syncDate;
     }
 
-    public void setActivityID(Integer activityID) {
+    public void setActivityID(int activityID) {
         this.activityID = activityID;
     }
 
@@ -89,19 +97,19 @@ public class ActivityDTO {
         this.description = description;
     }
 
-    public Integer getPriorityFlag() {
+    public int getPriorityFlag() {
         return priorityFlag;
     }
 
-    public void setPriorityFlag(Integer priorityFlag) {
+    public void setPriorityFlag(int priorityFlag) {
         this.priorityFlag = priorityFlag;
     }
 
-    public Integer getLessonID() {
-        return lessonID;
+    public int getLessonID() {
+        return courseID;
     }
 
-    public void setLessonID(Integer lessonID) {
-        this.lessonID = lessonID;
+    public void setLessonID(int lessonID) {
+        this.courseID = lessonID;
     }
 }

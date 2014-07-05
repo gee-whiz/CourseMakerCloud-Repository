@@ -15,22 +15,22 @@ import java.util.List;
  */
 public class TraineeDTO {
 
-    private Integer traineeID;
+    private int traineeID;
     private String firstName;
     private String middleName;
     private String lastName;
     private String email;
     private String cellphone;
     private long dateRegistered, dateUpdated;
-    private Integer gender, activeFlag;
+    private int gender, activeFlag;
     private String iDNumber;
     private String address, password;
-    private Integer cityID;
-    private Integer companyID;
-    private Integer trainingClassID;
+    private int cityID;
+    private int companyID;
+    private int trainingClassID;
     private String trainingClassName, cityName, provinceName;
     private List<GcmDeviceDTO> gcmDeviceList;
-    private Integer institutionID, provinceID;
+    private int institutionID, provinceID;
     private int totalTasks, totalCompleted;
     private double percComplete, averageInstructorRating, averageTraineeRating;
     private long lastDate;
@@ -109,19 +109,19 @@ public class TraineeDTO {
         this.provinceName = provinceName;
     }
 
-    public Integer getProvinceID() {
+    public int getProvinceID() {
         return provinceID;
     }
 
-    public void setProvinceID(Integer provinceID) {
+    public void setProvinceID(int provinceID) {
         this.provinceID = provinceID;
     }
 
-    public Integer getTraineeID() {
+    public int getTraineeID() {
         return traineeID;
     }
 
-    public void setTraineeID(Integer traineeID) {
+    public void setTraineeID(int traineeID) {
         this.traineeID = traineeID;
     }
 
@@ -133,11 +133,11 @@ public class TraineeDTO {
         this.totalTasks = totalTasks;
     }
 
-    public Integer getActiveFlag() {
+    public int getActiveFlag() {
         return activeFlag;
     }
 
-    public void setActiveFlag(Integer activeFlag) {
+    public void setActiveFlag(int activeFlag) {
         this.activeFlag = activeFlag;
     }
 
@@ -191,11 +191,11 @@ public class TraineeDTO {
         this.lastDate = lastDate;
     }
 
-    public Integer getTrainingClassID() {
+    public int getTrainingClassID() {
         return trainingClassID;
     }
 
-    public void setTrainingClassID(Integer trainingClassID) {
+    public void setTrainingClassID(int trainingClassID) {
         this.trainingClassID = trainingClassID;
     }
 
@@ -271,11 +271,11 @@ public class TraineeDTO {
         this.dateRegistered = dateRegistered;
     }
 
-    public Integer getGender() {
+    public int getGender() {
         return gender;
     }
 
-    public void setGender(Integer gender) {
+    public void setGender(int gender) {
         this.gender = gender;
     }
 
@@ -295,27 +295,27 @@ public class TraineeDTO {
         this.address = address;
     }
 
-    public Integer getCityID() {
+    public int getCityID() {
         return cityID;
     }
 
-    public void setCityID(Integer cityID) {
+    public void setCityID(int cityID) {
         this.cityID = cityID;
     }
 
-    public Integer getCompanyID() {
+    public int getCompanyID() {
         return companyID;
     }
 
-    public void setCompanyID(Integer trainingCompanyID) {
+    public void setCompanyID(int trainingCompanyID) {
         this.companyID = trainingCompanyID;
     }
 
-    public Integer getInstitutionID() {
+    public int getInstitutionID() {
         return institutionID;
     }
 
-    public void setInstitutionID(Integer institutionID) {
+    public void setInstitutionID(int institutionID) {
         this.institutionID = institutionID;
     }
 }

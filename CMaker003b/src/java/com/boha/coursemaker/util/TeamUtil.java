@@ -55,7 +55,7 @@ public class TeamUtil {
             for (TeamDTO t : dto) {
                 t.setTeamMemberList(new ArrayList<TeamMemberDTO>());
                 for (TeamMemberDTO tm : tmList) {
-                    if (tm.getTeamID().intValue() == t.getTeamID().intValue()) {
+                    if (tm.getTeamID() == t.getTeamID()) {
                         t.getTeamMemberList().add(tm);
                     }
                 }
@@ -83,7 +83,7 @@ public class TeamUtil {
             for (TeamDTO t : dto) {
                 t.setTeamMemberList(new ArrayList<TeamMemberDTO>());
                 for (TeamMemberDTO tm : tmList) {
-                    if (tm.getTeamID().intValue() == t.getTeamID().intValue()) {
+                    if (tm.getTeamID() == t.getTeamID()) {
                         t.getTeamMemberList().add(tm);
                     }
                 }
@@ -180,27 +180,30 @@ public class TeamUtil {
 
     public  ResponseDTO addTeam(TeamDTO team) throws DataException {
         ResponseDTO d = new ResponseDTO();
-
-        try {
-            
-            
+        try {               
             Team a = new Team();
             a.setDateRegistered(new Date());
             a.setTeamName(team.getTeamName());
             a.setTrainingClass(DataUtil.getTrainingClassByID(team.getTrainingClassID(), em));
             
             em.persist(a);
+            //get id 
+            Query q = em.createNamedQuery("Team.findByNameInClass", Team.class);
+            q.setParameter("id", team.getTrainingClassID());
+            q.setParameter("name", team.getTeamName());
+            q.setMaxResults(1);
+            Team xx = (Team)q.getSingleResult();
             
             log.log(Level.INFO, "Team added: {0}", team.getTeamName());
-            TeamDTO td = new TeamDTO(a);
+            TeamDTO td = new TeamDTO(xx);
             try {
                 if (team.getTeamMemberList() != null && team.getTeamMemberList().size() > 0) {
+                    log.log(Level.INFO, "team.getTeamMemberList().size(): {0}", team.getTeamMemberList().size());
                     TeamMemberDTO tm = team.getTeamMemberList().get(0);
-                    tm.setTeamID(a.getTeamID());
+                    tm.setTeamID(xx.getTeamID());
                     ResponseDTO r = addTeamMember(tm);
                     if (r.getStatusCode() == 0) {
-                        td.setTeamMemberList(new ArrayList<TeamMemberDTO>());
-                        td.getTeamMemberList().add(r.getTeamMember());
+                        td.setTeamMemberList(r.getTeamMemberList());
                     }
                 }
             } catch (Exception e) {
@@ -221,9 +224,7 @@ public class TeamUtil {
     public  ResponseDTO addTeamMember(TeamMemberDTO member) throws DataException {
 
         ResponseDTO d = new ResponseDTO();
-        try {
-            
-            
+        try {          
             TeamMember a = new TeamMember();
             a.setDateRegistered(new Date());
             Team team = getTeamByID(member.getTeamID());
@@ -238,7 +239,7 @@ public class TeamUtil {
                 throw new DataException("Trainee is NULL. traineeID: " + member.getTraineeID());
             }
             a.setTrainee(trainee);
-            a.setActiveFlag(1);
+            a.setActiveFlag(0);
             em.persist(a);
             
             Query q = em.createNamedQuery("TeamMember.findByTeam",TeamMember.class);
@@ -280,28 +281,28 @@ public class TeamUtil {
             a.setDateRequested(new Date());
             a.setDemoDate(new Date(ann.getDemoDate()));
             a.setDescription(ann.getDescription());
-            if (ann.getTeamID() != null) {
+            if (ann.getTeamID() > 0) {
                 a.setTeam(getTeamByID(ann.getTeamID()));
                 name = a.getTeam().getTeamName();
             }
-            if (ann.getTraineeID() != null) {
+            if (ann.getTraineeID() > 0) {
                 a.setTrainee(DataUtil.getTraineeByID(ann.getTraineeID(), em));
                 name = a.getTrainee().getFirstName() + " " + a.getTrainee().getLastName();
             }
-            if (ann.getTrainingClassID() != null) {
+            if (ann.getTrainingClassID() > 0) {
                 a.setTrainingClass(DataUtil.getTrainingClassByID(ann.getTrainingClassID(), em));
             }           
             em.persist(a);
             Query q = null;
-            if (ann.getTeamID() != null) {
+            if (ann.getTeamID() > 0) {
                q = em.createNamedQuery("DemoAnnouncement.findByTeam", DemoAnnouncement.class);
                q.setParameter("id", ann.getTeamID());
             }
-            if (ann.getTraineeID() != null) {
+            if (ann.getTraineeID() > 0) {
                 q = em.createNamedQuery("DemoAnnouncement.findByTrainee", DemoAnnouncement.class);
                 q.setParameter("id", ann.getTraineeID());
                             }
-            if (ann.getTrainingClassID() != null) {
+            if (ann.getTrainingClassID() > 0) {
                 q = em.createNamedQuery("DemoAnnouncement.findByClass",DemoAnnouncement.class);
                 q.setParameter("id", ann.getTrainingClassID());
             }    

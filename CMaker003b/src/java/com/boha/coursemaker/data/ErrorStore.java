@@ -1,7 +1,9 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package com.boha.coursemaker.data;
 
 import java.io.Serializable;
@@ -12,6 +14,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -37,45 +40,48 @@ public class ErrorStore implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "errorStoreID")
-    private Integer errorStoreID;
+    private int errorStoreID;
     @Basic(optional = false)
     @NotNull
     @Column(name = "statusCode")
     private int statusCode;
     @Basic(optional = false)
     @NotNull
+    @Lob
+    @Size(min = 1, max = 65535)
     @Column(name = "message")
     private String message;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 255)
-    @Column(name = "origin")
-    private String origin;
     @Basic(optional = false)
     @NotNull
     @Column(name = "dateOccured")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateOccured;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 255)
+    @Column(name = "origin")
+    private String origin;
 
     public ErrorStore() {
     }
 
-    public ErrorStore(Integer errorStoreID) {
+    public ErrorStore(int errorStoreID) {
         this.errorStoreID = errorStoreID;
     }
 
-    public ErrorStore(Integer errorStoreID, int statusCode, String message, Date dateOccured) {
+    public ErrorStore(int errorStoreID, int statusCode, String message, Date dateOccured, String origin) {
         this.errorStoreID = errorStoreID;
         this.statusCode = statusCode;
         this.message = message;
         this.dateOccured = dateOccured;
+        this.origin = origin;
     }
 
-    public Integer getErrorStoreID() {
+    public int getErrorStoreID() {
         return errorStoreID;
     }
 
-    public void setErrorStoreID(Integer errorStoreID) {
+    public void setErrorStoreID(int errorStoreID) {
         this.errorStoreID = errorStoreID;
     }
 
@@ -85,14 +91,6 @@ public class ErrorStore implements Serializable {
 
     public void setStatusCode(int statusCode) {
         this.statusCode = statusCode;
-    }
-
-    public String getOrigin() {
-        return origin;
-    }
-
-    public void setOrigin(String origin) {
-        this.origin = origin;
     }
 
     public String getMessage() {
@@ -111,25 +109,15 @@ public class ErrorStore implements Serializable {
         this.dateOccured = dateOccured;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (errorStoreID != null ? errorStoreID.hashCode() : 0);
-        return hash;
+    public String getOrigin() {
+        return origin;
     }
 
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof ErrorStore)) {
-            return false;
-        }
-        ErrorStore other = (ErrorStore) object;
-        if ((this.errorStoreID == null && other.errorStoreID != null) || (this.errorStoreID != null && !this.errorStoreID.equals(other.errorStoreID))) {
-            return false;
-        }
-        return true;
+    public void setOrigin(String origin) {
+        this.origin = origin;
     }
+
+  
 
     @Override
     public String toString() {

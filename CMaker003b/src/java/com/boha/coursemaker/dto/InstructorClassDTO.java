@@ -13,12 +13,12 @@ import java.io.Serializable;
  */
 public class InstructorClassDTO implements Serializable {
     private static final long serialVersionUID = 1L;
-    private Integer instructorClassID;
+    private int instructorClassID;
     private long dateRegistered, startDate, endDate;
     private String trainingClassName;
     //private long calendarID;
-    private Integer instructorID;
-    private Integer trainingClassID;
+    private int instructorID;
+    private int trainingClassID;
 
     public InstructorClassDTO(InstructorClass a) {
         instructorClassID = a.getInstructorClassID();
@@ -34,11 +34,11 @@ public class InstructorClassDTO implements Serializable {
         }
     }
 
-    public Integer getInstructorClassID() {
+    public int getInstructorClassID() {
         return instructorClassID;
     }
 
-    public void setInstructorClassID(Integer instructorClassID) {
+    public void setInstructorClassID(int instructorClassID) {
         this.instructorClassID = instructorClassID;
     }
 
@@ -76,19 +76,19 @@ public class InstructorClassDTO implements Serializable {
         this.trainingClassName = trainingClassName;
     }
 
-    public Integer getInstructorID() {
+    public int getInstructorID() {
         return instructorID;
     }
 
-    public void setInstructorID(Integer instructorID) {
+    public void setInstructorID(int instructorID) {
         this.instructorID = instructorID;
     }
 
-    public Integer getTrainingClassID() {
+    public int getTrainingClassID() {
         return trainingClassID;
     }
 
-    public void setTrainingClassID(Integer trainingClassID) {
+    public void setTrainingClassID(int trainingClassID) {
         this.trainingClassID = trainingClassID;
     }
 

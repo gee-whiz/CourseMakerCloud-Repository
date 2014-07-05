@@ -13,13 +13,13 @@ import com.boha.coursemaker.data.DemoAnnouncement;
  */
 public class DemoAnnouncementDTO {
 
-    private Integer demoAnnouncementID;
+    private int demoAnnouncementID;
     private long demoDate;
-    private Integer teamID;
+    private int teamID;
     private long dateRequested, cancellationDate;
     private String description;
-    private Integer traineeID;
-    private Integer trainingClassID;
+    private int traineeID;
+    private int trainingClassID;
     
     public DemoAnnouncementDTO(DemoAnnouncement a) {
         demoAnnouncementID = a.getDemoAnnouncementID();
@@ -41,7 +41,7 @@ public class DemoAnnouncementDTO {
         }
     }
 
-    public Integer getDemoAnnouncementID() {
+    public int getDemoAnnouncementID() {
         return demoAnnouncementID;
     }
 
@@ -53,7 +53,7 @@ public class DemoAnnouncementDTO {
         this.cancellationDate = cancellationDate;
     }
 
-    public void setDemoAnnouncementID(Integer demoAnnouncementID) {
+    public void setDemoAnnouncementID(int demoAnnouncementID) {
         this.demoAnnouncementID = demoAnnouncementID;
     }
 
@@ -65,11 +65,11 @@ public class DemoAnnouncementDTO {
         this.demoDate = demoDate;
     }
 
-    public Integer getTeamID() {
+    public int getTeamID() {
         return teamID;
     }
 
-    public void setTeamID(Integer teamID) {
+    public void setTeamID(int teamID) {
         this.teamID = teamID;
     }
 
@@ -89,19 +89,19 @@ public class DemoAnnouncementDTO {
         this.description = description;
     }
 
-    public Integer getTraineeID() {
+    public int getTraineeID() {
         return traineeID;
     }
 
-    public void setTraineeID(Integer traineeID) {
+    public void setTraineeID(int traineeID) {
         this.traineeID = traineeID;
     }
 
-    public Integer getTrainingClassID() {
+    public int getTrainingClassID() {
         return trainingClassID;
     }
 
-    public void setTrainingClassID(Integer trainingClassID) {
+    public void setTrainingClassID(int trainingClassID) {
         this.trainingClassID = trainingClassID;
     }
 }

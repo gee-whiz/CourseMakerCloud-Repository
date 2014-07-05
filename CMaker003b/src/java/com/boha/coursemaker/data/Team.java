@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.boha.coursemaker.data;
 
 import java.io.Serializable;
@@ -13,7 +12,6 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -35,20 +33,23 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "team")
 @NamedQueries({
-    @NamedQuery(name = "Team.findByCompany", 
-        query = "select a from Team a "
-                    + " where a.trainingClass.company.companyID = :id "
-                    + " order by a.trainingClass.trainingClassName"),
-@NamedQuery(name = "Team.findByClass", 
-        query = "select a from Team a "
-                    + "where a.trainingClass.trainingClassID = :id")})
+    @NamedQuery(name = "Team.findByCompany",
+            query = "select a from Team a "
+            + " where a.trainingClass.company.companyID = :id "
+            + " order by a.trainingClass.trainingClassName"),
+    @NamedQuery(name = "Team.findByNameInClass",
+            query = "select a from Team a where a.trainingClass.trainingClassID = :id AND a.teamName = :name"),
+    @NamedQuery(name = "Team.findByClass",
+            query = "select a from Team a "
+            + "where a.trainingClass.trainingClassID = :id")})
 public class Team implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "teamID")
-    private Integer teamID;
+    private int teamID;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
@@ -59,30 +60,32 @@ public class Team implements Serializable {
     @Column(name = "dateRegistered")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateRegistered;
+    @OneToMany(mappedBy = "team")
+    private List<DemoAnnouncement> demoAnnouncementList;
     @JoinColumn(name = "trainingClassID", referencedColumnName = "trainingClassID")
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @ManyToOne(optional = false)
     private TrainingClass trainingClass;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "team", fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "team")
     private List<TeamMember> teamMemberList;
 
     public Team() {
     }
 
-    public Team(Integer teamID) {
+    public Team(int teamID) {
         this.teamID = teamID;
     }
 
-    public Team(Integer teamID, String teamName, Date dateRegistered) {
+    public Team(int teamID, String teamName, Date dateRegistered) {
         this.teamID = teamID;
         this.teamName = teamName;
         this.dateRegistered = dateRegistered;
     }
 
-    public Integer getTeamID() {
+    public int getTeamID() {
         return teamID;
     }
 
-    public void setTeamID(Integer teamID) {
+    public void setTeamID(int teamID) {
         this.teamID = teamID;
     }
 
@@ -102,6 +105,14 @@ public class Team implements Serializable {
         this.dateRegistered = dateRegistered;
     }
 
+    public List<DemoAnnouncement> getDemoAnnouncementList() {
+        return demoAnnouncementList;
+    }
+
+    public void setDemoAnnouncementList(List<DemoAnnouncement> demoAnnouncementList) {
+        this.demoAnnouncementList = demoAnnouncementList;
+    }
+
     public TrainingClass getTrainingClass() {
         return trainingClass;
     }
@@ -109,7 +120,6 @@ public class Team implements Serializable {
     public void setTrainingClass(TrainingClass trainingClass) {
         this.trainingClass = trainingClass;
     }
-
 
     public List<TeamMember> getTeamMemberList() {
         return teamMemberList;
@@ -120,28 +130,8 @@ public class Team implements Serializable {
     }
 
     @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (teamID != null ? teamID.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Team)) {
-            return false;
-        }
-        Team other = (Team) object;
-        if ((this.teamID == null && other.teamID != null) || (this.teamID != null && !this.teamID.equals(other.teamID))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
     public String toString() {
         return "com.boha.coursemaker.data.Team[ teamID=" + teamID + " ]";
     }
-    
+
 }

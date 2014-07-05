@@ -1,7 +1,9 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package com.boha.coursemaker.data;
 
 import java.io.Serializable;
@@ -51,17 +53,12 @@ import javax.validation.constraints.Size;
                     + " order by a.dateRequested desc ")
     })
 public class HelpRequest implements Serializable {
-    @JoinColumn(name = "trainingClassID", referencedColumnName = "trainingClassID")
-    @ManyToOne(optional = false)
-    private TrainingClass trainingClass;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "helpRequest")
-    private List<HelpResponse> helpResponseList;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "helpRequestID")
-    private Integer helpRequestID;
+    private int helpRequestID;
     @Basic(optional = false)
     @NotNull
     @Column(name = "dateRequested")
@@ -71,9 +68,13 @@ public class HelpRequest implements Serializable {
     @Size(max = 65535)
     @Column(name = "comment")
     private String comment;
-    
-    @JoinColumn(name = "courseTraineeActivityID", referencedColumnName = "courseTraineeActivityID")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "helpRequest")
+    private List<HelpResponse> helpResponseList;
+    @JoinColumn(name = "trainingClassID", referencedColumnName = "trainingClassID")
     @ManyToOne(optional = false)
+    private TrainingClass trainingClass;
+    @JoinColumn(name = "courseTraineeActivityID", referencedColumnName = "courseTraineeActivityID")
+    @ManyToOne
     private CourseTraineeActivity courseTraineeActivity;
     @JoinColumn(name = "helpTypeID", referencedColumnName = "helpTypeID")
     @ManyToOne(optional = false)
@@ -82,20 +83,20 @@ public class HelpRequest implements Serializable {
     public HelpRequest() {
     }
 
-    public HelpRequest(Integer helpRequestID) {
+    public HelpRequest(int helpRequestID) {
         this.helpRequestID = helpRequestID;
     }
 
-    public HelpRequest(Integer helpRequestID, Date dateRequested) {
+    public HelpRequest(int helpRequestID, Date dateRequested) {
         this.helpRequestID = helpRequestID;
         this.dateRequested = dateRequested;
     }
 
-    public Integer getHelpRequestID() {
+    public int getHelpRequestID() {
         return helpRequestID;
     }
 
-    public void setHelpRequestID(Integer helpRequestID) {
+    public void setHelpRequestID(int helpRequestID) {
         this.helpRequestID = helpRequestID;
     }
 
@@ -115,50 +116,6 @@ public class HelpRequest implements Serializable {
         this.comment = comment;
     }
 
- 
-    public CourseTraineeActivity getCourseTraineeActivity() {
-        return courseTraineeActivity;
-    }
-
-    public void setCourseTraineeActivity(CourseTraineeActivity courseTraineeActivity) {
-        this.courseTraineeActivity = courseTraineeActivity;
-    }
-
-    public HelpType getHelpType() {
-        return helpType;
-    }
-
-    public void setHelpType(HelpType helpType) {
-        this.helpType = helpType;
-    }
-
- 
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (helpRequestID != null ? helpRequestID.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof HelpRequest)) {
-            return false;
-        }
-        HelpRequest other = (HelpRequest) object;
-        if ((this.helpRequestID == null && other.helpRequestID != null) || (this.helpRequestID != null && !this.helpRequestID.equals(other.helpRequestID))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "com.boha.coursemaker.data.HelpRequest[ helpRequestID=" + helpRequestID + " ]";
-    }
-
     public List<HelpResponse> getHelpResponseList() {
         return helpResponseList;
     }
@@ -175,6 +132,26 @@ public class HelpRequest implements Serializable {
         this.trainingClass = trainingClass;
     }
 
-  
+    public CourseTraineeActivity getCourseTraineeActivity() {
+        return courseTraineeActivity;
+    }
+
+    public void setCourseTraineeActivity(CourseTraineeActivity courseTraineeActivity) {
+        this.courseTraineeActivity = courseTraineeActivity;
+    }
+
+    public HelpType getHelpType() {
+        return helpType;
+    }
+
+    public void setHelpType(HelpType helpType) {
+        this.helpType = helpType;
+    }
+
+
+    @Override
+    public String toString() {
+        return "com.boha.coursemaker.data.HelpRequest[ helpRequestID=" + helpRequestID + " ]";
+    }
     
 }

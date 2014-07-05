@@ -81,18 +81,14 @@ public class AuthorServlet extends HttpServlet {
                     case RequestDTO.GET_COURSE_LIST_BY_CATEGORY:
                         resp = authorUtil.getCoursesByCategory(dto.getCategoryID());
                         break;
-                    case RequestDTO.GET_LESSON_LIST_BY_COURSE:
-                        resp = authorUtil.getLessonsByCourse(dto.getCourseID());
-                        break;
+                    
                     case RequestDTO.GET_OBJECTIVE_LIST_BY_COURSE:
                         resp = authorUtil.getObjectivesByCourse(dto.getCourseID());
                         break;
                     case RequestDTO.GET_ACTIVITY_LIST_BY_LESSON:
                         resp = authorUtil.getActivitiesByLesson(dto.getLessonID());
                         break;
-                    case RequestDTO.GET_RESOURCE_LIST_BY_LESSON:
-                        resp = authorUtil.getResourcesByLesson(dto.getLessonID());
-                        break;
+                    
                     case RequestDTO.ADD_CATEGORY:
                         resp = authorUtil.addCategory(dto.getCompanyID(), dto.getCategory());
                         break;
@@ -111,21 +107,17 @@ public class AuthorServlet extends HttpServlet {
                         resp = authorUtil.addCourse(dto.getCourse(),
                                 dto.getCompanyID(), dto.getAuthorID());
                         break;
-                    case RequestDTO.ADD_LESSON:
-                        resp = authorUtil.addLesson(dto.getLesson());
-                        break;
-
+                   
                     case RequestDTO.ADD_OBJECTIVES:
                         resp = authorUtil.addObjective(dto.getObjective(),
                                 dto.getCourseID());
                         break;
                     case RequestDTO.ADD_ACTIVITIES:
                         resp = authorUtil.addActivity(dto.getActivity(),
-                                dto.getLessonID());
+                                dto.getCourseID());
                         break;
                     case RequestDTO.ADD_RESOURCES:
-                        resp = authorUtil.addLessonResource(dto.getLessonResource(),
-                                dto.getLessonID());
+                        resp = authorUtil.addLessonResource(dto.getLessonResource());
                         break;
                     //
                     case RequestDTO.UPDATE_ACTIVITIES:
@@ -142,21 +134,14 @@ public class AuthorServlet extends HttpServlet {
                         break;
                     case RequestDTO.DELETE_ACTIVITIES:
                         resp = authorUtil.deleteActivities(
-                                dto.getActivityList(), dto.getLessonID());
+                                dto.getActivityList(), dto.getCourseID());
                         break;
                     case RequestDTO.DELETE_LESSON_RESOURCES:
                         resp = authorUtil.deleteLessonResources(
-                                dto.getLessonResourceList(), dto.getLessonID());
+                                dto.getLessonResourceList(), dto.getCourseID());
                         break;
 
-                    case RequestDTO.DELETE_LESSON:
-                        resp = authorUtil.deleteLessons(
-                                dto.getLessonList(), dto.getCourseID());
-                        break;
-                    case RequestDTO.UPDATE_LESSON:
-                        resp = authorUtil.updateLesson(dto.getLessonList());
-                        break;
-
+                   
                     case RequestDTO.DELETE_COURSE:
                         resp = authorUtil.deleteCourse(dto.getCourseID(), dto.getAuthorID());
                         break;

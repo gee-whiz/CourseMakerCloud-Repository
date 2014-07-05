@@ -1,7 +1,9 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package com.boha.coursemaker.data;
 
 import java.io.Serializable;
@@ -9,7 +11,6 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -30,14 +31,17 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "traineeShout")
 @NamedQueries({
-    @NamedQuery(name = "TraineeShout.findAll", query = "SELECT t FROM TraineeShout t")})
+    @NamedQuery(name = "TraineeShout.findAll", query = "SELECT t FROM TraineeShout t"),
+    @NamedQuery(name = "TraineeShout.findByTraineeShoutID", query = "SELECT t FROM TraineeShout t WHERE t.traineeShoutID = :traineeShoutID"),
+    @NamedQuery(name = "TraineeShout.findByDateRegistered", query = "SELECT t FROM TraineeShout t WHERE t.dateRegistered = :dateRegistered"),
+    @NamedQuery(name = "TraineeShout.findByRemarks", query = "SELECT t FROM TraineeShout t WHERE t.remarks = :remarks")})
 public class TraineeShout implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "traineeShoutID")
-    private Integer traineeShoutID;
+    private int traineeShoutID;
     @Basic(optional = false)
     @NotNull
     @Column(name = "dateRegistered")
@@ -49,30 +53,30 @@ public class TraineeShout implements Serializable {
     @Column(name = "remarks")
     private String remarks;
     @JoinColumn(name = "traineeID", referencedColumnName = "traineeID")
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @ManyToOne(optional = false)
     private Trainee trainee;
     @JoinColumn(name = "helpTypeID", referencedColumnName = "helpTypeID")
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @ManyToOne(optional = false)
     private HelpType helpType;
 
     public TraineeShout() {
     }
 
-    public TraineeShout(Integer traineeShoutID) {
+    public TraineeShout(int traineeShoutID) {
         this.traineeShoutID = traineeShoutID;
     }
 
-    public TraineeShout(Integer traineeShoutID, Date dateRegistered, String remarks) {
+    public TraineeShout(int traineeShoutID, Date dateRegistered, String remarks) {
         this.traineeShoutID = traineeShoutID;
         this.dateRegistered = dateRegistered;
         this.remarks = remarks;
     }
 
-    public Integer getTraineeShoutID() {
+    public int getTraineeShoutID() {
         return traineeShoutID;
     }
 
-    public void setTraineeShoutID(Integer traineeShoutID) {
+    public void setTraineeShoutID(int traineeShoutID) {
         this.traineeShoutID = traineeShoutID;
     }
 
@@ -108,28 +112,7 @@ public class TraineeShout implements Serializable {
         this.helpType = helpType;
     }
 
-  
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (traineeShoutID != null ? traineeShoutID.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof TraineeShout)) {
-            return false;
-        }
-        TraineeShout other = (TraineeShout) object;
-        if ((this.traineeShoutID == null && other.traineeShoutID != null) || (this.traineeShoutID != null && !this.traineeShoutID.equals(other.traineeShoutID))) {
-            return false;
-        }
-        return true;
-    }
-
+   
     @Override
     public String toString() {
         return "com.boha.coursemaker.data.TraineeShout[ traineeShoutID=" + traineeShoutID + " ]";

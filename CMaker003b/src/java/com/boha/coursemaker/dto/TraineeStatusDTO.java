@@ -13,7 +13,7 @@ import com.boha.coursemaker.data.TraineeStatus;
  * @author aubreyM
  */
 public class TraineeStatusDTO {
-   private Integer traineeStatusID;
+   private int traineeStatusID;
     
     private long dateUpdated;
     
@@ -21,7 +21,7 @@ public class TraineeStatusDTO {
     
     private TraineeStatusTypeDTO traineeStatusType;
     
-    private Integer traineeID;
+    private int traineeID;
     
     public TraineeStatusDTO(TraineeStatus a) {
         traineeID = a.getTrainee().getTraineeID();
@@ -31,11 +31,11 @@ public class TraineeStatusDTO {
         traineeStatusID = a.getTraineeStatusID();
     }
 
-    public Integer getTraineeStatusID() {
+    public int getTraineeStatusID() {
         return traineeStatusID;
     }
 
-    public void setTraineeStatusID(Integer traineeStatusID) {
+    public void setTraineeStatusID(int traineeStatusID) {
         this.traineeStatusID = traineeStatusID;
     }
 
@@ -63,11 +63,11 @@ public class TraineeStatusDTO {
         this.traineeStatusType = traineeStatusType;
     }
 
-    public Integer getTraineeID() {
+    public int getTraineeID() {
         return traineeID;
     }
 
-    public void setTraineeID(Integer traineeID) {
+    public void setTraineeID(int traineeID) {
         this.traineeID = traineeID;
     }
  

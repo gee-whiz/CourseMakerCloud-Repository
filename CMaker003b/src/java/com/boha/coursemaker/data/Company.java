@@ -1,7 +1,9 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package com.boha.coursemaker.data;
 
 import java.io.Serializable;
@@ -11,7 +13,6 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -47,17 +48,14 @@ import javax.validation.constraints.Size;
                     + "from Course a "
                     + " GROUP BY a.company"),
     
-     @NamedQuery(name = "Company.countLessons", 
-        query = "select a.course.category.company, count(a) as total from Lesson a "
-                    + "GROUP BY a.course.category.company"),
+     
      
      @NamedQuery(name = "Company.countActivities", 
-        query = "select a.lesson.course.category.company, count(a) as total from Activity a "
-                    + "GROUP BY a.lesson.course.category.company"),
+        query = "select a.course, count(a) as total from Activity a "
+                    + "GROUP BY a.course.category.company"),
      
      @NamedQuery(name = "Company.countLinks", 
-        query = "select a.lesson.course.category.company, count(a) as total from LessonResource a "
-                    + "GROUP BY a.lesson.course.category.company"),
+        query = "select a.course, count(a) as total from LessonResource a GROUP BY a.course.company"),
      
      @NamedQuery(name = "Company.countObjectives", 
         query = "select a.course.category.company, count(a) "
@@ -121,20 +119,17 @@ import javax.validation.constraints.Size;
                     + " where a.company.companyID = :id "
                     + " GROUP BY a.company"),
     
-     @NamedQuery(name = "Company.countLessonsByCompany", 
-        query = "select a.course.category.company, count(a) from Lesson a  "
-                    + "where a.course.category.company.companyID = :id "
-                    + "GROUP BY a.course.category.company"),
+     
      
      @NamedQuery(name = "Company.countActivitiesByCompany", 
-        query = "select a.lesson.course.category.company, count(a) from Activity a "
-                    + " where a.lesson.course.category.company.companyID = :id "
-                    + " GROUP BY a.lesson.course.category.company"),
+        query = "select a.course.category.company, count(a) from Activity a "
+                    + " where a.course.category.company.companyID = :id "
+                    + " GROUP BY a.course.category.company"),
      
      @NamedQuery(name = "Company.countLinksByCompany", 
-        query = "select a.lesson.course.category.company, count(a) from LessonResource a "
-                    + " where a.lesson.course.category.company.companyID = :id "
-                    + " GROUP BY a.lesson.course.category.company"),
+        query = "select a.course.category.company, count(a) from LessonResource a "
+                    + " where a.course.category.company.companyID = :id "
+                    + " GROUP BY a.course.category.company"),
      
      @NamedQuery(name = "Company.countObjectivesByCompany", 
         query = "select a.course.category.company, count(a) from Objective a "
@@ -148,7 +143,7 @@ import javax.validation.constraints.Size;
       
       @NamedQuery(name = "Company.countTraineesActiveByCompany", 
         query = "select a.company, count(a) from Trainee a "
-                    + "where a.activeFlag is null or a.activeFlag = 1 "
+                    + "where a.activeFlag is null or a.activeFlag = 0 "
                     + " and a.company.companyID = :id "
                     + " GROUP BY a.company"),
       
@@ -210,19 +205,16 @@ import javax.validation.constraints.Size;
         query = "select a.company, count(a) as total "
                     + "from Category a "
                     + " GROUP BY a.company")})
+
 public class Company implements Serializable {
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "company", fetch = FetchType.LAZY)
-    private List<Rating> ratingList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "company")
-    private List<HelpType> helpTypeList;
     @OneToMany(mappedBy = "company")
-    private List<ReportUser> reportUserList;
+    private List<ErrorStoreAndroid> errorStoreAndroidList;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "companyID")
-    private Integer companyID;
+    private int companyID;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 100)
@@ -237,44 +229,48 @@ public class Company implements Serializable {
     @Column(name = "dateRegistered")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateRegistered;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "company", fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "company")
     private List<Instructor> instructorList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "company")
     private List<Equipment> equipmentList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "company")
+    private List<HelpType> helpTypeList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "company")
     private List<Course> courseList;
     @OneToMany(mappedBy = "company")
     private List<Author> authorList;
-    @OneToMany(mappedBy = "company", fetch = FetchType.EAGER)
-    private List<Trainee> traineeList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "company", fetch = FetchType.EAGER)
-    private List<TrainingClass> trainingClassList;
     @OneToMany(mappedBy = "company")
+    private List<Trainee> traineeList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "company")
+    private List<TrainingClass> trainingClassList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "company")
     private List<Category> categoryList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "company", fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "company")
     private List<Administrator> administratorList;
     @JoinColumn(name = "cityID", referencedColumnName = "cityID")
     @ManyToOne
     private City city;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "company")
+    private List<Rating> ratingList;
 
     public Company() {
     }
 
-    public Company(Integer companyID) {
+    public Company(int companyID) {
         this.companyID = companyID;
     }
 
-    public Company(Integer companyID, String companyName, Date dateRegistered) {
+    public Company(int companyID, String companyName, Date dateRegistered) {
         this.companyID = companyID;
         this.companyName = companyName;
         this.dateRegistered = dateRegistered;
     }
 
-    public Integer getCompanyID() {
+    public int getCompanyID() {
         return companyID;
     }
 
-    public void setCompanyID(Integer companyID) {
+    public void setCompanyID(int companyID) {
         this.companyID = companyID;
     }
 
@@ -316,6 +312,14 @@ public class Company implements Serializable {
 
     public void setEquipmentList(List<Equipment> equipmentList) {
         this.equipmentList = equipmentList;
+    }
+
+    public List<HelpType> getHelpTypeList() {
+        return helpTypeList;
+    }
+
+    public void setHelpTypeList(List<HelpType> helpTypeList) {
+        this.helpTypeList = helpTypeList;
     }
 
     public List<Course> getCourseList() {
@@ -374,55 +378,27 @@ public class Company implements Serializable {
         this.city = city;
     }
 
-   
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (companyID != null ? companyID.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Company)) {
-            return false;
-        }
-        Company other = (Company) object;
-        if ((this.companyID == null && other.companyID != null) || (this.companyID != null && !this.companyID.equals(other.companyID))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "com.boha.coursemaker.data.Company[ companyID=" + companyID + " ]";
-    }
-
-    public List<ReportUser> getReportUserList() {
-        return reportUserList;
-    }
-
-    public void setReportUserList(List<ReportUser> reportUserList) {
-        this.reportUserList = reportUserList;
-    }
-
-    public List<HelpType> getHelpTypeList() {
-        return helpTypeList;
-    }
-
-    public void setHelpTypeList(List<HelpType> helpTypeList) {
-        this.helpTypeList = helpTypeList;
-    }
-
     public List<Rating> getRatingList() {
         return ratingList;
     }
 
     public void setRatingList(List<Rating> ratingList) {
         this.ratingList = ratingList;
+    }
+
+   
+
+    @Override
+    public String toString() {
+        return "com.boha.coursemaker.data.Company[ companyID=" + companyID + " ]";
+    }
+
+    public List<ErrorStoreAndroid> getErrorStoreAndroidList() {
+        return errorStoreAndroidList;
+    }
+
+    public void setErrorStoreAndroidList(List<ErrorStoreAndroid> errorStoreAndroidList) {
+        this.errorStoreAndroidList = errorStoreAndroidList;
     }
     
 }

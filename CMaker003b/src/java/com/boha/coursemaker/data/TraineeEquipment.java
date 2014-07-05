@@ -1,7 +1,9 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package com.boha.coursemaker.data;
 
 import java.io.Serializable;
@@ -42,22 +44,20 @@ import javax.persistence.TemporalType;
     @NamedQuery(name = "TraineeEquipment.findByDateReturned", query = "SELECT t FROM TraineeEquipment t WHERE t.dateReturned = :dateReturned"),
     @NamedQuery(name = "TraineeEquipment.findByConditionFlag", query = "SELECT t FROM TraineeEquipment t WHERE t.conditionFlag = :conditionFlag")})
 public class TraineeEquipment implements Serializable {
-   
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "traineeEquipmentID")
-    private Integer traineeEquipmentID;
+    private int traineeEquipmentID;
     @Column(name = "dateRegistered")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateRegistered;
     @Column(name = "dateReturned")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateReturned;
-    
     @Column(name = "conditionFlag")
-    private Integer conditionFlag;
+    private int conditionFlag;
     @JoinColumn(name = "administratorID", referencedColumnName = "administratorID")
     @ManyToOne
     private Administrator administrator;
@@ -71,15 +71,15 @@ public class TraineeEquipment implements Serializable {
     public TraineeEquipment() {
     }
 
-    public TraineeEquipment(Integer traineeEquipmentID) {
+    public TraineeEquipment(int traineeEquipmentID) {
         this.traineeEquipmentID = traineeEquipmentID;
     }
 
-    public Integer getTraineeEquipmentID() {
+    public int getTraineeEquipmentID() {
         return traineeEquipmentID;
     }
 
-    public void setTraineeEquipmentID(Integer traineeEquipmentID) {
+    public void setTraineeEquipmentID(int traineeEquipmentID) {
         this.traineeEquipmentID = traineeEquipmentID;
     }
 
@@ -99,11 +99,11 @@ public class TraineeEquipment implements Serializable {
         this.dateReturned = dateReturned;
     }
 
-    public Integer getConditionFlag() {
+    public int getConditionFlag() {
         return conditionFlag;
     }
 
-    public void setConditionFlag(Integer conditionFlag) {
+    public void setConditionFlag(int conditionFlag) {
         this.conditionFlag = conditionFlag;
     }
 
@@ -131,32 +131,9 @@ public class TraineeEquipment implements Serializable {
         this.trainee = trainee;
     }
 
-  
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (traineeEquipmentID != null ? traineeEquipmentID.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof TraineeEquipment)) {
-            return false;
-        }
-        TraineeEquipment other = (TraineeEquipment) object;
-        if ((this.traineeEquipmentID == null && other.traineeEquipmentID != null) || (this.traineeEquipmentID != null && !this.traineeEquipmentID.equals(other.traineeEquipmentID))) {
-            return false;
-        }
-        return true;
-    }
-
     @Override
     public String toString() {
         return "com.boha.coursemaker.data.TraineeEquipment[ traineeEquipmentID=" + traineeEquipmentID + " ]";
     }
-
-  
     
 }

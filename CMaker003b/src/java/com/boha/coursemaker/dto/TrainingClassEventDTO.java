@@ -13,7 +13,7 @@ import com.boha.coursemaker.data.TrainingClassEvent;
  */
 public class TrainingClassEventDTO {
 
-    private Integer trainingClassEventID;
+    private int trainingClassEventID;
 
     private String eventName;
     private String description;
@@ -21,7 +21,7 @@ public class TrainingClassEventDTO {
     private String location;
     private long startDate;
     private long endDate;
-    private Integer trainingClassID, trainingClassCourseID;
+    private int trainingClassID, trainingClassCourseID;
 
     public TrainingClassEventDTO(TrainingClassEvent a) {
         trainingClassEventID = a.getTrainingClassEventID();
@@ -37,19 +37,19 @@ public class TrainingClassEventDTO {
         }
     }
 
-    public Integer getTrainingClassEventID() {
+    public int getTrainingClassEventID() {
         return trainingClassEventID;
     }
 
-    public void setTrainingClassEventID(Integer trainingClassEventID) {
+    public void setTrainingClassEventID(int trainingClassEventID) {
         this.trainingClassEventID = trainingClassEventID;
     }
 
-    public Integer getTrainingClassCourseID() {
+    public int getTrainingClassCourseID() {
         return trainingClassCourseID;
     }
 
-    public void setTrainingClassCourseID(Integer trainingClassCourseID) {
+    public void setTrainingClassCourseID(int trainingClassCourseID) {
         this.trainingClassCourseID = trainingClassCourseID;
     }
 
@@ -101,11 +101,11 @@ public class TrainingClassEventDTO {
         this.endDate = endDate;
     }
 
-    public Integer getTrainingClassID() {
+    public int getTrainingClassID() {
         return trainingClassID;
     }
 
-    public void setTrainingClassID(Integer trainingClassID) {
+    public void setTrainingClassID(int trainingClassID) {
         this.trainingClassID = trainingClassID;
     }
 }

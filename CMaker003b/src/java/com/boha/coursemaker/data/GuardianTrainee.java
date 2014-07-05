@@ -1,7 +1,9 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package com.boha.coursemaker.data;
 
 import java.io.Serializable;
@@ -25,42 +27,44 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "guardianTrainee")
 @NamedQueries({
-    @NamedQuery(name = "GuardianTrainee.findAll", query = "SELECT g FROM GuardianTrainee g")})
+    @NamedQuery(name = "GuardianTrainee.findAll", query = "SELECT g FROM GuardianTrainee g"),
+    @NamedQuery(name = "GuardianTrainee.findByGuardianTraineeID", query = "SELECT g FROM GuardianTrainee g WHERE g.guardianTraineeID = :guardianTraineeID"),
+    @NamedQuery(name = "GuardianTrainee.findByActiveFlag", query = "SELECT g FROM GuardianTrainee g WHERE g.activeFlag = :activeFlag")})
 public class GuardianTrainee implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "guardianTraineeID")
-    private Integer guardianTraineeID;
+    private int guardianTraineeID;
     @Basic(optional = false)
     @NotNull
     @Column(name = "activeFlag")
     private int activeFlag;
-    @JoinColumn(name = "guardianID", referencedColumnName = "guardianID")
-    @ManyToOne(optional = false)
-    private Guardian guardian;
     @JoinColumn(name = "traineeID", referencedColumnName = "traineeID")
     @ManyToOne(optional = false)
     private Trainee trainee;
+    @JoinColumn(name = "guardianID", referencedColumnName = "guardianID")
+    @ManyToOne(optional = false)
+    private Guardian guardian;
 
     public GuardianTrainee() {
     }
 
-    public GuardianTrainee(Integer guardianTraineeID) {
+    public GuardianTrainee(int guardianTraineeID) {
         this.guardianTraineeID = guardianTraineeID;
     }
 
-    public GuardianTrainee(Integer guardianTraineeID, int activeFlag) {
+    public GuardianTrainee(int guardianTraineeID, int activeFlag) {
         this.guardianTraineeID = guardianTraineeID;
         this.activeFlag = activeFlag;
     }
 
-    public Integer getGuardianTraineeID() {
+    public int getGuardianTraineeID() {
         return guardianTraineeID;
     }
 
-    public void setGuardianTraineeID(Integer guardianTraineeID) {
+    public void setGuardianTraineeID(int guardianTraineeID) {
         this.guardianTraineeID = guardianTraineeID;
     }
 
@@ -72,23 +76,6 @@ public class GuardianTrainee implements Serializable {
         this.activeFlag = activeFlag;
     }
 
-    public Guardian getGuardian() {
-        return guardian;
-    }
-
-    public void setGuardian(Guardian guardian) {
-        this.guardian = guardian;
-    }
-
-   
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (guardianTraineeID != null ? guardianTraineeID.hashCode() : 0);
-        return hash;
-    }
-
     public Trainee getTrainee() {
         return trainee;
     }
@@ -97,18 +84,14 @@ public class GuardianTrainee implements Serializable {
         this.trainee = trainee;
     }
 
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof GuardianTrainee)) {
-            return false;
-        }
-        GuardianTrainee other = (GuardianTrainee) object;
-        if ((this.guardianTraineeID == null && other.guardianTraineeID != null) || (this.guardianTraineeID != null && !this.guardianTraineeID.equals(other.guardianTraineeID))) {
-            return false;
-        }
-        return true;
+    public Guardian getGuardian() {
+        return guardian;
     }
+
+    public void setGuardian(Guardian guardian) {
+        this.guardian = guardian;
+    }
+
 
     @Override
     public String toString() {

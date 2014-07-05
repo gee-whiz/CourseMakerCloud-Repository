@@ -13,19 +13,19 @@ import com.boha.coursemaker.data.LessonSchedule;
  * @author aubreyM
  */
 public class LessonScheduleDTO {
- private Integer lessonScheduleID;
+ private int lessonScheduleID;
     
     private long scheduleDate;
     
     private long endDate;
     
-    private Integer lessonID;
+    private int activityID;
     
-    private Integer trainingClassID;   
+    private int trainingClassID;   
     
     public LessonScheduleDTO(LessonSchedule a) {
         lessonScheduleID = a.getLessonScheduleID();
-        lessonID = a.getLesson().getLessonID();
+        activityID = a.getActivity().getActivityID();
         trainingClassID = a.getTrainingClass().getTrainingClassID();
         if (a.getScheduleDate() != null) {
             scheduleDate = a.getScheduleDate().getTime();
@@ -35,11 +35,11 @@ public class LessonScheduleDTO {
         }
     }
 
-    public Integer getLessonScheduleID() {
+    public int getLessonScheduleID() {
         return lessonScheduleID;
     }
 
-    public void setLessonScheduleID(Integer lessonScheduleID) {
+    public void setLessonScheduleID(int lessonScheduleID) {
         this.lessonScheduleID = lessonScheduleID;
     }
 
@@ -59,19 +59,11 @@ public class LessonScheduleDTO {
         this.endDate = endDate;
     }
 
-    public Integer getLessonID() {
-        return lessonID;
-    }
-
-    public void setLessonID(Integer lessonID) {
-        this.lessonID = lessonID;
-    }
-
-    public Integer getTrainingClassID() {
+    public int getTrainingClassID() {
         return trainingClassID;
     }
 
-    public void setTrainingClassID(Integer trainingClassID) {
+    public void setTrainingClassID(int trainingClassID) {
         this.trainingClassID = trainingClassID;
     }
 }

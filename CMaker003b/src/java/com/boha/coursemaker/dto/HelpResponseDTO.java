@@ -12,11 +12,11 @@ import com.boha.coursemaker.data.HelpResponse;
  */
 public class HelpResponseDTO {
 
-    private Integer helpResponseID;
+    private int helpResponseID;
     private String message;
     private long dateResponse;
-    private Integer scheduleMeeting;
-    private Integer problemSorted, instructorID;
+    private int scheduleMeeting;
+    private int problemSorted, instructorID;
     private long meetingDate;
     private HelpRequestDTO helpRequest;
 
@@ -39,11 +39,11 @@ public class HelpResponseDTO {
         problemSorted = a.getProblemSorted();
     }
 
-    public Integer getHelpResponseID() {
+    public int getHelpResponseID() {
         return helpResponseID;
     }
 
-    public void setHelpResponseID(Integer helpResponseID) {
+    public void setHelpResponseID(int helpResponseID) {
         this.helpResponseID = helpResponseID;
     }
 
@@ -51,11 +51,11 @@ public class HelpResponseDTO {
         return message;
     }
 
-    public Integer getInstructorID() {
+    public int getInstructorID() {
         return instructorID;
     }
 
-    public void setInstructorID(Integer instructorID) {
+    public void setInstructorID(int instructorID) {
         this.instructorID = instructorID;
     }
 
@@ -71,19 +71,19 @@ public class HelpResponseDTO {
         this.dateResponse = dateResponse;
     }
 
-    public Integer getScheduleMeeting() {
+    public int getScheduleMeeting() {
         return scheduleMeeting;
     }
 
-    public void setScheduleMeeting(Integer scheduleMeeting) {
+    public void setScheduleMeeting(int scheduleMeeting) {
         this.scheduleMeeting = scheduleMeeting;
     }
 
-    public Integer getProblemSorted() {
+    public int getProblemSorted() {
         return problemSorted;
     }
 
-    public void setProblemSorted(Integer problemSorted) {
+    public void setProblemSorted(int problemSorted) {
         this.problemSorted = problemSorted;
     }
 

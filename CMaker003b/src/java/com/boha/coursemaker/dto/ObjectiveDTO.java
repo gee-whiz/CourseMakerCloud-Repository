@@ -13,9 +13,9 @@ import com.boha.coursemaker.data.Objective;
  */
 public class ObjectiveDTO {
 
-    private Integer objectiveID;
+    private int objectiveID;
     private String objectiveName, description;    
-    private Integer courseID;
+    private int courseID;
 
     public ObjectiveDTO(Objective a) {
         objectiveID = a.getObjectiveID();
@@ -25,11 +25,11 @@ public class ObjectiveDTO {
         
     }
 
-    public Integer getObjectiveID() {
+    public int getObjectiveID() {
         return objectiveID;
     }
 
-    public void setObjectiveID(Integer objectiveID) {
+    public void setObjectiveID(int objectiveID) {
         this.objectiveID = objectiveID;
     }
 
@@ -49,11 +49,11 @@ public class ObjectiveDTO {
         this.description = description;
     }
 
-    public Integer getCourseID() {
+    public int getCourseID() {
         return courseID;
     }
 
-    public void setCourseID(Integer courseID) {
+    public void setCourseID(int courseID) {
         this.courseID = courseID;
     }
 

@@ -11,7 +11,6 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -57,68 +56,56 @@ public class DemoAnnouncement implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "demoAnnouncementID")
-    private Integer demoAnnouncementID;
+    private int demoAnnouncementID;
     @Basic(optional = false)
     @NotNull
     @Column(name = "demoDate")
     @Temporal(TemporalType.TIMESTAMP)
     private Date demoDate;
-     @JoinColumn(name = "teamID", referencedColumnName = "teamID")
-    @ManyToOne(fetch = FetchType.EAGER)
-    private Team team;
     @Basic(optional = false)
     @NotNull
     @Column(name = "dateRequested")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateRequested;
-    
-    @Basic(optional = true)
-    @Column(name = "cancellationDate")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date cancellationDate;
-    
-    
     @Basic(optional = false)
     @NotNull
     @Lob
     @Size(min = 1, max = 65535)
     @Column(name = "description")
     private String description;
+    @Column(name = "cancellationDate")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date cancellationDate;
+    @JoinColumn(name = "teamID", referencedColumnName = "teamID")
+    @ManyToOne
+    private Team team;
     @JoinColumn(name = "traineeID", referencedColumnName = "traineeID")
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     private Trainee trainee;
     @JoinColumn(name = "trainingClassID", referencedColumnName = "trainingClassID")
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @ManyToOne(optional = false)
     private TrainingClass trainingClass;
 
     public DemoAnnouncement() {
     }
 
-    public DemoAnnouncement(Integer demoAnnouncementID) {
+    public DemoAnnouncement(int demoAnnouncementID) {
         this.demoAnnouncementID = demoAnnouncementID;
     }
 
-    public DemoAnnouncement(Integer demoAnnouncementID, Date demoDate, Date dateRequested, String description) {
+    public DemoAnnouncement(int demoAnnouncementID, Date demoDate, Date dateRequested, String description) {
         this.demoAnnouncementID = demoAnnouncementID;
         this.demoDate = demoDate;
         this.dateRequested = dateRequested;
         this.description = description;
     }
 
-    public Integer getDemoAnnouncementID() {
+    public int getDemoAnnouncementID() {
         return demoAnnouncementID;
     }
 
-    public void setDemoAnnouncementID(Integer demoAnnouncementID) {
+    public void setDemoAnnouncementID(int demoAnnouncementID) {
         this.demoAnnouncementID = demoAnnouncementID;
-    }
-
-    public Date getCancellationDate() {
-        return cancellationDate;
-    }
-
-    public void setCancellationDate(Date cancellationDate) {
-        this.cancellationDate = cancellationDate;
     }
 
     public Date getDemoDate() {
@@ -129,8 +116,6 @@ public class DemoAnnouncement implements Serializable {
         this.demoDate = demoDate;
     }
 
-    
-
     public Date getDateRequested() {
         return dateRequested;
     }
@@ -139,20 +124,28 @@ public class DemoAnnouncement implements Serializable {
         this.dateRequested = dateRequested;
     }
 
-    public Team getTeam() {
-        return team;
-    }
-
-    public void setTeam(Team team) {
-        this.team = team;
-    }
-
     public String getDescription() {
         return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Date getCancellationDate() {
+        return cancellationDate;
+    }
+
+    public void setCancellationDate(Date cancellationDate) {
+        this.cancellationDate = cancellationDate;
+    }
+
+    public Team getTeam() {
+        return team;
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
     }
 
     public Trainee getTrainee() {
@@ -171,27 +164,7 @@ public class DemoAnnouncement implements Serializable {
         this.trainingClass = trainingClass;
     }
 
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (demoAnnouncementID != null ? demoAnnouncementID.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof DemoAnnouncement)) {
-            return false;
-        }
-        DemoAnnouncement other = (DemoAnnouncement) object;
-        if ((this.demoAnnouncementID == null && other.demoAnnouncementID != null) || (this.demoAnnouncementID != null && !this.demoAnnouncementID.equals(other.demoAnnouncementID))) {
-            return false;
-        }
-        return true;
-    }
-
+ 
     @Override
     public String toString() {
         return "com.boha.coursemaker.data.DemoAnnouncement[ demoAnnouncementID=" + demoAnnouncementID + " ]";

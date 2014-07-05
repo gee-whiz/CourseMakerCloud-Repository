@@ -1,18 +1,17 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
 package com.boha.coursemaker.data;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -22,7 +21,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -36,39 +34,33 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "course")
 @NamedQueries({
-    @NamedQuery(name = "Course.findByCategoryID", 
-        query = "select a from Course a "
-                    + "where a.category.categoryID = :id"
-                    + " order by a.courseName"),
-    @NamedQuery(name = "Course.findByAuthorID", 
-        query = "select a from Course a, CourseAuthor b "
-                + " where a.courseID = b.course.courseID and b.author.authorID = :authorID "
-                + " order by a.category.categoryID, a.courseName"),
-@NamedQuery(name = "Course.findByCompanyID", 
-        query = "select a from Course a"
-                    + " where a.company.companyID = :id "
-                    + " order by a.dateUpdated desc")})
+    @NamedQuery(name = "Course.findByCategoryID",
+            query = "select a from Course a "
+            + "where a.category.categoryID = :id"
+            + " order by a.courseName"),
+    @NamedQuery(name = "Course.findByAuthorID",
+            query = "select a from Course a, CourseAuthor b "
+            + " where a.courseID = b.course.courseID and b.author.authorID = :authorID "
+            + " order by a.category.categoryID, a.courseName"),
+    @NamedQuery(name = "Course.findByCompanyID",
+            query = "select a from Course a"
+            + " where a.company.companyID = :id "
+            + " order by a.dateUpdated desc")})
 public class Course implements Serializable {
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "course", fetch = FetchType.LAZY)
-    private List<Objective> objectiveList;
-    @Column(name = "localID")
-    private BigInteger localID;
-    @Column(name = "syncDate")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date syncDate;
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "courseID")
-    private Integer courseID;
+    private int courseID;
     @Basic(optional = false)
     @NotNull
     @Column(name = "dateUpdated")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateUpdated;
     @Column(name = "activeFlag")
-    private Integer activeFlag;
+    private int activeFlag;
     @Size(max = 255)
     @Column(name = "courseName")
     private String courseName;
@@ -77,7 +69,12 @@ public class Course implements Serializable {
     @Column(name = "description")
     private String description;
     @Column(name = "shareFlag")
-    private Integer shareFlag;
+    private int shareFlag;
+    @Column(name = "localID")
+    private long localID;
+    @Column(name = "syncDate")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date syncDate;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "course")
     private List<CourseAuthor> courseAuthorList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "course")
@@ -88,28 +85,39 @@ public class Course implements Serializable {
     @JoinColumn(name = "companyID", referencedColumnName = "companyID")
     @ManyToOne(optional = false)
     private Company company;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "course")
+    private List<Activity> activityList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "course")
+    private List<Objective> objectiveList;
     
-    @OneToMany(mappedBy = "course")
-    @OrderBy("priorityFlag")    
-    private List<Lesson> lessonList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "course")
+    private List<LessonResource> lessonResourceList;
 
     public Course() {
     }
 
-    public Course(Integer courseID) {
+    public Course(int courseID) {
         this.courseID = courseID;
     }
 
-    public Course(Integer courseID, Date dateUpdated) {
+    public Course(int courseID, Date dateUpdated) {
         this.courseID = courseID;
         this.dateUpdated = dateUpdated;
     }
 
-    public Integer getCourseID() {
+    public List<LessonResource> getLessonResourceList() {
+        return lessonResourceList;
+    }
+
+    public void setLessonResourceList(List<LessonResource> lessonResourceList) {
+        this.lessonResourceList = lessonResourceList;
+    }
+
+    public int getCourseID() {
         return courseID;
     }
 
-    public void setCourseID(Integer courseID) {
+    public void setCourseID(int courseID) {
         this.courseID = courseID;
     }
 
@@ -121,11 +129,11 @@ public class Course implements Serializable {
         this.dateUpdated = dateUpdated;
     }
 
-    public Integer getActiveFlag() {
+    public int getActiveFlag() {
         return activeFlag;
     }
 
-    public void setActiveFlag(Integer activeFlag) {
+    public void setActiveFlag(int activeFlag) {
         this.activeFlag = activeFlag;
     }
 
@@ -145,12 +153,28 @@ public class Course implements Serializable {
         this.description = description;
     }
 
-    public Integer getShareFlag() {
+    public int getShareFlag() {
         return shareFlag;
     }
 
-    public void setShareFlag(Integer shareFlag) {
+    public void setShareFlag(int shareFlag) {
         this.shareFlag = shareFlag;
+    }
+
+    public long getLocalID() {
+        return localID;
+    }
+
+    public void setLocalID(long localID) {
+        this.localID = localID;
+    }
+
+    public Date getSyncDate() {
+        return syncDate;
+    }
+
+    public void setSyncDate(Date syncDate) {
+        this.syncDate = syncDate;
     }
 
     public List<CourseAuthor> getCourseAuthorList() {
@@ -185,57 +209,12 @@ public class Course implements Serializable {
         this.company = company;
     }
 
-    
-
-    public List<Lesson> getLessonList() {
-        return lessonList;
+    public List<Activity> getActivityList() {
+        return activityList;
     }
 
-    public void setLessonList(List<Lesson> lessonList) {
-        this.lessonList = lessonList;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (courseID != null ? courseID.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Course)) {
-            return false;
-        }
-        Course other = (Course) object;
-        if ((this.courseID == null && other.courseID != null) || (this.courseID != null && !this.courseID.equals(other.courseID))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "com.boha.coursemaker.data.Course[ courseID=" + courseID + " ]";
-    }
-
-   
-
-    public Date getSyncDate() {
-        return syncDate;
-    }
-
-    public void setSyncDate(Date syncDate) {
-        this.syncDate = syncDate;
-    }
-
-    public BigInteger getLocalID() {
-        return localID;
-    }
-
-    public void setLocalID(BigInteger localID) {
-        this.localID = localID;
+    public void setActivityList(List<Activity> activityList) {
+        this.activityList = activityList;
     }
 
     public List<Objective> getObjectiveList() {
@@ -245,5 +224,10 @@ public class Course implements Serializable {
     public void setObjectiveList(List<Objective> objectiveList) {
         this.objectiveList = objectiveList;
     }
-    
+
+    @Override
+    public String toString() {
+        return "com.boha.coursemaker.data.Course[ courseID=" + courseID + " ]";
+    }
+
 }

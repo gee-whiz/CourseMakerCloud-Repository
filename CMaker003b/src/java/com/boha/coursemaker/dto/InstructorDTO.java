@@ -6,11 +6,7 @@
 
 package com.boha.coursemaker.dto;
 
-import com.boha.coursemaker.data.GcmDevice;
-import com.boha.coursemaker.data.HelpResponse;
 import com.boha.coursemaker.data.Instructor;
-import com.boha.coursemaker.data.InstructorClass;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,15 +14,15 @@ import java.util.List;
  * @author aubreyM
  */
 public class InstructorDTO {
-    private Integer instructorID;
+    private int instructorID;
     private String firstName;    
     private String lastName;
     private String email;
     private String cellphone, password;
     private long dateRegistered;
-    private Integer activeFlag;
+    private int activeFlag;
     private String cityName, companyName;
-    private Integer cityID, companyID;
+    private int cityID, companyID;
     private List<GcmDeviceDTO> gcmDeviceList;
     private List<InstructorClassDTO> instructorClassList;
     private List<HelpResponseDTO> helpResponseList;
@@ -49,7 +45,7 @@ public class InstructorDTO {
         
     }
 
-    public Integer getInstructorID() {
+    public int getInstructorID() {
         return instructorID;
     }
 
@@ -65,20 +61,20 @@ public class InstructorDTO {
         this.gcmDeviceList = gcmDeviceList;
     }
 
-    public Integer getActiveFlag() {
+    public int getActiveFlag() {
         return activeFlag;
     }
 
 
-    public void setActiveFlag(Integer activeFlag) {
+    public void setActiveFlag(int activeFlag) {
         this.activeFlag = activeFlag;
     }
 
-    public Integer getCompanyID() {
+    public int getCompanyID() {
         return companyID;
     }
 
-    public void setCompanyID(Integer companyID) {
+    public void setCompanyID(int companyID) {
         this.companyID = companyID;
     }
 
@@ -119,7 +115,7 @@ public class InstructorDTO {
         this.companyName = companyName;
     }
 
-    public void setInstructorID(Integer instructorID) {
+    public void setInstructorID(int instructorID) {
         this.instructorID = instructorID;
     }
 
@@ -163,11 +159,11 @@ public class InstructorDTO {
         this.dateRegistered = dateRegistered;
     }
 
-    public Integer getCityID() {
+    public int getCityID() {
         return cityID;
     }
 
-    public void setCityID(Integer cityID) {
+    public void setCityID(int cityID) {
         this.cityID = cityID;
     }
     

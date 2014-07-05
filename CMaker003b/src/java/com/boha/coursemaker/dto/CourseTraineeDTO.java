@@ -13,14 +13,14 @@ import com.boha.coursemaker.data.CourseTrainee;
  * @author aubreyM
  */
 public class CourseTraineeDTO {
-    private Integer courseTraineeID;
+    private int courseTraineeID;
     private long dateEnrolled;
     private long ratingDate;
     private String comment, courseName, traineeName;
     private RatingDTO rating;
-    private Integer traineeID;
+    private int traineeID;
     
-    private Integer courseID;
+    private int courseID;
     
     public CourseTraineeDTO(CourseTrainee a) {
         courseTraineeID = a.getCourseTraineeID();
@@ -39,7 +39,7 @@ public class CourseTraineeDTO {
         }
     }
 
-    public Integer getCourseTraineeID() {
+    public int getCourseTraineeID() {
         return courseTraineeID;
     }
 
@@ -51,7 +51,7 @@ public class CourseTraineeDTO {
         this.traineeName = traineeName;
     }
 
-    public void setCourseTraineeID(Integer courseTraineeID) {
+    public void setCourseTraineeID(int courseTraineeID) {
         this.courseTraineeID = courseTraineeID;
     }
 
@@ -95,19 +95,19 @@ public class CourseTraineeDTO {
         this.rating = rating;
     }
 
-    public Integer getTraineeID() {
+    public int getTraineeID() {
         return traineeID;
     }
 
-    public void setTraineeID(Integer traineeID) {
+    public void setTraineeID(int traineeID) {
         this.traineeID = traineeID;
     }
 
-    public Integer getTrainingCompanyCourseID() {
+    public int getTrainingCompanyCourseID() {
         return courseID;
     }
 
-    public void setTrainingCompanyCourseID(Integer trainingCompanyCourseID) {
+    public void setTrainingCompanyCourseID(int trainingCompanyCourseID) {
         this.courseID = trainingCompanyCourseID;
     }
 }

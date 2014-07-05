@@ -1,7 +1,9 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package com.boha.coursemaker.data;
 
 import java.io.Serializable;
@@ -46,7 +48,7 @@ public class Inventory implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "inventoryID")
-    private Integer inventoryID;
+    private int inventoryID;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 45)
@@ -56,7 +58,7 @@ public class Inventory implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateRegistered;
     @Column(name = "conditionFlag")
-    private Integer conditionFlag;
+    private int conditionFlag;
     @Column(name = "dateUpdated")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateUpdated;
@@ -64,7 +66,7 @@ public class Inventory implements Serializable {
     @Column(name = "model")
     private String model;
     @Column(name = "yearPurchased")
-    private Integer yearPurchased;
+    private int yearPurchased;
     @JoinColumn(name = "administratorID", referencedColumnName = "administratorID")
     @ManyToOne
     private Administrator administrator;
@@ -77,36 +79,20 @@ public class Inventory implements Serializable {
     public Inventory() {
     }
 
-    public Inventory(Integer inventoryID) {
+    public Inventory(int inventoryID) {
         this.inventoryID = inventoryID;
     }
 
-    public Inventory(Integer inventoryID, String serialNumber) {
+    public Inventory(int inventoryID, String serialNumber) {
         this.inventoryID = inventoryID;
         this.serialNumber = serialNumber;
     }
 
-    public Administrator getAdministrator() {
-        return administrator;
-    }
-
-    public void setAdministrator(Administrator administrator) {
-        this.administrator = administrator;
-    }
-
-    public Equipment getEquipment() {
-        return equipment;
-    }
-
-    public void setEquipment(Equipment equipment) {
-        this.equipment = equipment;
-    }
-
-    public Integer getInventoryID() {
+    public int getInventoryID() {
         return inventoryID;
     }
 
-    public void setInventoryID(Integer inventoryID) {
+    public void setInventoryID(int inventoryID) {
         this.inventoryID = inventoryID;
     }
 
@@ -126,11 +112,11 @@ public class Inventory implements Serializable {
         this.dateRegistered = dateRegistered;
     }
 
-    public Integer getConditionFlag() {
+    public int getConditionFlag() {
         return conditionFlag;
     }
 
-    public void setConditionFlag(Integer conditionFlag) {
+    public void setConditionFlag(int conditionFlag) {
         this.conditionFlag = conditionFlag;
     }
 
@@ -150,15 +136,29 @@ public class Inventory implements Serializable {
         this.model = model;
     }
 
-    public Integer getYearPurchased() {
+    public int getYearPurchased() {
         return yearPurchased;
     }
 
-    public void setYearPurchased(Integer yearPurchased) {
+    public void setYearPurchased(int yearPurchased) {
         this.yearPurchased = yearPurchased;
     }
 
-   
+    public Administrator getAdministrator() {
+        return administrator;
+    }
+
+    public void setAdministrator(Administrator administrator) {
+        this.administrator = administrator;
+    }
+
+    public Equipment getEquipment() {
+        return equipment;
+    }
+
+    public void setEquipment(Equipment equipment) {
+        this.equipment = equipment;
+    }
 
     public List<TraineeEquipment> getTraineeEquipmentList() {
         return traineeEquipmentList;
@@ -168,25 +168,6 @@ public class Inventory implements Serializable {
         this.traineeEquipmentList = traineeEquipmentList;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (inventoryID != null ? inventoryID.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Inventory)) {
-            return false;
-        }
-        Inventory other = (Inventory) object;
-        if ((this.inventoryID == null && other.inventoryID != null) || (this.inventoryID != null && !this.inventoryID.equals(other.inventoryID))) {
-            return false;
-        }
-        return true;
-    }
 
     @Override
     public String toString() {

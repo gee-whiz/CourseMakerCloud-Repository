@@ -6,7 +6,6 @@
 package com.boha.coursemaker.dto;
 
 import com.boha.coursemaker.data.LessonResource;
-import java.math.BigInteger;
 
 /**
  *
@@ -14,16 +13,15 @@ import java.math.BigInteger;
  */
 public class LessonResourceDTO {
 
-    private Integer lessonResourceID;
+    private int lessonResourceID;
     private String url, resourceName;
-    private BigInteger localID;
     private long syncDate;
     private long dateUpdated;
-    private Integer lessonID, instructorID, traineeID, authorID;
+    private int courseID, instructorID, traineeID, authorID;
 
     public LessonResourceDTO(LessonResource a) {
         lessonResourceID = a.getLessonResourceID();
-        lessonID = a.getLesson().getLessonID();
+        courseID = a.getCourse().getCourseID();
         if (a.getInstructor() != null) {
             instructorID = a.getInstructor().getInstructorID();
         }
@@ -35,34 +33,20 @@ public class LessonResourceDTO {
         }
         url = a.getUrl();
         dateUpdated = a.getDateUpdated().getTime();
-        if (a.getLocalID() != null) {
-            localID = a.getLocalID();
-        }
+       
         if (a.getSyncDate() != null) {
             syncDate = a.getSyncDate().getTime();
         }
         resourceName = a.getResourceName();
     }
 
-    public Integer getLessonResourceID() {
+    public int getLessonResourceID() {
         return lessonResourceID;
     }
 
     public String getResourceName() {
         return resourceName;
     }
-
-    public BigInteger getLocalID() {
-        return localID;
-    }
-
-    public void setLocalID(BigInteger localID) {
-        this.localID = localID;
-    }
-
-    
-
-    
 
     public long getSyncDate() {
         return syncDate;
@@ -76,31 +60,31 @@ public class LessonResourceDTO {
         this.resourceName = resourceName;
     }
 
-    public Integer getInstructorID() {
+    public int getInstructorID() {
         return instructorID;
     }
 
-    public void setInstructorID(Integer instructorID) {
+    public void setInstructorID(int instructorID) {
         this.instructorID = instructorID;
     }
 
-    public Integer getTraineeID() {
+    public int getTraineeID() {
         return traineeID;
     }
 
-    public void setTraineeID(Integer traineeID) {
+    public void setTraineeID(int traineeID) {
         this.traineeID = traineeID;
     }
 
-    public Integer getAuthorID() {
+    public int getAuthorID() {
         return authorID;
     }
 
-    public void setAuthorID(Integer authorID) {
+    public void setAuthorID(int authorID) {
         this.authorID = authorID;
     }
 
-    public void setLessonResourceID(Integer lessonResourceID) {
+    public void setLessonResourceID(int lessonResourceID) {
         this.lessonResourceID = lessonResourceID;
     }
 
@@ -120,11 +104,14 @@ public class LessonResourceDTO {
         this.dateUpdated = dateUpdated;
     }
 
-    public Integer getLessonID() {
-        return lessonID;
+    public int getCourseID() {
+        return courseID;
     }
 
-    public void setLessonID(Integer lessonID) {
-        this.lessonID = lessonID;
+    public void setCourseID(int courseID) {
+        this.courseID = courseID;
     }
+
+   
+
 }

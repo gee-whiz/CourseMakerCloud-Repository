@@ -1,7 +1,9 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package com.boha.coursemaker.data;
 
 import java.io.Serializable;
@@ -35,7 +37,7 @@ public class TraineeStatusType implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "traineeStatusTypeID")
-    private Integer traineeStatusTypeID;
+    private int traineeStatusTypeID;
     @Size(max = 45)
     @Column(name = "traineeStatusTypeName")
     private String traineeStatusTypeName;
@@ -45,15 +47,15 @@ public class TraineeStatusType implements Serializable {
     public TraineeStatusType() {
     }
 
-    public TraineeStatusType(Integer traineeStatusTypeID) {
+    public TraineeStatusType(int traineeStatusTypeID) {
         this.traineeStatusTypeID = traineeStatusTypeID;
     }
 
-    public Integer getTraineeStatusTypeID() {
+    public int getTraineeStatusTypeID() {
         return traineeStatusTypeID;
     }
 
-    public void setTraineeStatusTypeID(Integer traineeStatusTypeID) {
+    public void setTraineeStatusTypeID(int traineeStatusTypeID) {
         this.traineeStatusTypeID = traineeStatusTypeID;
     }
 
@@ -73,25 +75,6 @@ public class TraineeStatusType implements Serializable {
         this.traineeStatusList = traineeStatusList;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (traineeStatusTypeID != null ? traineeStatusTypeID.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof TraineeStatusType)) {
-            return false;
-        }
-        TraineeStatusType other = (TraineeStatusType) object;
-        if ((this.traineeStatusTypeID == null && other.traineeStatusTypeID != null) || (this.traineeStatusTypeID != null && !this.traineeStatusTypeID.equals(other.traineeStatusTypeID))) {
-            return false;
-        }
-        return true;
-    }
 
     @Override
     public String toString() {

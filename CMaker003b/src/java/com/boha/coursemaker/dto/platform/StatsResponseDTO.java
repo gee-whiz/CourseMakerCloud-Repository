@@ -4,6 +4,7 @@
  */
 package com.boha.coursemaker.dto.platform;
 
+import com.boha.coursemaker.dto.ErrorStoreAndroidDTO;
 import com.boha.coursemaker.dto.ErrorStoreDTO;
 import java.util.List;
 
@@ -17,9 +18,18 @@ public class StatsResponseDTO {
     private String message, logString;
     private List<CompanyStatsDTO> statsList;
     private List<ErrorStoreDTO> errorStoreList;
+    private List<ErrorStoreAndroidDTO> errorStoreAndroidList;
 
     public int getStatusCode() {
         return statusCode;
+    }
+
+    public List<ErrorStoreAndroidDTO> getErrorStoreAndroidList() {
+        return errorStoreAndroidList;
+    }
+
+    public void setErrorStoreAndroidList(List<ErrorStoreAndroidDTO> errorStoreAndroidList) {
+        this.errorStoreAndroidList = errorStoreAndroidList;
     }
 
     public void setStatusCode(int statusCode) {

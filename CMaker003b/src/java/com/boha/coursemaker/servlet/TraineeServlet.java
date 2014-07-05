@@ -43,6 +43,8 @@ public class TraineeServlet extends HttpServlet {
     TraineeUtil traineeUtil;
     @EJB
     InstructorUtil instructorUtil;
+    @EJB
+    CloudMsgUtil cloudMsgUtil;
     /**
      * Processes requests for both HTTP
      * <code>GET</code> and
@@ -72,11 +74,11 @@ public class TraineeServlet extends HttpServlet {
                         resp = DataUtil.getProvinceListByCountryCode(dto.getCountryCode(), traineeUtil.getEntityManager());
                         break;
                     case RequestDTO.GCM_SEND_TRAINEE_TO_INSTRUCTOR_MSG:
-                        resp = CloudMsgUtil.sendTraineeToInstructorMessage(
+                        resp = cloudMsgUtil.sendTraineeToInstructorMessage(
                                 dto.getHelpRequest(), null, dto.getTrainingClassID(), platformUtil, instructorUtil);
                         break;
                     case RequestDTO.SEND_TRAINEE_SHOUT:
-                        resp = CloudMsgUtil.sendTraineeToInstructorMessage(
+                        resp = cloudMsgUtil.sendTraineeToInstructorMessage(
                                 null, dto.getTraineeShout(), dto.getTrainingClassID(), platformUtil, instructorUtil);
                         break;
                     

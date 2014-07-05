@@ -1,7 +1,9 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package com.boha.coursemaker.data;
 
 import java.io.Serializable;
@@ -34,19 +36,20 @@ import javax.validation.constraints.Size;
                     + " order by a.province.provinceName, a.cityName")
     })
 public class City implements Serializable {
+    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
+    @Column(name = "latitude")
+    private Double latitude;
+    @Column(name = "longitude")
+    private Double longitude;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "cityID")
-    private Integer cityID;
+    private int cityID;
     @Size(max = 100)
     @Column(name = "cityName")
     private String cityName;
-    @Column(name = "latitude")
-    private Double latitude;
-    @Column(name = "longitude")
-    private Double longitude;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "city")
     private List<Instructor> instructorList;
     @JoinColumn(name = "provinceID", referencedColumnName = "provinceID")
@@ -62,15 +65,15 @@ public class City implements Serializable {
     public City() {
     }
 
-    public City(Integer cityID) {
+    public City(int cityID) {
         this.cityID = cityID;
     }
 
-    public Integer getCityID() {
+    public int getCityID() {
         return cityID;
     }
 
-    public void setCityID(Integer cityID) {
+    public void setCityID(int cityID) {
         this.cityID = cityID;
     }
 
@@ -82,21 +85,6 @@ public class City implements Serializable {
         this.cityName = cityName;
     }
 
-    public Double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(Double latitude) {
-        this.latitude = latitude;
-    }
-
-    public Double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(Double longitude) {
-        this.longitude = longitude;
-    }
 
     public List<Instructor> getInstructorList() {
         return instructorList;
@@ -113,8 +101,6 @@ public class City implements Serializable {
     public void setProvince(Province province) {
         this.province = province;
     }
-
-   
 
     public List<Trainee> getTraineeList() {
         return traineeList;
@@ -140,29 +126,27 @@ public class City implements Serializable {
         this.companyList = companyList;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (cityID != null ? cityID.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof City)) {
-            return false;
-        }
-        City other = (City) object;
-        if ((this.cityID == null && other.cityID != null) || (this.cityID != null && !this.cityID.equals(other.cityID))) {
-            return false;
-        }
-        return true;
-    }
+   
 
     @Override
     public String toString() {
         return "com.boha.coursemaker.data.City[ cityID=" + cityID + " ]";
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
     }
     
 }

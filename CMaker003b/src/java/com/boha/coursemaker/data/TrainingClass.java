@@ -1,7 +1,9 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package com.boha.coursemaker.data;
 
 import java.io.Serializable;
@@ -11,7 +13,6 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -20,7 +21,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -45,33 +45,17 @@ import javax.validation.constraints.Size;
     
     })
 public class TrainingClass implements Serializable {
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "trainingClass", fetch = FetchType.EAGER)
-    private List<Team> teamList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "trainingClass", fetch = FetchType.EAGER)
-    private List<DemoAnnouncement> demoAnnouncementList;
-    @Column(name = "calendarID")
-    private Integer calendarID;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "trainingClass", fetch = FetchType.EAGER)
-    private List<TrainingClassEvent> trainingClassEventList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "trainingClass")
-    private List<HelpRequest> helpRequestList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "trainingClass")
-    private List<InstructorClass> instructorClassList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "trainingClass")
-    private List<Attendance> attendanceList;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "trainingClassID")
-    private Integer trainingClassID;
+    private int trainingClassID;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 100)
     @Column(name = "trainingClassName")
     private String trainingClassName;
-    @Column(name = "isOpen")
-    private Integer isOpen;
     @Basic(optional = false)
     @NotNull
     @Column(name = "startDate")
@@ -82,10 +66,17 @@ public class TrainingClass implements Serializable {
     @Column(name = "endDate")
     @Temporal(TemporalType.TIMESTAMP)
     private Date endDate;
+    @Column(name = "isOpen")
+    private int isOpen;
+    @Column(name = "calendarID")
+    private int calendarID;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "trainingClass")
+    private List<TrainingClassEvent> trainingClassEventList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "trainingClass")
+    private List<DemoAnnouncement> demoAnnouncementList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "trainingClass")
     private List<TrainingClassCourse> trainingClassCourseList;
     @OneToMany(mappedBy = "trainingClass")
-    @OrderBy("lastName, firstName")
     private List<Trainee> traineeList;
     @OneToMany(mappedBy = "trainingClass")
     private List<LessonSchedule> lessonScheduleList;
@@ -95,26 +86,34 @@ public class TrainingClass implements Serializable {
     @JoinColumn(name = "companyID", referencedColumnName = "companyID")
     @ManyToOne(optional = false)
     private Company company;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "trainingClass")
+    private List<Attendance> attendanceList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "trainingClass")
+    private List<Team> teamList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "trainingClass")
+    private List<HelpRequest> helpRequestList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "trainingClass")
+    private List<InstructorClass> instructorClassList;
 
     public TrainingClass() {
     }
 
-    public TrainingClass(Integer trainingClassID) {
+    public TrainingClass(int trainingClassID) {
         this.trainingClassID = trainingClassID;
     }
 
-    public TrainingClass(Integer trainingClassID, String trainingClassName, Date startDate, Date endDate) {
+    public TrainingClass(int trainingClassID, String trainingClassName, Date startDate, Date endDate) {
         this.trainingClassID = trainingClassID;
         this.trainingClassName = trainingClassName;
         this.startDate = startDate;
         this.endDate = endDate;
     }
 
-    public Integer getTrainingClassID() {
+    public int getTrainingClassID() {
         return trainingClassID;
     }
 
-    public void setTrainingClassID(Integer trainingClassID) {
+    public void setTrainingClassID(int trainingClassID) {
         this.trainingClassID = trainingClassID;
     }
 
@@ -142,12 +141,36 @@ public class TrainingClass implements Serializable {
         this.endDate = endDate;
     }
 
-    public Integer getIsOpen() {
+    public int getIsOpen() {
         return isOpen;
     }
 
-    public void setIsOpen(Integer isOpen) {
+    public void setIsOpen(int isOpen) {
         this.isOpen = isOpen;
+    }
+
+    public int getCalendarID() {
+        return calendarID;
+    }
+
+    public void setCalendarID(int calendarID) {
+        this.calendarID = calendarID;
+    }
+
+    public List<TrainingClassEvent> getTrainingClassEventList() {
+        return trainingClassEventList;
+    }
+
+    public void setTrainingClassEventList(List<TrainingClassEvent> trainingClassEventList) {
+        this.trainingClassEventList = trainingClassEventList;
+    }
+
+    public List<DemoAnnouncement> getDemoAnnouncementList() {
+        return demoAnnouncementList;
+    }
+
+    public void setDemoAnnouncementList(List<DemoAnnouncement> demoAnnouncementList) {
+        this.demoAnnouncementList = demoAnnouncementList;
     }
 
     public List<TrainingClassCourse> getTrainingClassCourseList() {
@@ -190,71 +213,12 @@ public class TrainingClass implements Serializable {
         this.company = company;
     }
 
- 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (trainingClassID != null ? trainingClassID.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof TrainingClass)) {
-            return false;
-        }
-        TrainingClass other = (TrainingClass) object;
-        if ((this.trainingClassID == null && other.trainingClassID != null) || (this.trainingClassID != null && !this.trainingClassID.equals(other.trainingClassID))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "com.boha.coursemaker.data.TrainingClass[ trainingClassID=" + trainingClassID + " ]";
-    }
-
     public List<Attendance> getAttendanceList() {
         return attendanceList;
     }
 
     public void setAttendanceList(List<Attendance> attendanceList) {
         this.attendanceList = attendanceList;
-    }
-
-    public List<InstructorClass> getInstructorClassList() {
-        return instructorClassList;
-    }
-
-    public void setInstructorClassList(List<InstructorClass> instructorClassList) {
-        this.instructorClassList = instructorClassList;
-    }
-
-    public List<HelpRequest> getHelpRequestList() {
-        return helpRequestList;
-    }
-
-    public void setHelpRequestList(List<HelpRequest> helpRequestList) {
-        this.helpRequestList = helpRequestList;
-    }
-
-
-    public List<TrainingClassEvent> getTrainingClassEventList() {
-        return trainingClassEventList;
-    }
-
-    public void setTrainingClassEventList(List<TrainingClassEvent> trainingClassEventList) {
-        this.trainingClassEventList = trainingClassEventList;
-    }
-
-    public Integer getCalendarID() {
-        return calendarID;
-    }
-
-    public void setCalendarID(Integer calendarID) {
-        this.calendarID = calendarID;
     }
 
     public List<Team> getTeamList() {
@@ -265,12 +229,25 @@ public class TrainingClass implements Serializable {
         this.teamList = teamList;
     }
 
-    public List<DemoAnnouncement> getDemoAnnouncementList() {
-        return demoAnnouncementList;
+    public List<HelpRequest> getHelpRequestList() {
+        return helpRequestList;
     }
 
-    public void setDemoAnnouncementList(List<DemoAnnouncement> demoAnnouncementList) {
-        this.demoAnnouncementList = demoAnnouncementList;
+    public void setHelpRequestList(List<HelpRequest> helpRequestList) {
+        this.helpRequestList = helpRequestList;
+    }
+
+    public List<InstructorClass> getInstructorClassList() {
+        return instructorClassList;
+    }
+
+    public void setInstructorClassList(List<InstructorClass> instructorClassList) {
+        this.instructorClassList = instructorClassList;
+    }
+
+    @Override
+    public String toString() {
+        return "com.boha.coursemaker.data.TrainingClass[ trainingClassID=" + trainingClassID + " ]";
     }
     
 }

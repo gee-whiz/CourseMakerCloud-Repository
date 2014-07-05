@@ -5,7 +5,6 @@
 package com.boha.coursemaker.dto;
 
 import com.boha.coursemaker.data.HelpRequest;
-import com.boha.coursemaker.data.Lesson;
 import com.boha.coursemaker.data.Trainee;
 
 /**
@@ -14,7 +13,7 @@ import com.boha.coursemaker.data.Trainee;
  */
 public class HelpRequestDTO {
 
-    private Integer helpRequestID;
+    private int helpRequestID;
     private long dateRequested;
     private String comment;
     private CourseTraineeActivityDTO courseTraineeActivity;
@@ -28,9 +27,7 @@ public class HelpRequestDTO {
         
         if (a.getCourseTraineeActivity() != null) {
             courseTraineeActivity = new CourseTraineeActivityDTO();
-            Lesson l = a.getCourseTraineeActivity().getLesson();
-            courseTraineeActivity.setLessonID(l.getLessonID());
-            courseTraineeActivity.setLessonName(l.getLessonName());
+            courseTraineeActivity.setCourseID(a.getCourseTraineeActivity().getCourseTrainee().getTrainingClassCourse().getCourse().getCourseID());
             courseTraineeActivity.setCompletedFlag(a.getCourseTraineeActivity().getCompletedFlag());
             courseTraineeActivity.setCourseName(a.getCourseTraineeActivity().getCourseTrainee().getTrainingClassCourse().getCourse().getCourseName());
             Trainee t = a.getCourseTraineeActivity().getCourseTrainee().getTrainee();
@@ -48,11 +45,11 @@ public class HelpRequestDTO {
         }
     }
 
-    public Integer getHelpRequestID() {
+    public int getHelpRequestID() {
         return helpRequestID;
     }
 
-    public void setHelpRequestID(Integer helpRequestID) {
+    public void setHelpRequestID(int helpRequestID) {
         this.helpRequestID = helpRequestID;
     }
 

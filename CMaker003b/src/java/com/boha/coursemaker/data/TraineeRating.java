@@ -1,7 +1,9 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package com.boha.coursemaker.data;
 
 import java.io.Serializable;
@@ -48,7 +50,7 @@ public class TraineeRating implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "traineeRatingID")
-    private Integer traineeRatingID;
+    private int traineeRatingID;
     @Basic(optional = false)
     @NotNull
     @Column(name = "dateUpdated")
@@ -71,20 +73,20 @@ public class TraineeRating implements Serializable {
     public TraineeRating() {
     }
 
-    public TraineeRating(Integer traineeRatingID) {
+    public TraineeRating(int traineeRatingID) {
         this.traineeRatingID = traineeRatingID;
     }
 
-    public TraineeRating(Integer traineeRatingID, Date dateUpdated) {
+    public TraineeRating(int traineeRatingID, Date dateUpdated) {
         this.traineeRatingID = traineeRatingID;
         this.dateUpdated = dateUpdated;
     }
 
-    public Integer getTraineeRatingID() {
+    public int getTraineeRatingID() {
         return traineeRatingID;
     }
 
-    public void setTraineeRatingID(Integer traineeRatingID) {
+    public void setTraineeRatingID(int traineeRatingID) {
         this.traineeRatingID = traineeRatingID;
     }
 
@@ -128,26 +130,6 @@ public class TraineeRating implements Serializable {
         this.courseTraineeActivity = courseTraineeActivity;
     }
 
- 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (traineeRatingID != null ? traineeRatingID.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof TraineeRating)) {
-            return false;
-        }
-        TraineeRating other = (TraineeRating) object;
-        if ((this.traineeRatingID == null && other.traineeRatingID != null) || (this.traineeRatingID != null && !this.traineeRatingID.equals(other.traineeRatingID))) {
-            return false;
-        }
-        return true;
-    }
 
     @Override
     public String toString() {

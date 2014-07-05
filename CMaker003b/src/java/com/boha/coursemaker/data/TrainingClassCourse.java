@@ -1,7 +1,9 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package com.boha.coursemaker.data;
 
 import java.io.Serializable;
@@ -11,7 +13,6 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -54,25 +55,25 @@ import javax.persistence.TemporalType;
                 + "and a.course.courseID = :cID")
     })
 public class TrainingClassCourse implements Serializable {
-    @OneToMany(mappedBy = "trainingClassCourse", fetch = FetchType.EAGER)
-    private List<TrainingClassEvent> trainingClassEventList;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "trainingClassCourseID")
-    private Integer trainingClassCourseID;
+    private int trainingClassCourseID;
     @Column(name = "dateUpdated")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateUpdated;
     @Column(name = "priorityFlag")
-    private Integer priorityFlag;
+    private int priorityFlag;
     @Column(name = "startDate")
     @Temporal(TemporalType.TIMESTAMP)
     private Date startDate;
     @Column(name = "endDate")
     @Temporal(TemporalType.TIMESTAMP)
     private Date endDate;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "trainingClassCourse")
+    private List<TrainingClassEvent> trainingClassEventList;
     @JoinColumn(name = "trainingClassID", referencedColumnName = "trainingClassID")
     @ManyToOne(optional = false)
     private TrainingClass trainingClass;
@@ -85,15 +86,15 @@ public class TrainingClassCourse implements Serializable {
     public TrainingClassCourse() {
     }
 
-    public TrainingClassCourse(Integer trainingClassCourseID) {
+    public TrainingClassCourse(int trainingClassCourseID) {
         this.trainingClassCourseID = trainingClassCourseID;
     }
 
-    public Integer getTrainingClassCourseID() {
+    public int getTrainingClassCourseID() {
         return trainingClassCourseID;
     }
 
-    public void setTrainingClassCourseID(Integer trainingClassCourseID) {
+    public void setTrainingClassCourseID(int trainingClassCourseID) {
         this.trainingClassCourseID = trainingClassCourseID;
     }
 
@@ -105,11 +106,11 @@ public class TrainingClassCourse implements Serializable {
         this.dateUpdated = dateUpdated;
     }
 
-    public Integer getPriorityFlag() {
+    public int getPriorityFlag() {
         return priorityFlag;
     }
 
-    public void setPriorityFlag(Integer priorityFlag) {
+    public void setPriorityFlag(int priorityFlag) {
         this.priorityFlag = priorityFlag;
     }
 
@@ -129,6 +130,14 @@ public class TrainingClassCourse implements Serializable {
         this.endDate = endDate;
     }
 
+    public List<TrainingClassEvent> getTrainingClassEventList() {
+        return trainingClassEventList;
+    }
+
+    public void setTrainingClassEventList(List<TrainingClassEvent> trainingClassEventList) {
+        this.trainingClassEventList = trainingClassEventList;
+    }
+
     public TrainingClass getTrainingClass() {
         return trainingClass;
     }
@@ -145,8 +154,6 @@ public class TrainingClassCourse implements Serializable {
         this.course = course;
     }
 
-  
-
     public List<CourseTrainee> getCourseTraineeList() {
         return courseTraineeList;
     }
@@ -155,37 +162,11 @@ public class TrainingClassCourse implements Serializable {
         this.courseTraineeList = courseTraineeList;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (trainingClassCourseID != null ? trainingClassCourseID.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof TrainingClassCourse)) {
-            return false;
-        }
-        TrainingClassCourse other = (TrainingClassCourse) object;
-        if ((this.trainingClassCourseID == null && other.trainingClassCourseID != null) || (this.trainingClassCourseID != null && !this.trainingClassCourseID.equals(other.trainingClassCourseID))) {
-            return false;
-        }
-        return true;
-    }
+  
 
     @Override
     public String toString() {
         return "com.boha.coursemaker.data.TrainingClassCourse[ trainingClassCourseID=" + trainingClassCourseID + " ]";
-    }
-
-    public List<TrainingClassEvent> getTrainingClassEventList() {
-        return trainingClassEventList;
-    }
-
-    public void setTrainingClassEventList(List<TrainingClassEvent> trainingClassEventList) {
-        this.trainingClassEventList = trainingClassEventList;
     }
     
 }

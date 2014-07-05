@@ -1,7 +1,9 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package com.boha.coursemaker.data;
 
 import java.io.Serializable;
@@ -10,7 +12,6 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -42,7 +43,7 @@ public class Equipment implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "equipmentID")
-    private Integer equipmentID;
+    private int equipmentID;
     @Size(max = 100)
     @Column(name = "equipmentName")
     private String equipmentName;
@@ -52,21 +53,21 @@ public class Equipment implements Serializable {
     @JoinColumn(name = "companyID", referencedColumnName = "companyID")
     @ManyToOne(optional = false)
     private Company company;
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "equipment")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "equipment")
     private List<Inventory> inventoryList;
 
     public Equipment() {
     }
 
-    public Equipment(Integer equipmentID) {
+    public Equipment(int equipmentID) {
         this.equipmentID = equipmentID;
     }
 
-    public Integer getEquipmentID() {
+    public int getEquipmentID() {
         return equipmentID;
     }
 
-    public void setEquipmentID(Integer equipmentID) {
+    public void setEquipmentID(int equipmentID) {
         this.equipmentID = equipmentID;
     }
 
@@ -94,8 +95,6 @@ public class Equipment implements Serializable {
         this.company = company;
     }
 
-    
-
     public List<Inventory> getInventoryList() {
         return inventoryList;
     }
@@ -104,25 +103,7 @@ public class Equipment implements Serializable {
         this.inventoryList = inventoryList;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (equipmentID != null ? equipmentID.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Equipment)) {
-            return false;
-        }
-        Equipment other = (Equipment) object;
-        if ((this.equipmentID == null && other.equipmentID != null) || (this.equipmentID != null && !this.equipmentID.equals(other.equipmentID))) {
-            return false;
-        }
-        return true;
-    }
+  
 
     @Override
     public String toString() {

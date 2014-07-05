@@ -13,11 +13,11 @@ import com.boha.coursemaker.data.TeamMember;
  */
 public class TeamMemberDTO {
 
-    private Integer teamMemberID, companyID;
+    private int teamMemberID, companyID;
     private long dateRegistered;
-    private Integer activeFlag;
-    private Integer traineeID;
-    private Integer teamID;
+    private int activeFlag;
+    private int traineeID;
+    private int teamID;
     private String firstName, lastName, email, cellphone;
     
     public TeamMemberDTO(TeamMember a) {
@@ -34,19 +34,19 @@ public class TeamMemberDTO {
         
     }
 
-    public Integer getTeamMemberID() {
+    public int getTeamMemberID() {
         return teamMemberID;
     }
 
-    public void setTeamMemberID(Integer teamMemberID) {
+    public void setTeamMemberID(int teamMemberID) {
         this.teamMemberID = teamMemberID;
     }
 
-    public Integer getCompanyID() {
+    public int getCompanyID() {
         return companyID;
     }
 
-    public void setCompanyID(Integer companyID) {
+    public void setCompanyID(int companyID) {
         this.companyID = companyID;
     }
 
@@ -90,27 +90,27 @@ public class TeamMemberDTO {
         this.dateRegistered = dateRegistered;
     }
 
-    public Integer getActiveFlag() {
+    public int getActiveFlag() {
         return activeFlag;
     }
 
-    public void setActiveFlag(Integer activeFlag) {
+    public void setActiveFlag(int activeFlag) {
         this.activeFlag = activeFlag;
     }
 
-    public Integer getTraineeID() {
+    public int getTraineeID() {
         return traineeID;
     }
 
-    public void setTraineeID(Integer traineeID) {
+    public void setTraineeID(int traineeID) {
         this.traineeID = traineeID;
     }
 
-    public Integer getTeamID() {
+    public int getTeamID() {
         return teamID;
     }
 
-    public void setTeamID(Integer teamID) {
+    public void setTeamID(int teamID) {
         this.teamID = teamID;
     }
 }

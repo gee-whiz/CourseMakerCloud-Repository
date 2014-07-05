@@ -1,7 +1,9 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package com.boha.coursemaker.data;
 
 import java.io.Serializable;
@@ -56,7 +58,7 @@ public class CourseTrainee implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "courseTraineeID")
-    private Integer courseTraineeID;
+    private int courseTraineeID;
     @Basic(optional = false)
     @NotNull
     @Column(name = "dateEnrolled")
@@ -84,20 +86,20 @@ public class CourseTrainee implements Serializable {
     public CourseTrainee() {
     }
 
-    public CourseTrainee(Integer courseTraineeID) {
+    public CourseTrainee(int courseTraineeID) {
         this.courseTraineeID = courseTraineeID;
     }
 
-    public CourseTrainee(Integer courseTraineeID, Date dateEnrolled) {
+    public CourseTrainee(int courseTraineeID, Date dateEnrolled) {
         this.courseTraineeID = courseTraineeID;
         this.dateEnrolled = dateEnrolled;
     }
 
-    public Integer getCourseTraineeID() {
+    public int getCourseTraineeID() {
         return courseTraineeID;
     }
 
-    public void setCourseTraineeID(Integer courseTraineeID) {
+    public void setCourseTraineeID(int courseTraineeID) {
         this.courseTraineeID = courseTraineeID;
     }
 
@@ -157,27 +159,7 @@ public class CourseTrainee implements Serializable {
         this.trainingClassCourse = trainingClassCourse;
     }
 
- 
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (courseTraineeID != null ? courseTraineeID.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof CourseTrainee)) {
-            return false;
-        }
-        CourseTrainee other = (CourseTrainee) object;
-        if ((this.courseTraineeID == null && other.courseTraineeID != null) || (this.courseTraineeID != null && !this.courseTraineeID.equals(other.courseTraineeID))) {
-            return false;
-        }
-        return true;
-    }
+  
 
     @Override
     public String toString() {

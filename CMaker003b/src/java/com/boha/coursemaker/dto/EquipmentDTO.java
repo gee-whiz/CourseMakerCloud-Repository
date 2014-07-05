@@ -14,9 +14,9 @@ import java.util.List;
  */
 public class EquipmentDTO {
 
-    private Integer equipmentID;
+    private int equipmentID;
     private String equipmentName;
-    private Integer companyID;
+    private int companyID;
     private List<InventoryDTO> inventoryList;
 
     public EquipmentDTO(Equipment a) {
@@ -26,11 +26,11 @@ public class EquipmentDTO {
         
     }
 
-    public Integer getEquipmentID() {
+    public int getEquipmentID() {
         return equipmentID;
     }
 
-    public void setEquipmentID(Integer equipmentID) {
+    public void setEquipmentID(int equipmentID) {
         this.equipmentID = equipmentID;
     }
 
@@ -42,11 +42,11 @@ public class EquipmentDTO {
         this.equipmentName = equipmentName;
     }
 
-    public Integer getCompanyID() {
+    public int getCompanyID() {
         return companyID;
     }
 
-    public void setCompanyID(Integer companyID) {
+    public void setCompanyID(int companyID) {
         this.companyID = companyID;
     }
 

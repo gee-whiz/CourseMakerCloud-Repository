@@ -22,7 +22,6 @@ import com.boha.coursemaker.dto.HelpTypeDTO;
 import com.boha.coursemaker.dto.InstructorClassDTO;
 import com.boha.coursemaker.dto.InstructorDTO;
 import com.boha.coursemaker.dto.InventoryDTO;
-import com.boha.coursemaker.dto.LessonDTO;
 import com.boha.coursemaker.dto.LessonResourceDTO;
 import com.boha.coursemaker.dto.ObjectiveDTO;
 import com.boha.coursemaker.dto.RatingDTO;
@@ -477,7 +476,7 @@ public class RequestDTO {
             title, summary, countryCode;
     private long startDate, endDate, calendarID;
     //operation variables
-    private Integer companyID, lessonID, categoryID, cityID,
+    private int companyID, lessonID, categoryID, cityID,
             authorID, instructorID, trainingClassID, inventoryID,
             courseID, activityID, courseTraineeActivityID,
             instructorClassID, demoAnnouncementID,
@@ -501,10 +500,9 @@ public class RequestDTO {
     private HelpResponseDTO helpResponse;
     private InventoryDTO inventory;
     private EquipmentDTO equipment;
-    private Integer trainingCompanyCourseID;
+    private int trainingCompanyCourseID;
     private CourseDTO course;
     private CategoryDTO category;
-    private LessonDTO lesson;
     private ObjectiveDTO objective;
     private LessonResourceDTO lessonResource;
     private ActivityDTO activity;
@@ -517,14 +515,10 @@ public class RequestDTO {
     List<ActivityDTO> activityList;
     List<ObjectiveDTO> objectiveList;
     List<LessonResourceDTO> lessonResourceList;
-    List<LessonDTO> lessonList;
     List<InstructorClassDTO> instructorClassList;
     List<CourseDTO> courseList;
 
-    public List<LessonDTO> getLessonList() {
-        return lessonList;
-    }
-
+  
     public TraineeShoutDTO getTraineeShout() {
         return traineeShout;
     }
@@ -545,11 +539,11 @@ public class RequestDTO {
         this.demoAnnouncement = demoAnnouncement;
     }
 
-    public Integer getDemoAnnouncementID() {
+    public int getDemoAnnouncementID() {
         return demoAnnouncementID;
     }
 
-    public void setDemoAnnouncementID(Integer demoAnnouncementID) {
+    public void setDemoAnnouncementID(int demoAnnouncementID) {
         this.demoAnnouncementID = demoAnnouncementID;
     }
 
@@ -577,11 +571,11 @@ public class RequestDTO {
         return gcmDevice;
     }
 
-    public Integer getEquipmentID() {
+    public int getEquipmentID() {
         return equipmentID;
     }
 
-    public Integer getTraineeEquipmentID() {
+    public int getTraineeEquipmentID() {
         return traineeEquipmentID;
     }
 
@@ -593,27 +587,27 @@ public class RequestDTO {
         this.trainingClassEvent = trainingClassEvent;
     }
 
-    public Integer getInstructorClassID() {
+    public int getInstructorClassID() {
         return instructorClassID;
     }
 
-    public Integer getTrainingClassEventID() {
+    public int getTrainingClassEventID() {
         return trainingClassEventID;
     }
 
-    public void setTrainingClassEventID(Integer trainingClassEventID) {
+    public void setTrainingClassEventID(int trainingClassEventID) {
         this.trainingClassEventID = trainingClassEventID;
     }
 
-    public void setInstructorClassID(Integer instructorClassID) {
+    public void setInstructorClassID(int instructorClassID) {
         this.instructorClassID = instructorClassID;
     }
 
-    public void setTraineeEquipmentID(Integer traineeEquipmentID) {
+    public void setTraineeEquipmentID(int traineeEquipmentID) {
         this.traineeEquipmentID = traineeEquipmentID;
     }
 
-    public void setEquipmentID(Integer equipmentID) {
+    public void setEquipmentID(int equipmentID) {
         this.equipmentID = equipmentID;
     }
 
@@ -645,15 +639,12 @@ public class RequestDTO {
         this.instructorClassList = instructorClassList;
     }
 
-    public void setLessonList(List<LessonDTO> lessonList) {
-        this.lessonList = lessonList;
-    }
-
-    public Integer getCityID() {
+  
+    public int getCityID() {
         return cityID;
     }
 
-    public void setCityID(Integer cityID) {
+    public void setCityID(int cityID) {
         this.cityID = cityID;
     }
 
@@ -698,7 +689,7 @@ public class RequestDTO {
     }
 
     //
-    public Integer getTraineeID() {
+    public int getTraineeID() {
         return traineeID;
     }
 
@@ -754,11 +745,11 @@ public class RequestDTO {
         this.company = company;
     }
 
-    public Integer getTrainingClassCourseID() {
+    public int getTrainingClassCourseID() {
         return trainingClassCourseID;
     }
 
-    public void setTrainingClassCourseID(Integer trainingClassCourseID) {
+    public void setTrainingClassCourseID(int trainingClassCourseID) {
         this.trainingClassCourseID = trainingClassCourseID;
     }
 
@@ -774,13 +765,6 @@ public class RequestDTO {
         this.category = category;
     }
 
-    public LessonDTO getLesson() {
-        return lesson;
-    }
-
-    public void setLesson(LessonDTO lesson) {
-        this.lesson = lesson;
-    }
 
     public LessonResourceDTO getLessonResource() {
         return lessonResource;
@@ -814,31 +798,31 @@ public class RequestDTO {
         this.activity = activity;
     }
 
-    public void setTraineeID(Integer traineeID) {
+    public void setTraineeID(int traineeID) {
         this.traineeID = traineeID;
     }
 
-    public Integer getTrainingCompanyCourseID() {
+    public int getTrainingCompanyCourseID() {
         return trainingCompanyCourseID;
     }
 
-    public Integer getCategoryID() {
+    public int getCategoryID() {
         return categoryID;
     }
 
-    public void setCategoryID(Integer categoryID) {
+    public void setCategoryID(int categoryID) {
         this.categoryID = categoryID;
     }
 
-    public Integer getConditionFlag() {
+    public int getConditionFlag() {
         return conditionFlag;
     }
 
-    public void setConditionFlag(Integer conditionFlag) {
+    public void setConditionFlag(int conditionFlag) {
         this.conditionFlag = conditionFlag;
     }
 
-    public void setTrainingCompanyCourseID(Integer trainingCompanyCourseID) {
+    public void setTrainingCompanyCourseID(int trainingCompanyCourseID) {
         this.trainingCompanyCourseID = trainingCompanyCourseID;
     }
 
@@ -882,11 +866,11 @@ public class RequestDTO {
         this.returnEquipment = returnEquipment;
     }
 
-    public Integer getInventoryID() {
+    public int getInventoryID() {
         return inventoryID;
     }
 
-    public void setInventoryID(Integer inventoryID) {
+    public void setInventoryID(int inventoryID) {
         this.inventoryID = inventoryID;
     }
 
@@ -911,7 +895,7 @@ public class RequestDTO {
         this.courseTraineeActivity = courseTraineeActivity;
     }
 
-    public Integer getActivityID() {
+    public int getActivityID() {
         return activityID;
     }
 
@@ -923,15 +907,15 @@ public class RequestDTO {
         this.courseTrainee = courseTrainee;
     }
 
-    public Integer getCourseTraineeActivityID() {
+    public int getCourseTraineeActivityID() {
         return courseTraineeActivityID;
     }
 
-    public void setCourseTraineeActivityID(Integer courseTraineeActivityID) {
+    public void setCourseTraineeActivityID(int courseTraineeActivityID) {
         this.courseTraineeActivityID = courseTraineeActivityID;
     }
 
-    public void setActivityID(Integer activityID) {
+    public void setActivityID(int activityID) {
         this.activityID = activityID;
     }
 
@@ -971,19 +955,19 @@ public class RequestDTO {
         this.instructor = instructor;
     }
 
-    public Integer getAdministratorID() {
+    public int getAdministratorID() {
         return administratorID;
     }
 
-    public void setAdministratorID(Integer administratorID) {
+    public void setAdministratorID(int administratorID) {
         this.administratorID = administratorID;
     }
 
-    public Integer getTrainingClassID() {
+    public int getTrainingClassID() {
         return trainingClassID;
     }
 
-    public void setTrainingClassID(Integer trainingClassID) {
+    public void setTrainingClassID(int trainingClassID) {
         this.trainingClassID = trainingClassID;
     }
 
@@ -1019,43 +1003,43 @@ public class RequestDTO {
         this.requestType = requestType;
     }
 
-    public Integer getCompanyID() {
+    public int getCompanyID() {
         return companyID;
     }
 
-    public void setCompanyID(Integer companyID) {
+    public void setCompanyID(int companyID) {
         this.companyID = companyID;
     }
 
-    public Integer getCourseID() {
+    public int getCourseID() {
         return courseID;
     }
 
-    public void setCourseID(Integer courseID) {
+    public void setCourseID(int courseID) {
         this.courseID = courseID;
     }
 
-    public Integer getAuthorID() {
+    public int getAuthorID() {
         return authorID;
     }
 
-    public void setAuthorID(Integer authorID) {
+    public void setAuthorID(int authorID) {
         this.authorID = authorID;
     }
 
-    public Integer getInstructorID() {
+    public int getInstructorID() {
         return instructorID;
     }
 
-    public void setInstructorID(Integer instructorID) {
+    public void setInstructorID(int instructorID) {
         this.instructorID = instructorID;
     }
 
-    public Integer getLessonID() {
+    public int getLessonID() {
         return lessonID;
     }
 
-    public void setLessonID(Integer lessonID) {
+    public void setLessonID(int lessonID) {
         this.lessonID = lessonID;
     }
 

@@ -1,7 +1,9 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package com.boha.coursemaker.data;
 
 import java.io.Serializable;
@@ -43,36 +45,36 @@ public class InstructorClass implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "instructorClassID")
-    private Integer instructorClassID;
+    private int instructorClassID;
     @Basic(optional = false)
     @NotNull
     @Column(name = "dateRegistered")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateRegistered;
-    @JoinColumn(name = "instructorID", referencedColumnName = "instructorID")
-    @ManyToOne(optional = false)
-    private Instructor instructor;
     @JoinColumn(name = "trainingClassID", referencedColumnName = "trainingClassID")
     @ManyToOne(optional = false)
     private TrainingClass trainingClass;
+    @JoinColumn(name = "instructorID", referencedColumnName = "instructorID")
+    @ManyToOne(optional = false)
+    private Instructor instructor;
 
     public InstructorClass() {
     }
 
-    public InstructorClass(Integer instructorClassID) {
+    public InstructorClass(int instructorClassID) {
         this.instructorClassID = instructorClassID;
     }
 
-    public InstructorClass(Integer instructorClassID, Date dateRegistered) {
+    public InstructorClass(int instructorClassID, Date dateRegistered) {
         this.instructorClassID = instructorClassID;
         this.dateRegistered = dateRegistered;
     }
 
-    public Integer getInstructorClassID() {
+    public int getInstructorClassID() {
         return instructorClassID;
     }
 
-    public void setInstructorClassID(Integer instructorClassID) {
+    public void setInstructorClassID(int instructorClassID) {
         this.instructorClassID = instructorClassID;
     }
 
@@ -84,14 +86,6 @@ public class InstructorClass implements Serializable {
         this.dateRegistered = dateRegistered;
     }
 
-    public Instructor getInstructor() {
-        return instructor;
-    }
-
-    public void setInstructor(Instructor instructor) {
-        this.instructor = instructor;
-    }
-
     public TrainingClass getTrainingClass() {
         return trainingClass;
     }
@@ -100,27 +94,14 @@ public class InstructorClass implements Serializable {
         this.trainingClass = trainingClass;
     }
 
-  
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (instructorClassID != null ? instructorClassID.hashCode() : 0);
-        return hash;
+    public Instructor getInstructor() {
+        return instructor;
     }
 
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof InstructorClass)) {
-            return false;
-        }
-        InstructorClass other = (InstructorClass) object;
-        if ((this.instructorClassID == null && other.instructorClassID != null) || (this.instructorClassID != null && !this.instructorClassID.equals(other.instructorClassID))) {
-            return false;
-        }
-        return true;
+    public void setInstructor(Instructor instructor) {
+        this.instructor = instructor;
     }
+
 
     @Override
     public String toString() {

@@ -1,7 +1,9 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package com.boha.coursemaker.data;
 
 import java.io.Serializable;
@@ -50,7 +52,7 @@ public class InstructorRating implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "instructorRatingID")
-    private Integer instructorRatingID;
+    private int instructorRatingID;
     @Basic(optional = false)
     @NotNull
     @Column(name = "dateUpdated")
@@ -61,34 +63,34 @@ public class InstructorRating implements Serializable {
     @Column(name = "comment")
     private String comment;
     @Column(name = "completedFlag")
-    private Integer completedFlag;
-    @JoinColumn(name = "instructorID", referencedColumnName = "instructorID")
-    @ManyToOne(optional = false)
-    private Instructor instructor;
+    private int completedFlag;
     @JoinColumn(name = "ratingID", referencedColumnName = "ratingID")
     @ManyToOne(optional = false)
     private Rating rating;
     @JoinColumn(name = "courseTraineeActivityID", referencedColumnName = "courseTraineeActivityID")
     @ManyToOne(optional = false)
     private CourseTraineeActivity courseTraineeActivity;
+    @JoinColumn(name = "instructorID", referencedColumnName = "instructorID")
+    @ManyToOne(optional = false)
+    private Instructor instructor;
 
     public InstructorRating() {
     }
 
-    public InstructorRating(Integer instructorRatingID) {
+    public InstructorRating(int instructorRatingID) {
         this.instructorRatingID = instructorRatingID;
     }
 
-    public InstructorRating(Integer instructorRatingID, Date dateUpdated) {
+    public InstructorRating(int instructorRatingID, Date dateUpdated) {
         this.instructorRatingID = instructorRatingID;
         this.dateUpdated = dateUpdated;
     }
 
-    public Integer getInstructorRatingID() {
+    public int getInstructorRatingID() {
         return instructorRatingID;
     }
 
-    public void setInstructorRatingID(Integer instructorRatingID) {
+    public void setInstructorRatingID(int instructorRatingID) {
         this.instructorRatingID = instructorRatingID;
     }
 
@@ -108,20 +110,12 @@ public class InstructorRating implements Serializable {
         this.comment = comment;
     }
 
-    public Integer getCompletedFlag() {
+    public int getCompletedFlag() {
         return completedFlag;
     }
 
-    public void setCompletedFlag(Integer completedFlag) {
+    public void setCompletedFlag(int completedFlag) {
         this.completedFlag = completedFlag;
-    }
-
-    public Instructor getInstructor() {
-        return instructor;
-    }
-
-    public void setInstructor(Instructor instructor) {
-        this.instructor = instructor;
     }
 
     public Rating getRating() {
@@ -140,26 +134,12 @@ public class InstructorRating implements Serializable {
         this.courseTraineeActivity = courseTraineeActivity;
     }
 
-  
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (instructorRatingID != null ? instructorRatingID.hashCode() : 0);
-        return hash;
+    public Instructor getInstructor() {
+        return instructor;
     }
 
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof InstructorRating)) {
-            return false;
-        }
-        InstructorRating other = (InstructorRating) object;
-        if ((this.instructorRatingID == null && other.instructorRatingID != null) || (this.instructorRatingID != null && !this.instructorRatingID.equals(other.instructorRatingID))) {
-            return false;
-        }
-        return true;
+    public void setInstructor(Instructor instructor) {
+        this.instructor = instructor;
     }
 
     @Override

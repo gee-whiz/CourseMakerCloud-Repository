@@ -1,5 +1,6 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
 package com.boha.coursemaker.data;
@@ -11,11 +12,11 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -34,40 +35,26 @@ import javax.validation.constraints.Size;
 @Table(name = "trainee")
 @NamedQueries({
     @NamedQuery(name = "Trainee.findByClass", query = "select a from Trainee a "
-                + "where a.trainingClass.trainingClassID = :id "
-                + " and a.activeFlag is null"),
+            + "where a.trainingClass.trainingClassID = :id "
+            + " and (a.activeFlag is null or a.activeFlag = 0)"),
     @NamedQuery(name = "Trainee.findByCompany", query = "select a from Trainee a where a.company.companyID = :id "
-                + " and a.activeFlag is null"),
-    @NamedQuery(name = "Trainee.findByInstructor", 
-        query = "select a from Trainee a, InstructorClass b "
-                + " where a.trainingClass = b.trainingClass "
-                + " and b.instructor.instructorID = :id "
-                + " order by a.lastName, a.firstName"),
-@NamedQuery(name = "Trainee.login", 
-        query = "select a from Trainee a "
-                    + "where a.email = :email and a.password = :pswd")})
+            + " and (a.activeFlag is null or a.activeFlag = 0)"),
+    @NamedQuery(name = "Trainee.findByInstructor",
+            query = "select a from Trainee a, InstructorClass b "
+            + " where a.trainingClass = b.trainingClass "
+            + " and b.instructor.instructorID = :id "
+            + " order by a.lastName, a.firstName"),
+    @NamedQuery(name = "Trainee.login",
+            query = "select a from Trainee a "
+            + "where a.email = :email and a.password = :pswd")})
 public class Trainee implements Serializable {
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "trainee", fetch = FetchType.EAGER)
-    private List<TeamMember> teamMemberList;
-    @OneToMany(mappedBy = "trainee", fetch = FetchType.EAGER)
-    private List<DemoAnnouncement> demoAnnouncementList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "trainee", fetch = FetchType.EAGER)
-    private List<TraineeShout> traineeShoutList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "trainee")
-    private List<GuardianTrainee> guardianTraineeList;
-    @OneToMany(mappedBy = "trainee")
-    private List<GcmDevice> gcmDeviceList;
-    @Size(max = 100)
-    @Column(name = "GCMRegistrationID")
-    private String gCMRegistrationID;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "trainee")
-    private List<Attendance> attendanceList;
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "traineeID")
-    private Integer traineeID;
+    private int traineeID;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 45)
@@ -81,6 +68,7 @@ public class Trainee implements Serializable {
     @Size(min = 1, max = 45)
     @Column(name = "lastName")
     private String lastName;
+    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 100)
@@ -96,25 +84,32 @@ public class Trainee implements Serializable {
     @Column(name = "dateRegistered")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateRegistered;
-    @Column(name = "dateUpdated")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date dateUpdated;
     @Column(name = "gender")
-    private Integer gender;
+    private int gender;
     @Size(max = 45)
     @Column(name = "IDNumber")
     private String iDNumber;
     @Size(max = 255)
     @Column(name = "address")
     private String address;
-    
-    @Size(min = 1, max = 45)
+    @Size(max = 45)
     @Column(name = "password")
     private String password;
     @Column(name = "activeFlag")
-    private Integer activeFlag;
+    private int activeFlag;
+    @Lob
+    @Size(max = 65535)
+    @Column(name = "GCMRegistrationID")
+    private String gCMRegistrationID;
+    @Column(name = "dateUpdated")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateUpdated;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "trainee")
+    private List<TraineeShout> traineeShoutList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "trainee")
     private List<TraineeRating> traineeRatingList;
+    @OneToMany(mappedBy = "trainee")
+    private List<DemoAnnouncement> demoAnnouncementList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "trainee")
     private List<TraineeStatus> traineeStatusList;
     @JoinColumn(name = "administratorID", referencedColumnName = "administratorID")
@@ -133,34 +128,41 @@ public class Trainee implements Serializable {
     @ManyToOne
     private Institution institution;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "trainee")
+    private List<GuardianTrainee> guardianTraineeList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "trainee")
     private List<CourseTrainee> courseTraineeList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "trainee")
+    private List<Attendance> attendanceList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "trainee")
+    private List<TeamMember> teamMemberList;
     @OneToMany(mappedBy = "trainee")
     private List<LessonResource> lessonResourceList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "trainee")
     private List<TraineeEquipment> traineeEquipmentList;
+    @OneToMany(mappedBy = "trainee")
+    private List<GcmDevice> gcmDeviceList;
 
     public Trainee() {
     }
 
-    public Trainee(Integer traineeID) {
+    public Trainee(int traineeID) {
         this.traineeID = traineeID;
     }
 
-    public Trainee(Integer traineeID, String firstName, String lastName, String email, String cellphone, Date dateRegistered, String password) {
+    public Trainee(int traineeID, String firstName, String lastName, String email, String cellphone, Date dateRegistered) {
         this.traineeID = traineeID;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.cellphone = cellphone;
         this.dateRegistered = dateRegistered;
-        this.password = password;
     }
 
-    public Integer getTraineeID() {
+    public int getTraineeID() {
         return traineeID;
     }
 
-    public void setTraineeID(Integer traineeID) {
+    public void setTraineeID(int traineeID) {
         this.traineeID = traineeID;
     }
 
@@ -182,22 +184,6 @@ public class Trainee implements Serializable {
 
     public String getLastName() {
         return lastName;
-    }
-
-    public String getgCMRegistrationID() {
-        return gCMRegistrationID;
-    }
-
-    public void setgCMRegistrationID(String gCMRegistrationID) {
-        this.gCMRegistrationID = gCMRegistrationID;
-    }
-
-    public Date getDateUpdated() {
-        return dateUpdated;
-    }
-
-    public void setDateUpdated(Date dateUpdated) {
-        this.dateUpdated = dateUpdated;
     }
 
     public void setLastName(String lastName) {
@@ -228,11 +214,11 @@ public class Trainee implements Serializable {
         this.dateRegistered = dateRegistered;
     }
 
-    public Integer getGender() {
+    public int getGender() {
         return gender;
     }
 
-    public void setGender(Integer gender) {
+    public void setGender(int gender) {
         this.gender = gender;
     }
 
@@ -260,12 +246,36 @@ public class Trainee implements Serializable {
         this.password = password;
     }
 
-    public Integer getActiveFlag() {
+    public int getActiveFlag() {
         return activeFlag;
     }
 
-    public void setActiveFlag(Integer activeFlag) {
+    public void setActiveFlag(int activeFlag) {
         this.activeFlag = activeFlag;
+    }
+
+    public String getGCMRegistrationID() {
+        return gCMRegistrationID;
+    }
+
+    public void setGCMRegistrationID(String gCMRegistrationID) {
+        this.gCMRegistrationID = gCMRegistrationID;
+    }
+
+    public Date getDateUpdated() {
+        return dateUpdated;
+    }
+
+    public void setDateUpdated(Date dateUpdated) {
+        this.dateUpdated = dateUpdated;
+    }
+
+    public List<TraineeShout> getTraineeShoutList() {
+        return traineeShoutList;
+    }
+
+    public void setTraineeShoutList(List<TraineeShout> traineeShoutList) {
+        this.traineeShoutList = traineeShoutList;
     }
 
     public List<TraineeRating> getTraineeRatingList() {
@@ -276,6 +286,14 @@ public class Trainee implements Serializable {
         this.traineeRatingList = traineeRatingList;
     }
 
+    public List<DemoAnnouncement> getDemoAnnouncementList() {
+        return demoAnnouncementList;
+    }
+
+    public void setDemoAnnouncementList(List<DemoAnnouncement> demoAnnouncementList) {
+        this.demoAnnouncementList = demoAnnouncementList;
+    }
+
     public List<TraineeStatus> getTraineeStatusList() {
         return traineeStatusList;
     }
@@ -283,8 +301,6 @@ public class Trainee implements Serializable {
     public void setTraineeStatusList(List<TraineeStatus> traineeStatusList) {
         this.traineeStatusList = traineeStatusList;
     }
-
-   
 
     public Administrator getAdministrator() {
         return administrator;
@@ -326,13 +342,36 @@ public class Trainee implements Serializable {
         this.institution = institution;
     }
 
-  
+    public List<GuardianTrainee> getGuardianTraineeList() {
+        return guardianTraineeList;
+    }
+
+    public void setGuardianTraineeList(List<GuardianTrainee> guardianTraineeList) {
+        this.guardianTraineeList = guardianTraineeList;
+    }
+
     public List<CourseTrainee> getCourseTraineeList() {
         return courseTraineeList;
     }
 
     public void setCourseTraineeList(List<CourseTrainee> courseTraineeList) {
         this.courseTraineeList = courseTraineeList;
+    }
+
+    public List<Attendance> getAttendanceList() {
+        return attendanceList;
+    }
+
+    public void setAttendanceList(List<Attendance> attendanceList) {
+        this.attendanceList = attendanceList;
+    }
+
+    public List<TeamMember> getTeamMemberList() {
+        return teamMemberList;
+    }
+
+    public void setTeamMemberList(List<TeamMember> teamMemberList) {
+        this.teamMemberList = teamMemberList;
     }
 
     public List<LessonResource> getLessonResourceList() {
@@ -351,47 +390,6 @@ public class Trainee implements Serializable {
         this.traineeEquipmentList = traineeEquipmentList;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (traineeID != null ? traineeID.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Trainee)) {
-            return false;
-        }
-        Trainee other = (Trainee) object;
-        if ((this.traineeID == null && other.traineeID != null) || (this.traineeID != null && !this.traineeID.equals(other.traineeID))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "com.boha.coursemaker.data.Trainee[ traineeID=" + traineeID + " ]";
-    }
-
-    public String getGCMRegistrationID() {
-        return gCMRegistrationID;
-    }
-
-    public void setGCMRegistrationID(String gCMRegistrationID) {
-        this.gCMRegistrationID = gCMRegistrationID;
-    }
-
-    public List<Attendance> getAttendanceList() {
-        return attendanceList;
-    }
-
-    public void setAttendanceList(List<Attendance> attendanceList) {
-        this.attendanceList = attendanceList;
-    }
-
     public List<GcmDevice> getGcmDeviceList() {
         return gcmDeviceList;
     }
@@ -400,36 +398,9 @@ public class Trainee implements Serializable {
         this.gcmDeviceList = gcmDeviceList;
     }
 
-    public List<GuardianTrainee> getGuardianTraineeList() {
-        return guardianTraineeList;
+    @Override
+    public String toString() {
+        return "com.boha.coursemaker.data.Trainee[ traineeID=" + traineeID + " ]";
     }
 
-    public void setGuardianTraineeList(List<GuardianTrainee> guardianTraineeList) {
-        this.guardianTraineeList = guardianTraineeList;
-    }
-
-    public List<TraineeShout> getTraineeShoutList() {
-        return traineeShoutList;
-    }
-
-    public void setTraineeShoutList(List<TraineeShout> traineeShoutList) {
-        this.traineeShoutList = traineeShoutList;
-    }
-
-    public List<TeamMember> getTeamMemberList() {
-        return teamMemberList;
-    }
-
-    public void setTeamMemberList(List<TeamMember> teamMemberList) {
-        this.teamMemberList = teamMemberList;
-    }
-
-    public List<DemoAnnouncement> getDemoAnnouncementList() {
-        return demoAnnouncementList;
-    }
-
-    public void setDemoAnnouncementList(List<DemoAnnouncement> demoAnnouncementList) {
-        this.demoAnnouncementList = demoAnnouncementList;
-    }
-    
 }

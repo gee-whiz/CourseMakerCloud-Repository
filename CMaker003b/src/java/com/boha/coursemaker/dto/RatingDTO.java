@@ -13,9 +13,9 @@ import com.boha.coursemaker.data.Rating;
  * @author aubreyM
  */
 public class RatingDTO {
-    private Integer ratingID;
+    private int ratingID;
     private String ratingName;
-    private Integer ratingNumber, companyID;
+    private int ratingNumber, companyID;
     
     public RatingDTO(Rating a) {
         ratingID = a.getRatingID();
@@ -24,11 +24,11 @@ public class RatingDTO {
         companyID = a.getCompany().getCompanyID();
     }
 
-    public Integer getRatingID() {
+    public int getRatingID() {
         return ratingID;
     }
 
-    public void setRatingID(Integer ratingID) {
+    public void setRatingID(int ratingID) {
         this.ratingID = ratingID;
     }
 
@@ -36,11 +36,11 @@ public class RatingDTO {
         return ratingName;
     }
 
-    public Integer getCompanyID() {
+    public int getCompanyID() {
         return companyID;
     }
 
-    public void setCompanyID(Integer companyID) {
+    public void setCompanyID(int companyID) {
         this.companyID = companyID;
     }
 
@@ -48,11 +48,11 @@ public class RatingDTO {
         this.ratingName = ratingName;
     }
 
-    public Integer getRatingNumber() {
+    public int getRatingNumber() {
         return ratingNumber;
     }
 
-    public void setRatingNumber(Integer ratingNumber) {
+    public void setRatingNumber(int ratingNumber) {
         this.ratingNumber = ratingNumber;
     }
 }

@@ -1,7 +1,9 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package com.boha.coursemaker.data;
 
 import java.io.Serializable;
@@ -37,16 +39,16 @@ public class LessonSchedule implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "lessonScheduleID")
-    private Integer lessonScheduleID;
+    private int lessonScheduleID;
     @Column(name = "scheduleDate")
     @Temporal(TemporalType.TIMESTAMP)
     private Date scheduleDate;
     @Column(name = "endDate")
     @Temporal(TemporalType.TIMESTAMP)
     private Date endDate;
-    @JoinColumn(name = "lessonID", referencedColumnName = "lessonID")
+    @JoinColumn(name = "activityID", referencedColumnName = "activityID")
     @ManyToOne
-    private Lesson lesson;
+    private Activity activity;
     @JoinColumn(name = "trainingClassID", referencedColumnName = "trainingClassID")
     @ManyToOne
     private TrainingClass trainingClass;
@@ -54,15 +56,15 @@ public class LessonSchedule implements Serializable {
     public LessonSchedule() {
     }
 
-    public LessonSchedule(Integer lessonScheduleID) {
+    public LessonSchedule(int lessonScheduleID) {
         this.lessonScheduleID = lessonScheduleID;
     }
 
-    public Integer getLessonScheduleID() {
+    public int getLessonScheduleID() {
         return lessonScheduleID;
     }
 
-    public void setLessonScheduleID(Integer lessonScheduleID) {
+    public void setLessonScheduleID(int lessonScheduleID) {
         this.lessonScheduleID = lessonScheduleID;
     }
 
@@ -82,12 +84,12 @@ public class LessonSchedule implements Serializable {
         this.endDate = endDate;
     }
 
-    public Lesson getLesson() {
-        return lesson;
+    public Activity getActivity() {
+        return activity;
     }
 
-    public void setLesson(Lesson lesson) {
-        this.lesson = lesson;
+    public void setActivity(Activity activity) {
+        this.activity = activity;
     }
 
     public TrainingClass getTrainingClass() {
@@ -98,27 +100,6 @@ public class LessonSchedule implements Serializable {
         this.trainingClass = trainingClass;
     }
 
-
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (lessonScheduleID != null ? lessonScheduleID.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof LessonSchedule)) {
-            return false;
-        }
-        LessonSchedule other = (LessonSchedule) object;
-        if ((this.lessonScheduleID == null && other.lessonScheduleID != null) || (this.lessonScheduleID != null && !this.lessonScheduleID.equals(other.lessonScheduleID))) {
-            return false;
-        }
-        return true;
-    }
 
     @Override
     public String toString() {

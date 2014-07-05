@@ -1,7 +1,9 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package com.boha.coursemaker.data;
 
 import java.io.Serializable;
@@ -36,32 +38,33 @@ public class Country implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "countryID")
-    private Integer countryID;
+    private int countryID;
     @Size(max = 100)
     @Column(name = "countryName")
     private String countryName;
-    @Column(name = "countryCode")
-    private String countryCode;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "latitude")
     private Double latitude;
     @Column(name = "longitude")
     private Double longitude;
+    @Size(max = 10)
+    @Column(name = "countryCode")
+    private String countryCode;
     @OneToMany(mappedBy = "country")
     private List<Province> provinceList;
 
     public Country() {
     }
 
-    public Country(Integer countryID) {
+    public Country(int countryID) {
         this.countryID = countryID;
     }
 
-    public Integer getCountryID() {
+    public int getCountryID() {
         return countryID;
     }
 
-    public void setCountryID(Integer countryID) {
+    public void setCountryID(int countryID) {
         this.countryID = countryID;
     }
 
@@ -81,20 +84,20 @@ public class Country implements Serializable {
         this.latitude = latitude;
     }
 
-    public String getCountryCode() {
-        return countryCode;
-    }
-
-    public void setCountryCode(String countryCode) {
-        this.countryCode = countryCode;
-    }
-
     public Double getLongitude() {
         return longitude;
     }
 
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
+    }
+
+    public String getCountryCode() {
+        return countryCode;
+    }
+
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
     }
 
     public List<Province> getProvinceList() {
@@ -105,25 +108,7 @@ public class Country implements Serializable {
         this.provinceList = provinceList;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (countryID != null ? countryID.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Country)) {
-            return false;
-        }
-        Country other = (Country) object;
-        if ((this.countryID == null && other.countryID != null) || (this.countryID != null && !this.countryID.equals(other.countryID))) {
-            return false;
-        }
-        return true;
-    }
+  
 
     @Override
     public String toString() {

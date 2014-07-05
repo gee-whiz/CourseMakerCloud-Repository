@@ -1,7 +1,9 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package com.boha.coursemaker.data;
 
 import java.io.Serializable;
@@ -34,19 +36,16 @@ import javax.validation.constraints.Size;
     })
 public class Rating implements Serializable {
     private static final long serialVersionUID = 1L;
-    @JoinColumn(name = "companyID", referencedColumnName = "companyID")
-    @ManyToOne(optional = false)
-    private Company company;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "ratingID")
-    private Integer ratingID;
+    private int ratingID;
     @Size(max = 50)
     @Column(name = "ratingName")
     private String ratingName;
     @Column(name = "ratingNumber")
-    private Integer ratingNumber;
+    private int ratingNumber;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "rating")
     private List<TraineeRating> traineeRatingList;
     @OneToMany(mappedBy = "rating")
@@ -55,27 +54,22 @@ public class Rating implements Serializable {
     private List<CourseTrainee> courseTraineeList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "rating")
     private List<InstructorRating> instructorRatingList;
+    @JoinColumn(name = "companyID", referencedColumnName = "companyID")
+    @ManyToOne(optional = false)
+    private Company company;
 
     public Rating() {
     }
 
-    public Rating(Integer ratingID) {
+    public Rating(int ratingID) {
         this.ratingID = ratingID;
     }
 
-    public Integer getRatingID() {
+    public int getRatingID() {
         return ratingID;
     }
 
-    public Company getCompany() {
-        return company;
-    }
-
-    public void setCompany(Company company) {
-        this.company = company;
-    }
-
-    public void setRatingID(Integer ratingID) {
+    public void setRatingID(int ratingID) {
         this.ratingID = ratingID;
     }
 
@@ -87,11 +81,11 @@ public class Rating implements Serializable {
         this.ratingName = ratingName;
     }
 
-    public Integer getRatingNumber() {
+    public int getRatingNumber() {
         return ratingNumber;
     }
 
-    public void setRatingNumber(Integer ratingNumber) {
+    public void setRatingNumber(int ratingNumber) {
         this.ratingNumber = ratingNumber;
     }
 
@@ -127,25 +121,14 @@ public class Rating implements Serializable {
         this.instructorRatingList = instructorRatingList;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (ratingID != null ? ratingID.hashCode() : 0);
-        return hash;
+    public Company getCompany() {
+        return company;
     }
 
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Rating)) {
-            return false;
-        }
-        Rating other = (Rating) object;
-        if ((this.ratingID == null && other.ratingID != null) || (this.ratingID != null && !this.ratingID.equals(other.ratingID))) {
-            return false;
-        }
-        return true;
+    public void setCompany(Company company) {
+        this.company = company;
     }
+
 
     @Override
     public String toString() {

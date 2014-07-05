@@ -27,24 +27,31 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 /**
  *
  * @author aubreyM
  */
+@Stateless
+@TransactionManagement(TransactionManagementType.CONTAINER)
 public class CloudMsgUtil {
 
+    @PersistenceContext
+    EntityManager em;
     private static final int RETRIES = 5;
     public static final String API_KEY = "AIzaSyCJIUMPXsL-GVAfNAl1i-fDy6qf7g5TtCU";
 
-    public static ResponseDTO sendInstructorToTraineeMessage(HelpResponseDTO req, PlatformUtil platformUtil) throws
+    public  ResponseDTO sendInstructorToTraineeMessage(HelpResponseDTO req, PlatformUtil platformUtil) throws
             Exception, DataException {
 
         ResponseDTO resp = new ResponseDTO();
         //write record to table
-        EntityManager em = EMUtil.getEntityManager();
 
         HelpRequest hr = DataUtil.getHelpRequestByID(req.getHelpRequest().getHelpRequestID(), platformUtil.getEntityManager());
         HelpResponse h = new HelpResponse();
@@ -56,9 +63,7 @@ public class CloudMsgUtil {
         h.setInstructor(DataUtil.getInstructorByID(req.getInstructorID(), platformUtil.getEntityManager()));
 
         try {
-            em.getTransaction().begin();
             em.persist(h);
-            em.getTransaction().commit();
             LOG.log(Level.INFO, "HelpResponse added to db");
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "HelpResponse add failed", e);
@@ -110,20 +115,20 @@ public class CloudMsgUtil {
 
     }
 
-    private static List<GcmDevice> getDevices(Integer companyID) {
-        EntityManager em = EMUtil.getEntityManager();
+    private  List<GcmDevice> getDevices(int companyID) {
         Query q = em.createNamedQuery("GcmDevice.findInstructorDevices");
         q.setParameter("id", companyID);
         return q.getResultList();
     }
 
-    public static ResponseDTO sendTraineeToInstructorMessage(
+    public  ResponseDTO sendTraineeToInstructorMessage(
             HelpRequestDTO req, TraineeShoutDTO traineeShout,
-            Integer trainingClassID, PlatformUtil platformUtil, InstructorUtil instructorUtil) throws
+            int trainingClassID, PlatformUtil platformUtil, InstructorUtil instructorUtil) throws
             Exception, DataException {
 
+         LOG.log(Level.OFF, "helptype id: {0}", req.getHelpType().getHelpTypeID());
+                 
         ResponseDTO resp = new ResponseDTO();
-        EntityManager em = EMUtil.getEntityManager();
         Gson g = new Gson();
         String txJSON = null;
         if (req != null) {
@@ -131,15 +136,13 @@ public class CloudMsgUtil {
             h.setComment(req.getComment());
             if (req.getCourseTraineeActivity() != null) {
                 h.setCourseTraineeActivity(DataUtil.getCourseTraineeActivityByID(
-                        req.getCourseTraineeActivity().getCourseTraineeActivityID(), platformUtil.getEntityManager()));
+                        req.getCourseTraineeActivity().getCourseTraineeActivityID(), em));
             }
             h.setDateRequested(new Date());
             h.setHelpType(DataUtil.getHelpTypeByID(req.getHelpType().getHelpTypeID(), platformUtil.getEntityManager()));
-            h.setTrainingClass(DataUtil.getTrainingClassByID(trainingClassID, platformUtil.getEntityManager()));
+            h.setTrainingClass(DataUtil.getTrainingClassByID(trainingClassID, em));
             try {
-                em.getTransaction().begin();
                 em.persist(h);
-                em.getTransaction().commit();
                 LOG.log(Level.INFO, "HelpRequest added to db, type: {0}", h.getHelpType().getHelpTypeName());
             } catch (Exception e) {
                 LOG.log(Level.SEVERE, "HelpRequest add failed", e);
@@ -155,9 +158,7 @@ public class CloudMsgUtil {
             ts.setHelpType(DataUtil.getHelpTypeByID(req.getHelpType().getHelpTypeID(), platformUtil.getEntityManager()));
             ts.setTrainee(DataUtil.getTraineeByID(traineeShout.getTraineeID(), platformUtil.getEntityManager()));
             try {
-                em.getTransaction().begin();
                 em.persist(ts);
-                em.getTransaction().commit();
                 LOG.log(Level.INFO, "TraineeShout added to db, type: {0}", ts.getHelpType().getHelpTypeName());
             } catch (Exception e) {
                 LOG.log(Level.SEVERE, "TraineeShout add failed", e);
@@ -174,7 +175,7 @@ public class CloudMsgUtil {
         List<GcmDevice> gcmList = getDevices(tc.getCompany().getCompanyID());
         for (Instructor ins : iList) {
             for (GcmDevice m : gcmList) {
-                if (ins.getInstructorID().intValue() == m.getInstructor().getInstructorID().intValue()) {
+                if (ins.getInstructorID() == m.getInstructor().getInstructorID()) {
                     registrationIDs.add(m.getRegistrationID());
                 }
             }
@@ -187,15 +188,15 @@ public class CloudMsgUtil {
             platformUtil.addErrorStore(888, resp.getMessage(), "Cloud Message Services");
             return resp;
         }
-        
+
         sendMessage(txJSON, registrationIDs, platformUtil);
-        
+
         return resp;
 
     }
     public static final int GCM_MESSAGE_ERROR = 3, ALL_OK = 0;
 
-    private static int sendMessage(String json, List<String> registrationIDs, PlatformUtil platformUtil) throws IOException, Exception {
+    private  int sendMessage(String json, List<String> registrationIDs, PlatformUtil platformUtil) throws IOException, Exception {
         Sender sender = new Sender(API_KEY);
         Message message = new Message.Builder()
                 .addData("message", json)
@@ -217,7 +218,7 @@ public class CloudMsgUtil {
         return ALL_OK;
     }
 
-    private static boolean handleResult(Result result, PlatformUtil platformUtil)
+    private  boolean handleResult(Result result, PlatformUtil platformUtil)
             throws Exception {
 
         LOG.log(Level.INFO, "Handle result from Google GCM servers: {0}", result.toString());
@@ -254,7 +255,7 @@ public class CloudMsgUtil {
         return true;
     }
 
-    private static boolean handleMultiCastResult(MulticastResult multiCastResult, PlatformUtil platformUtil)
+    private  boolean handleMultiCastResult(MulticastResult multiCastResult, PlatformUtil platformUtil)
             throws Exception {
         LOG.log(Level.INFO, "Handle result from Google GCM servers: {0}", multiCastResult.toString());
         if (multiCastResult.getFailure() == 0

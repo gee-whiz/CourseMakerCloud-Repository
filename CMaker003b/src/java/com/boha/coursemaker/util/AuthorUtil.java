@@ -12,21 +12,18 @@ import com.boha.coursemaker.data.Company;
 import com.boha.coursemaker.data.Course;
 import com.boha.coursemaker.data.CourseAuthor;
 import com.boha.coursemaker.data.GcmDevice;
-import com.boha.coursemaker.data.Lesson;
 import com.boha.coursemaker.data.LessonResource;
 import com.boha.coursemaker.data.Objective;
 
 import com.boha.coursemaker.dto.ActivityDTO;
 import com.boha.coursemaker.dto.AuthorDTO;
 import com.boha.coursemaker.dto.CategoryDTO;
-import com.boha.coursemaker.dto.LessonDTO;
 import com.boha.coursemaker.dto.ObjectiveDTO;
 import com.boha.coursemaker.dto.LessonResourceDTO;
 import com.boha.coursemaker.dto.platform.ResponseDTO;
 import com.boha.coursemaker.dto.CourseDTO;
 import com.boha.coursemaker.dto.CompanyDTO;
 import com.boha.coursemaker.dto.GcmDeviceDTO;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -56,11 +53,8 @@ public class AuthorUtil {
             throws DataException {
         ResponseDTO d = new ResponseDTO();
 
-
-        Integer courseID = list.get(0).getCourseID();
+        int courseID = list.get(0).getCourseID();
         try {
-
-
 
             for (ObjectiveDTO dto : list) {
                 Objective a = DataUtil.getObjectiveByID(dto.getObjectiveID(), em);
@@ -78,7 +72,6 @@ public class AuthorUtil {
                     throw new DataException("Objective not found for update");
                 }
             }
-
 
             Query q = em.createNamedQuery("Objective.findByCourse");
             q.setParameter("id", courseID);
@@ -102,12 +95,10 @@ public class AuthorUtil {
             throws DataException {
         ResponseDTO d = new ResponseDTO();
 
-
-        Integer lessonID = list.get(0).getLessonID();
         try {
 
             for (ActivityDTO dto : list) {
-                Activity a = DataUtil.getActivityByID(dto.getActivityID(), em);
+                Activity a = em.find(Activity.class, dto.getActivityID());
                 if (a != null) {
                     if (dto.getActivityName() != null) {
                         a.setActivityName(dto.getActivityName());
@@ -116,20 +107,18 @@ public class AuthorUtil {
                     if (dto.getDescription() != null) {
                         a.setDescription(dto.getDescription());
                     }
-                    if (dto.getPriorityFlag() != null) {
-                        a.setPriorityFlag(dto.getPriorityFlag());
-                    }
+
+                    a.setPriorityFlag(dto.getPriorityFlag());
+
                     em.merge(a);
-                    ////log.log(Level.INFO, "Activity updated: {0} priority: {1}", new Object[]{dto.getActivityName(), a.getPriorityFlag().intValue()});
                 } else {
                     log.log(Level.SEVERE, "***ERROR*** activity not found");
                     throw new DataException("Activity not found for update");
                 }
             }
 
-
-            Query q = em.createNamedQuery("Activity.findByLesson", Activity.class);
-            q.setParameter("id", lessonID);
+            Query q = em.createNamedQuery("Activity.findByCourseID", Activity.class);
+            q.setParameter("id", list.get(0).getCourseID());
             List<Activity> listx = q.getResultList();
             List<ActivityDTO> dto = new ArrayList<>();
             for (Activity crs : listx) {
@@ -174,7 +163,6 @@ public class AuthorUtil {
                         gcm.setAuthor(author);
                         em.persist(gcm);
 
-
                         CloudMessagingRegistrar.sendRegistration(gcm.getRegistrationID(), platformUtil);
 
                     }
@@ -200,13 +188,11 @@ public class AuthorUtil {
         return d;
     }
 
-    public ResponseDTO registerAuthor(AuthorDTO author, Integer companyID)
+    public ResponseDTO registerAuthor(AuthorDTO author, int companyID)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
 
-
         try {
-
 
             Company tc = DataUtil.getCompanyByID(companyID, em);
 
@@ -220,7 +206,7 @@ public class AuthorUtil {
             a.setDateRegistered(new Date());
             em.persist(a);
 
-            Query q = em.createNamedQuery("Author.findByCompany",Author.class);
+            Query q = em.createNamedQuery("Author.findByCompany", Author.class);
             q.setParameter("id", companyID);
             List<Author> list = q.getResultList();
             d.setAuthorList(new ArrayList<AuthorDTO>());
@@ -256,7 +242,7 @@ public class AuthorUtil {
         return gList;
     }
 
-    public List<CategoryDTO> getCategoriesx(Integer companyID, boolean getCourses) {
+    public List<CategoryDTO> getCategoriesx(int companyID, boolean getCourses) {
         Company co = DataUtil.getCompanyByID(companyID, em);
         List<Category> list = co.getCategoryList();
         List<CategoryDTO> gList = new ArrayList<>();
@@ -267,7 +253,7 @@ public class AuthorUtil {
     }
 
     public List<CategoryDTO> addInitialCategories(
-            Integer companyID, EntityManager em) throws DataException {
+            int companyID, EntityManager em) throws DataException {
 
         List<CategoryDTO> dto = new ArrayList<>();
         try {
@@ -276,51 +262,50 @@ public class AuthorUtil {
             Category a = new Category();
             a.setCategoryName("Cloud Application Computing");
             a.setCompany(tc);
-            a.setLocalID(new BigInteger("" + System.currentTimeMillis()));
+            a.setLocalID(System.currentTimeMillis());
             em.persist(a);
             //
             Thread.sleep(3);
             Category a1 = new Category();
             a1.setCategoryName("Android Development");
             a1.setCompany(tc);
-            a1.setLocalID(new BigInteger("" + System.currentTimeMillis()));
+            a1.setLocalID(System.currentTimeMillis());
             em.persist(a1);
             //
             Thread.sleep(3);
             Category a2 = new Category();
             a2.setCategoryName("Database Development");
             a2.setCompany(tc);
-            a2.setLocalID(new BigInteger("" + System.currentTimeMillis()));
+            a2.setLocalID(System.currentTimeMillis());
             em.persist(a2);
             //
             Thread.sleep(3);
             Category a3 = new Category();
             a3.setCategoryName("HTML5 App Development");
             a3.setCompany(tc);
-            a3.setLocalID(new BigInteger("" + System.currentTimeMillis()));
+            a3.setLocalID(System.currentTimeMillis());
             em.persist(a3);
             //
             Thread.sleep(3);
             Category a4 = new Category();
             a4.setCategoryName("Windows Phone Development");
             a4.setCompany(tc);
-            a4.setLocalID(new BigInteger("" + System.currentTimeMillis()));
+            a4.setLocalID(System.currentTimeMillis());
             em.persist(a4);
             //
             Thread.sleep(3);
             Category a5 = new Category();
             a5.setCategoryName("Feature Phone Development");
             a5.setCompany(tc);
-            a5.setLocalID(new BigInteger("" + System.currentTimeMillis()));
+            a5.setLocalID(System.currentTimeMillis());
             em.persist(a5);
             //
             Thread.sleep(3);
             Category a6 = new Category();
             a6.setCategoryName("Ubuntu Touch Development");
             a6.setCompany(tc);
-            a6.setLocalID(new BigInteger("" + System.currentTimeMillis()));
+            a6.setLocalID(System.currentTimeMillis());
             em.persist(a6);
-
 
             Query q = em.createNamedQuery("Category.findByCompanyID");
             q.setParameter("id", companyID);
@@ -333,8 +318,6 @@ public class AuthorUtil {
             //log.log(Level.INFO, "Initial Categories loaded: {0}",
             //      new Object[]{dto.size()});
 
-
-
         } catch (Exception e) {
             log.log(Level.SEVERE, "***ERROR*** Adding category", e);
             throw new DataException(DataUtil.getErrorString(e));
@@ -342,7 +325,7 @@ public class AuthorUtil {
         return dto;
     }
 
-    public ResponseDTO addCategory(Integer companyID,
+    public ResponseDTO addCategory(int companyID,
             CategoryDTO category) throws DataException {
 
         ResponseDTO d = new ResponseDTO();
@@ -353,13 +336,11 @@ public class AuthorUtil {
             Category a = new Category();
             a.setCategoryName(category.getCategoryName());
             a.setCompany(tc);
-            a.setLocalID(category.getLocalID());
             em.persist(a);
-
 
             d.setCategory(new CategoryDTO(a));
 
-            Query q = em.createNamedQuery("Category.findByCompanyID",Category.class);      
+            Query q = em.createNamedQuery("Category.findByCompanyID", Category.class);
             q.setParameter("id", companyID);
             List<Category> list = q.getResultList();
             List<CategoryDTO> dto = new ArrayList<>();
@@ -380,7 +361,6 @@ public class AuthorUtil {
         } finally {
         }
 
-
         return d;
     }
 
@@ -394,9 +374,7 @@ public class AuthorUtil {
             Category a = DataUtil.getCategoryByID(category.getCategoryID(), em);
             em.remove(a);
 
-
-
-            Query q = em.createNamedQuery("Category.findByCompanyID",Category.class);      
+            Query q = em.createNamedQuery("Category.findByCompanyID", Category.class);
             q.setParameter("id", category.getCompanyID());
             List<Category> list = q.getResultList();
             List<CategoryDTO> dto = new ArrayList<>();
@@ -413,7 +391,6 @@ public class AuthorUtil {
         } finally {
         }
 
-
         return d;
     }
 
@@ -428,10 +405,9 @@ public class AuthorUtil {
             a.setCategoryName(category.getCategoryName());
             em.merge(a);
 
-
             d.setCategory(new CategoryDTO(a));
 
-            Query q = em.createNamedQuery("Category.findByCompanyID",Category.class);      ;
+            Query q = em.createNamedQuery("Category.findByCompanyID", Category.class);;
             q.setParameter("id", category.getCompanyID());
             List<Category> list = q.getResultList();
             List<CategoryDTO> dto = new ArrayList<>();
@@ -449,7 +425,6 @@ public class AuthorUtil {
         } finally {
         }
 
-
         return d;
     }
 
@@ -461,12 +436,12 @@ public class AuthorUtil {
      * @throws DataException
      */
     public ResponseDTO getCompanyCourseList(
-            Integer companyID)
+            int companyID)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
 
-            Query q = em.createNamedQuery("Course.findByCompanyID",Course.class);
+            Query q = em.createNamedQuery("Course.findByCompanyID", Course.class);
             q.setParameter("id", companyID);
             List<Course> list = q.getResultList();
             List<CourseDTO> dtoList = new ArrayList<>();
@@ -474,41 +449,31 @@ public class AuthorUtil {
                 dtoList.add(new CourseDTO(tcc));
             }
 
-            List<LessonDTO> lessonList = getCompanyLessons(companyID);
             List<ObjectiveDTO> objectiveList = getCompanyObjectives(companyID);
             List<LessonResourceDTO> linkList = getCompanyLinks(companyID);
             List<ActivityDTO> actList = getCompanyActivities(companyID);
             //
             for (CourseDTO c : dtoList) {
-                c.setLessonList(new ArrayList<LessonDTO>());
+                c.setActivityList(new ArrayList<ActivityDTO>());
                 c.setObjectiveList(new ArrayList<ObjectiveDTO>());
+                c.setLessonResourceList(new ArrayList<LessonResourceDTO>());
 
                 for (ObjectiveDTO o : objectiveList) {
-                    if (o.getCourseID().intValue() == c.getCourseID().intValue()) {
+                    if (o.getCourseID() == c.getCourseID()) {
                         c.getObjectiveList().add(o);
                     }
                 }
 
-                for (LessonDTO l : lessonList) {
-                    if (l.getCourseID().intValue() == c.getCourseID().intValue()) {
-                        l.setLessonResourceList(new ArrayList<LessonResourceDTO>());
-                        l.setActivityList(new ArrayList<ActivityDTO>());
-
-                        for (ActivityDTO act : actList) {
-                            if (act.getLessonID().intValue() == l.getLessonID().intValue()) {
-                                l.getActivityList().add(act);
-                            }
-                        }
-
-                        for (LessonResourceDTO link : linkList) {
-                            if (l.getLessonID().intValue() == link.getLessonID().intValue()) {
-                                l.getLessonResourceList().add(link);
-                            }
-                        }
-                        c.getLessonList().add(l);
-
+                for (ActivityDTO act : actList) {
+                    if (act.getCourseID() == c.getCourseID()) {
+                        c.getActivityList().add(act);
                     }
 
+                }
+                for (LessonResourceDTO link : linkList) {
+                    if (c.getCourseID() == link.getCourseID()) {
+                        c.getLessonResourceList().add(link);
+                    }
                 }
 
             }
@@ -523,7 +488,7 @@ public class AuthorUtil {
         return d;
     }
 
-    private List<ActivityDTO> getCompanyActivities(Integer companyID) {
+    private List<ActivityDTO> getCompanyActivities(int companyID) {
         List<ActivityDTO> list;
 
         Query q = em.createNamedQuery("Activity.findByCompany", Activity.class);
@@ -537,7 +502,7 @@ public class AuthorUtil {
         return list;
     }
 
-    private List<LessonResourceDTO> getCompanyLinks(Integer companyID) {
+    private List<LessonResourceDTO> getCompanyLinks(int companyID) {
         List<LessonResourceDTO> list;
 
         Query q = em.createNamedQuery("LessonResource.findByCompany", LessonResource.class);
@@ -551,21 +516,7 @@ public class AuthorUtil {
         return list;
     }
 
-    private List<LessonDTO> getCompanyLessons(Integer companyID) {
-        List<LessonDTO> list;
-
-        Query q = em.createNamedQuery("Lesson.findByCompany", Lesson.class);
-        q.setParameter("id", companyID);
-        List<Lesson> mlist = q.getResultList();
-        list = new ArrayList<>();
-        for (Lesson tcc : mlist) {
-            list.add(new LessonDTO(tcc));
-        }
-
-        return list;
-    }
-
-    private List<ObjectiveDTO> getCompanyObjectives(Integer companyID) {
+    private List<ObjectiveDTO> getCompanyObjectives(int companyID) {
         List<ObjectiveDTO> list;
 
         Query q = em.createNamedQuery("Objective.findByCompany");
@@ -582,38 +533,32 @@ public class AuthorUtil {
     /**
      * Add listx of Activities that comprise a1 Lesson to the database
      *
-     * @param actList
+     * @param a
      * @param courseID
      * @return
      * @throws DataException
      */
     public ResponseDTO addActivity(ActivityDTO a,
-            Integer lessonID)
+            int courseID)
             throws DataException {
+        log.log(Level.OFF, "------- add activity, courseID: {0}", courseID);
         ResponseDTO d = new ResponseDTO();
 
-
-        Lesson lesson;
+        Course course;
         try {
 
-            lesson = DataUtil.getLessonByID(lessonID, em);
+            course = em.find(Course.class, courseID);
             Activity activity = new Activity();
-            activity.setLesson(lesson);
+            activity.setCourse(course);
             activity.setDescription(a.getDescription());
             activity.setActivityName(a.getActivityName());
 
-            if (a.getPriorityFlag() == null) {
-                activity.setPriorityFlag(0);
-            } else {
-                activity.setPriorityFlag(a.getPriorityFlag());
-            }
+            activity.setPriorityFlag(a.getPriorityFlag());
             activity.setLocalID(a.getLocalID());
             em.persist(activity);
 
-
-            d.setActivity(new ActivityDTO(activity));
-            Query q = em.createNamedQuery("Activity.findByLesson",Activity.class);
-            q.setParameter("id", lessonID);
+            Query q = em.createNamedQuery("Activity.findByCourseID", Activity.class);
+            q.setParameter("id", courseID);
             List<Activity> list = q.getResultList();
             List<ActivityDTO> dto = new ArrayList<>();
             for (Activity crs : list) {
@@ -621,7 +566,7 @@ public class AuthorUtil {
             }
             d.setActivityList(dto);
             d.setMessage("activity added on server");
-            //log.log(Level.INFO, "Activity added to lesson: {0} - added: {1}",
+            //log.log(Level.INFO, "Activity added to course: {0} - added: {1}",
             //      new Object[]{lesson.getLessonName(), activity.getActivityName()});
         } catch (RollbackException e) {
             d.setStatusCode(ResponseDTO.ERROR_DUPLICATE);
@@ -644,10 +589,9 @@ public class AuthorUtil {
      * @return
      * @throws DataException
      */
-    public ResponseDTO addObjective(ObjectiveDTO objective, Integer courseID)
+    public ResponseDTO addObjective(ObjectiveDTO objective, int courseID)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
-
 
         Course course;
         try {
@@ -659,8 +603,6 @@ public class AuthorUtil {
             ls.setObjectiveName(objective.getObjectiveName());
 
             em.persist(ls);
-
-
 
             d.setObjective(new ObjectiveDTO(ls));
             Query q = em.createNamedQuery("Objective.findByCourse");
@@ -683,7 +625,6 @@ public class AuthorUtil {
             throw new DataException(DataUtil.getErrorString(e));
         } finally {
 
-
             return d;
         }
     }
@@ -691,33 +632,27 @@ public class AuthorUtil {
     /**
      * Write listx of LessonRessources for a1 specific Lesson to the database
      *
-     * @param resourceList
-     * @param courseID
+     * @param l
      * @return
      * @throws DataException
      */
-    public ResponseDTO addLessonResource(LessonResourceDTO l,
-            Integer lessonID)
+    public ResponseDTO addLessonResource(LessonResourceDTO l)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
-
-
-        Lesson lesson;
+        log.log(Level.OFF, "addLessonResource courseID: {0}", l.getCourseID());
+        Course act;
         try {
 
-            lesson = DataUtil.getLessonByID(lessonID, em);
+            act = em.find(Course.class, l.getCourseID());
             LessonResource ls = new LessonResource();
-            ls.setLesson(lesson);
+            ls.setCourse(act);
             ls.setDateUpdated(new Date());
             ls.setResourceName(l.getResourceName());
             ls.setUrl(l.getUrl());
-            ls.setLocalID(l.getLocalID());
             em.persist(ls);
 
-
-            d.setLessonResource(new LessonResourceDTO(ls));
-            Query q = em.createNamedQuery("LessonResource.findByLessonID", LessonResource.class);
-            q.setParameter("id", lessonID);
+            Query q = em.createNamedQuery("LessonResource.findByCourse", LessonResource.class);
+            q.setParameter("id", l.getCourseID());
             List<LessonResource> list = q.getResultList();
             List<LessonResourceDTO> dto = new ArrayList<>();
             for (LessonResource crs : list) {
@@ -737,86 +672,13 @@ public class AuthorUtil {
             throw new DataException(DataUtil.getErrorString(e));
         } finally {
 
-
             return d;
         }
     }
 
-    /**
-     * Write a1 listx of new Lessons for a1 specific course to the database
-     *
-     * @param lessonList
-     * @param courseID
-     * @return
-     * @throws DataException
-     */
-    public ResponseDTO addLesson(LessonDTO l)
-            throws DataException {
-        ResponseDTO d = new ResponseDTO();
+    private List<LessonResourceDTO> getCourseLinks(int courseID) {
 
-
-        Course course;
-        try {
-
-            course = DataUtil.getCourseByID(
-                    l.getCourseID(), em);
-            Lesson lesson = new Lesson();
-            lesson.setCourse(course);
-            lesson.setDescription(l.getDescription());
-            lesson.setLessonName(l.getLessonName());
-            if (l.getPriorityFlag() == null) {
-                lesson.setPriorityFlag(0);
-            } else {
-                lesson.setPriorityFlag(l.getPriorityFlag());
-            }
-            lesson.setLocalID(l.getLocalID());
-            em.persist(lesson);
-
-
-            Query q = em.createNamedQuery("Lesson.findByCourse",Lesson.class);
-            q.setParameter("id", l.getCourseID());
-            List<Lesson> list = q.getResultList();
-            List<LessonDTO> dto = new ArrayList<>();
-            for (Lesson crs : list) {
-                dto.add(new LessonDTO(crs));
-            }
-            List<ActivityDTO> actList = getCourseActivities(course.getCourseID());
-            List<LessonResourceDTO> rList = getCourseLinks(course.getCourseID());
-
-            for (LessonDTO lessonx : dto) {
-                lessonx.setActivityList(new ArrayList<ActivityDTO>());
-                for (ActivityDTO a : actList) {
-                    if (a.getLessonID().intValue() == lessonx.getLessonID().intValue()) {
-                        lessonx.getActivityList().add(a);
-                    }
-                }
-                for (LessonResourceDTO r : rList) {
-                    if (r.getLessonID().intValue() == lessonx.getLessonID().intValue()) {
-                        lessonx.getLessonResourceList().add(r);
-                    }
-                }
-            }
-            d.setLessonList(dto);
-            d.setMessage("lesson added on server");
-            log.log(Level.INFO, "Lesson added to course: {0} - added lesson: {1}",
-                    new Object[]{course.getCourseName(), lesson.getLessonName()});
-        } catch (RollbackException e) {
-            d.setStatusCode(ResponseDTO.ERROR_DUPLICATE);
-            d.setMessage("The lesson/task already exists");
-
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "***ERROR*** Adding lesson", e);
-            throw new DataException(DataUtil.getErrorString(e));
-        } finally {
-
-
-            return d;
-        }
-    }
-
-    private List<LessonResourceDTO> getCourseLinks(Integer courseID) {
-
-        Query q = em.createNamedQuery("LessonResource.findByCourse",LessonResource.class);
+        Query q = em.createNamedQuery("LessonResource.findByCourse", LessonResource.class);
         q.setParameter("id", courseID);
         List<LessonResource> list = q.getResultList();
         List<LessonResourceDTO> dto = new ArrayList<>();
@@ -826,9 +688,9 @@ public class AuthorUtil {
         return dto;
     }
 
-    private List<ActivityDTO> getCourseActivities(Integer courseID) {
+    private List<ActivityDTO> getCourseActivities(int courseID) {
 
-        Query q = em.createNamedQuery("Activity.findByCourseID",Activity.class);
+        Query q = em.createNamedQuery("Activity.findByCourseID", Activity.class);
         q.setParameter("id", courseID);
         List<Activity> list = q.getResultList();
         List<ActivityDTO> dto = new ArrayList<>();
@@ -838,101 +700,15 @@ public class AuthorUtil {
         return dto;
     }
 
-    public ResponseDTO updateLesson(List<LessonDTO> list)
-            throws DataException {
-        ResponseDTO d = new ResponseDTO();
-
-
-        Integer courseID = list.get(0).getCourseID();
-        try {
-
-            for (LessonDTO l : list) {
-                Lesson lesson = DataUtil.getLessonByID(l.getLessonID(), em);
-                if (l.getDescription() != null) {
-                    lesson.setDescription(l.getDescription());
-                }
-                if (l.getLessonName() != null) {
-                    lesson.setLessonName(l.getLessonName());
-                }
-                if (l.getPriorityFlag() != null) {
-                    lesson.setPriorityFlag(l.getPriorityFlag());
-                }
-                em.merge(lesson);
-            }
-
-
-            Query q = em.createNamedQuery("Lesson.findByCourse",Lesson.class);
-            q.setParameter("id", courseID);
-            List<Lesson> listx = q.getResultList();
-            List<LessonDTO> dto = new ArrayList<>();
-            for (Lesson less : listx) {
-                dto.add(new LessonDTO(less));
-            }
-            List<ActivityDTO> actList = getCourseActivities(courseID);
-            List<LessonResourceDTO> rList = getCourseLinks(courseID);
-            for (LessonDTO lesson : dto) {
-                lesson.setActivityList(new ArrayList<ActivityDTO>());
-                lesson.setLessonResourceList(new ArrayList<LessonResourceDTO>());
-                for (ActivityDTO a : actList) {
-                    if (a.getLessonID().intValue() == lesson.getLessonID().intValue()) {
-                        lesson.getActivityList().add(a);
-                    }
-                }
-                for (LessonResourceDTO r : rList) {
-                    if (r.getLessonID().intValue() == lesson.getLessonID().intValue()) {
-                        lesson.getLessonResourceList().add(r);
-                    }
-                }
-            }
-
-            d.setLessonList(dto);
-            d.setMessage("lesson updated on server");
-            //log.log(Level.INFO, "Lessons updated in courseID: {0} - updated lessons: {1}",
-            //new Object[]{courseID, list.size()});
-
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "***ERROR*** updating lesson", e);
-            throw new DataException(DataUtil.getErrorString(e));
-        } finally {
-
-
-            return d;
-        }
-    }
-
-    public ResponseDTO getResourcesByLesson(
-            Integer lessonID)
-            throws DataException {
-
-        ResponseDTO d = new ResponseDTO();
-
-        try {
-
-            Query q = em.createNamedQuery("LessonResource.findByLessonID",LessonResource.class);
-            q.setParameter("id", lessonID);
-            List<LessonResource> lsList = q.getResultList();
-            List<LessonResourceDTO> dtoList = new ArrayList<>();
-            for (LessonResource lesson : lsList) {
-                dtoList.add(new LessonResourceDTO(lesson));
-            }
-            d.setLessonResourceList(dtoList);
-            d.setMessage("resources listed");
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "Failed ", e);
-            throw new DataException(DataUtil.getErrorString(e));
-        }
-        return d;
-    }
-
     public ResponseDTO getActivitiesByLesson(
-            Integer lessonID)
+            int lessonID)
             throws DataException {
 
         ResponseDTO d = new ResponseDTO();
 
         try {
 
-            Query q = em.createNamedQuery("Activity.findByLesson",Activity.class);
+            Query q = em.createNamedQuery("Activity.findByLesson", Activity.class);
             q.setParameter("id", lessonID);
             List<Activity> lsList = q.getResultList();
             List<ActivityDTO> dtoList = new ArrayList<>();
@@ -949,7 +725,7 @@ public class AuthorUtil {
     }
 
     public ResponseDTO getObjectivesByCourse(
-            Integer courseID)
+            int courseID)
             throws DataException {
 
         ResponseDTO d = new ResponseDTO();
@@ -972,50 +748,9 @@ public class AuthorUtil {
         return d;
     }
 
-    public ResponseDTO getLessonsByCourse(Integer courseID)
-            throws DataException {
+    public List<LessonResourceDTO> getLinksByCourse(int courseID) {
 
-        ResponseDTO d = new ResponseDTO();
-
-        try {
-
-            Query q = em.createNamedQuery("Lesson.findByCourse",Lesson.class);
-            q.setParameter("id", courseID);
-            List<Lesson> lsList = q.getResultList();
-            List<LessonDTO> dtoList = new ArrayList<>();
-            for (Lesson lesson : lsList) {
-                dtoList.add(new LessonDTO(lesson));
-            }
-            List<ActivityDTO> actList = getActivitiesByCourse(courseID);
-            List<LessonResourceDTO> linkList = getLinksByCourse(courseID);
-
-            for (LessonDTO lesson : dtoList) {
-                lesson.setActivityList(new ArrayList<ActivityDTO>());
-                lesson.setLessonResourceList(new ArrayList<LessonResourceDTO>());
-                for (LessonResourceDTO lr : linkList) {
-                    if (lr.getLessonID().intValue() == lesson.getLessonID().intValue()) {
-                        lesson.getLessonResourceList().add(lr);
-                    }
-                }
-                for (ActivityDTO act : actList) {
-                    if (act.getLessonID().intValue() == lesson.getLessonID().intValue()) {
-                        lesson.getActivityList().add(act);
-                    }
-                }
-            }
-            d.setLessonList(dtoList);
-            d.setMessage("lessons, with depedents, listed: " + dtoList.size());
-            log.log(Level.OFF, "Lessons found {0} courseID: {1}", new Object[]{dtoList.size(), courseID});
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "Failed ", e);
-            throw new DataException(DataUtil.getErrorString(e));
-        }
-        return d;
-    }
-
-    public List<LessonResourceDTO> getLinksByCourse(Integer courseID) {
-
-        Query q = em.createNamedQuery("LessonResource.findByCourse",LessonResource.class);
+        Query q = em.createNamedQuery("LessonResource.findByCourse", LessonResource.class);
         q.setParameter("id", courseID);
         List<LessonResource> resourceList = q.getResultList();
 
@@ -1026,11 +761,10 @@ public class AuthorUtil {
 
         return lessonResourceList;
 
-
     }
 
-    private List<ActivityDTO> getActivitiesByCourse(Integer courseID) {
-        Query q = em.createNamedQuery("Activity.findByCourseID",Activity.class);
+    private List<ActivityDTO> getActivitiesByCourse(int courseID) {
+        Query q = em.createNamedQuery("Activity.findByCourseID", Activity.class);
         q.setParameter("id", courseID);
         List<Activity> actList = q.getResultList();
         List<ActivityDTO> dto = new ArrayList<>();
@@ -1040,42 +774,34 @@ public class AuthorUtil {
         return dto;
     }
 
-    public ResponseDTO getCoursesByCategory(Integer categoryID)
+    public ResponseDTO getCoursesByCategory(int categoryID)
             throws DataException {
 
         ResponseDTO d = new ResponseDTO();
         try {
-            Query q = em.createNamedQuery("Course.findByCategoryID",Course.class);
+            Query q = em.createNamedQuery("Course.findByCategoryID", Course.class);
             q.setParameter("id", categoryID);
             List<Course> lsList = q.getResultList();
             List<CourseDTO> dtoList = new ArrayList<>();
             for (Course c : lsList) {
                 dtoList.add(new CourseDTO(c));
             }
-            List<LessonDTO> lessonList = getLessonsByCategory(categoryID);
             List<ActivityDTO> actList = getActivitiesByCategory(categoryID);
             List<LessonResourceDTO> linkList = getLinksByCategory(categoryID);
 
             for (CourseDTO course : dtoList) {
-                course.setLessonList(new ArrayList<LessonDTO>());
-                for (LessonDTO less : lessonList) {
-                    less.setActivityList(new ArrayList<ActivityDTO>());
-                    less.setLessonResourceList(new ArrayList<LessonResourceDTO>());
-                    if (less.getCourseID().intValue() == course.getCourseID().intValue()) {
-                        for (LessonResourceDTO lr : linkList) {
-                            if (lr.getLessonID().intValue() == less.getLessonID().intValue()) {
-                                less.getLessonResourceList().add(lr);
-                            }
-                        }
-                        for (ActivityDTO act : actList) {
-                            if (act.getLessonID().intValue() == less.getLessonID().intValue()) {
-                                less.getActivityList().add(act);
-                            }
-                        }
-                        course.getLessonList().add(less);
+                course.setActivityList(new ArrayList<ActivityDTO>());
+                course.setLessonResourceList(new ArrayList<LessonResourceDTO>());
+                for (ActivityDTO act : actList) {
+
+                    if (act.getCourseID() == course.getCourseID()) {
+                        course.getActivityList().add(act);
                     }
-                    //log.log(Level.OFF, "Activities added to {0} : {1}", 
-                       //     new Object[]{less.getLessonName(), less.getActivityList().size()});
+                }
+                for (LessonResourceDTO lr : linkList) {
+                    if (lr.getCourseID() == course.getCourseID()) {
+                        course.getLessonResourceList().add(lr);
+                    }
                 }
             }
 
@@ -1088,18 +814,7 @@ public class AuthorUtil {
         return d;
     }
 
-    public List<LessonDTO> getLessonsByCategory(Integer categoryID) {
-        Query q = em.createNamedQuery("Lesson.findByCategory",Lesson.class);
-        q.setParameter("id", categoryID);
-        List<Lesson> list = q.getResultList();
-        List<LessonDTO> dto = new ArrayList<>();
-        for (Lesson a : list) {
-            dto.add(new LessonDTO(a));
-        }
-        return dto;
-    }
-
-    public List<ActivityDTO> getActivitiesByCategory(Integer categoryID) {
+    public List<ActivityDTO> getActivitiesByCategory(int categoryID) {
         Query q = em.createNamedQuery("Activity.findByCategory", Activity.class);
         q.setParameter("id", categoryID);
         List<Activity> list = q.getResultList();
@@ -1110,8 +825,8 @@ public class AuthorUtil {
         return dto;
     }
 
-    public List<LessonResourceDTO> getLinksByCategory(Integer categoryID) {
-        Query q = em.createNamedQuery("LessonResource.findByCategoryID",LessonResource.class);
+    public List<LessonResourceDTO> getLinksByCategory(int categoryID) {
+        Query q = em.createNamedQuery("LessonResource.findByCategoryID", LessonResource.class);
         q.setParameter("id", categoryID);
         List<LessonResource> list = q.getResultList();
         List<LessonResourceDTO> dto = new ArrayList<>();
@@ -1121,8 +836,8 @@ public class AuthorUtil {
         return dto;
     }
 
-    public ResponseDTO getCategoryList(Integer trainingCompanyID,
-            Integer authorID)
+    public ResponseDTO getCategoryList(int trainingCompanyID,
+            int authorID)
             throws DataException {
 
         ResponseDTO d = new ResponseDTO();
@@ -1136,7 +851,6 @@ public class AuthorUtil {
                 dtoList.add(new CategoryDTO(c));
             }
             List<Course> courseList = getCourses(authorID, em);
-            List<Lesson> lessonList = getLessons(authorID, em);
             List<Activity> ativitycList = getActivity(authorID, em);
             List<LessonResource> resourceList = getResources(authorID, em);
 
@@ -1144,39 +858,30 @@ public class AuthorUtil {
                 //log.log(Level.OFF, "setting up category: {0}", cat.getCategoryName());
                 cat.setCourseList(new ArrayList<CourseDTO>());
                 for (Course course : courseList) {
-                    if (course.getCategory().getCategoryID().intValue()
-                            == cat.getCategoryID().intValue()) {
+                    if (course.getCategory().getCategoryID()
+                            == cat.getCategoryID()) {
                         CourseDTO cDTO = new CourseDTO(course);
-                        cDTO.setLessonList(new ArrayList<LessonDTO>());
-                        for (Lesson lesson : lessonList) {
-                            if (lesson.getCourse().getCourseID().intValue() == course.getCourseID().intValue()) {
-                                LessonDTO lDTO = new LessonDTO(lesson);
-                                lDTO.setActivityList(new ArrayList<ActivityDTO>());
-                                for (Activity act : ativitycList) {
-                                    if (act.getLesson().getLessonID().intValue() == lesson.getLessonID().intValue()) {
-                                        lDTO.getActivityList().add(new ActivityDTO(act));
-                                    }
-                                }
-                                //log.log(Level.OFF, "activities added for {0} : {1}", 
-                                   //     new Object[]{lDTO.getLessonName(), lDTO.getActivityList().size()});
-                                lDTO.setLessonResourceList(new ArrayList<LessonResourceDTO>());
-                                for (LessonResource res : resourceList) {
-                                    if (res.getLesson().getLessonID().intValue() == lesson.getLessonID().intValue()) {
-                                        lDTO.getLessonResourceList().add(new LessonResourceDTO(res));
-                                    }
-                                }
-                                //log.log(Level.OFF, "links added for {0} : {1}", 
-                                 //       new Object[]{lDTO.getLessonName(), lDTO.getLessonResourceList().size()});
-                                cDTO.getLessonList().add(lDTO);
+                        cDTO.setActivityList(new ArrayList<ActivityDTO>());
+                        cDTO.setLessonResourceList(new ArrayList<LessonResourceDTO>());
+                        for (Activity act : ativitycList) {
+                            if (act.getCourse().getCourseID() == course.getCourseID()) {
+
+                                ActivityDTO aa = new ActivityDTO(act);
+
+                                cDTO.getActivityList().add(aa);
+
                             }
-                            
                         }
-                        //log.log(Level.OFF, "lessons for {0} : {1}", new Object[]{cDTO.getCourseName(), cDTO.getLessonList().size()});
+                        for (LessonResource res : resourceList) {
+                            if (res.getCourse().getCourseID() == course.getCourseID()) {
+                                cDTO.getLessonResourceList().add(new LessonResourceDTO(res));
+                            }
+                        }
                         cat.getCourseList().add(cDTO);
                     }
+
                 }
             }
-
 
             d.setCategoryList(dtoList);
             d.setMessage("categories listed " + dtoList.size());
@@ -1187,24 +892,16 @@ public class AuthorUtil {
         return d;
     }
 
-    private List<Lesson> getLessons(Integer authorID, EntityManager em) {
-        Query q = em.createNamedQuery("Lesson.findByAuthor",Lesson.class);
-        q.setParameter("authorID", authorID);
-        List<Lesson> list = q.getResultList();
-        log.log(Level.INFO, "Author lessons : {0}", list.size());
-        return list;
-    }
-
-    private List<Activity> getActivity(Integer authorID, EntityManager em) {
-        Query q = em.createNamedQuery("Activity.findByAuthor",Activity.class);
+    private List<Activity> getActivity(int authorID, EntityManager em) {
+        Query q = em.createNamedQuery("Activity.findByAuthor", Activity.class);
         q.setParameter("authorID", authorID);
         List<Activity> list = q.getResultList();
         log.log(Level.INFO, "Author activities : {0}", list.size());
         return list;
     }
 
-    private List<LessonResource> getResources(Integer authorID, EntityManager em) {
-        Query q = em.createNamedQuery("LessonResource.findByAuthorID",LessonResource.class);
+    private List<LessonResource> getResources(int authorID, EntityManager em) {
+        Query q = em.createNamedQuery("LessonResource.findByAuthorID", LessonResource.class);
         q.setParameter("authorID", authorID);
         List<LessonResource> list = q.getResultList();
         log.log(Level.INFO, "Author links : {0}", list.size());
@@ -1218,8 +915,8 @@ public class AuthorUtil {
      * @param em
      * @return
      */
-    private List<Course> getCourses(Integer authorID, EntityManager em) {
-        Query q = em.createNamedQuery("Course.findByAuthorID",Course.class);
+    private List<Course> getCourses(int authorID, EntityManager em) {
+        Query q = em.createNamedQuery("Course.findByAuthorID", Course.class);
         q.setParameter("authorID", authorID);
         List<Course> list = q.getResultList();
         //log.log(Level.INFO, "Author courses : {0}", list.size());
@@ -1237,9 +934,10 @@ public class AuthorUtil {
      * @throws DataException
      */
     public ResponseDTO addCourse(CourseDTO course,
-            Integer companyID,
-            Integer authorID)
+            int companyID,
+            int authorID)
             throws DataException {
+        log.log(Level.INFO, "### adding course, company: {0} author: {1}", new Object[]{companyID, authorID});
         ResponseDTO d = new ResponseDTO();
 
         try {
@@ -1248,15 +946,14 @@ public class AuthorUtil {
             c.setCourseName(course.getCourseName());
             c.setDescription(course.getDescription());
             c.setDateUpdated(new Date());
-            c.setCategory(DataUtil.getCategoryByID(course.getCategoryID(), em));
-            c.setCompany(DataUtil.getCompanyByID(companyID, em));
+            c.setCategory(em.find(Category.class, course.getCategoryID()));
+            c.setCompany(em.find(Company.class, companyID));
             c.setDateUpdated(new Date());
-            c.setLocalID(course.getLocalID());
 
             em.persist(c);
             if (authorID > 0) {
                 CourseAuthor ca = new CourseAuthor();
-                ca.setAuthor(DataUtil.getAuthorByID(authorID, em));
+                ca.setAuthor(em.find(Author.class, authorID));
                 ca.setCourse(c);
                 ca.setDateUpdated(new Date());
                 em.persist(ca);
@@ -1285,7 +982,7 @@ public class AuthorUtil {
     }
 
     public ResponseDTO updateCourse(CourseDTO course,
-            Integer authorID)
+            int authorID)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
@@ -1322,7 +1019,6 @@ public class AuthorUtil {
                 }
             }
 
-
             Query q = em.createNamedQuery("Course.findByCategoryID", Course.class);
             q.setParameter("id", course.getCategoryID());
             List<Course> list = q.getResultList();
@@ -1334,7 +1030,6 @@ public class AuthorUtil {
             d.setMessage("course added on server");
 
             //log.log(Level.INFO, "### Course added: {0}", course.getCourseName());
-
         } catch (Exception e) {
             log.log(Level.SEVERE, "***ERROR*** Adding course", e);
             throw new DataException(DataUtil.getErrorString(e));
@@ -1344,42 +1039,16 @@ public class AuthorUtil {
         return d;
     }
 
-    public ResponseDTO deleteCourse(Integer courseID,
-            Integer authorID)
+    public ResponseDTO deleteCourse(int courseID,
+            int authorID)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
 
-
-        Integer categoryID;
+        int categoryID;
         try {
 
             Course c = DataUtil.getCourseByID(courseID, em);
             categoryID = c.getCategory().getCategoryID();
-            List<CourseAuthor> caList = c.getCourseAuthorList();
-            for (CourseAuthor ca : caList) {
-                em.remove(ca);
-            }
-
-            List<Lesson> lessonList = c.getLessonList();
-            for (Lesson lesson : lessonList) {
-                List<Activity> actList = lesson.getActivityList();
-
-                for (Activity activity : actList) {
-                    em.remove(activity);
-                }
-
-
-                List<LessonResource> resList = lesson.getLessonResourceList();
-
-                for (LessonResource lessonResource : resList) {
-                    em.remove(lessonResource);
-                }
-
-
-                em.remove(lesson);
-
-            }
-
             em.remove(c);
 
             Query q = em.createNamedQuery("Course.findByCategoryID", Course.class);
@@ -1393,7 +1062,6 @@ public class AuthorUtil {
             d.setMessage(c.getCourseName() + " deleted from server");
 
             //log.log(Level.INFO, "### Course deleted: {0}", c.getCourseName());
-
         } catch (Exception e) {
             log.log(Level.SEVERE, "***ERROR*** deleting course", e);
             throw new DataException(DataUtil.getErrorString(e));
@@ -1404,24 +1072,19 @@ public class AuthorUtil {
     }
 
     public ResponseDTO deleteActivities(List<ActivityDTO> actList,
-            Integer lessonID)
+            int courseID)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
 
-
-        Lesson lesson;
-        int cnt = 0;
         try {
 
-            lesson = DataUtil.getLessonByID(lessonID, em);
             for (ActivityDTO activity : actList) {
                 Activity a = DataUtil.getActivityByID(activity.getActivityID(), em);
                 em.remove(a);
-                cnt++;
             }
 
-            Query q = em.createNamedQuery("Activity.findByLesson",Activity.class);
-            q.setParameter("id", lesson.getLessonID());
+            Query q = em.createNamedQuery("Activity.findByCourseID", Activity.class);
+            q.setParameter("id", courseID);
             List<Activity> lsList = q.getResultList();
             List<ActivityDTO> dtoList = new ArrayList<>();
             for (Activity l : lsList) {
@@ -1437,15 +1100,13 @@ public class AuthorUtil {
         } finally {
         }
 
-
         return d;
     }
 
-    public ResponseDTO deleteObjectives(List<ObjectiveDTO> objectiveList, 
-            Integer courseID)
+    public ResponseDTO deleteObjectives(List<ObjectiveDTO> objectiveList,
+            int courseID)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
-
 
         int cnt = 0;
         try {
@@ -1473,50 +1134,12 @@ public class AuthorUtil {
         } finally {
         }
 
-
         return d;
     }
 
-    public ResponseDTO deleteLessons(List<LessonDTO> lessonList,
-            Integer courseID)
+    public ResponseDTO deleteLessonResources(List<LessonResourceDTO> resourceList, int lessonID)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
-
-
-        int cnt = 0;
-        try {
-
-            for (LessonDTO l : lessonList) {
-                Lesson ls = DataUtil.getLessonByID(l.getLessonID(), em);
-                em.remove(ls);
-                cnt++;
-            }
-
-            Query q = em.createNamedQuery("Lesson.findByCourse", Lesson.class);
-            q.setParameter("id", courseID);
-            List<Lesson> lsList = q.getResultList();
-            List<LessonDTO> dtoList = new ArrayList<>();
-            for (Lesson lesson : lsList) {
-                dtoList.add(new LessonDTO(lesson));
-            }
-            d.setLessonList(dtoList);
-            //log.log(Level.INFO, "Lessons deleted course: {0} - deleted lessons: {1}",
-            //new Object[]{courseID, cnt});
-
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "***ERROR*** del lesson", e);
-            throw new DataException(DataUtil.getErrorString(e));
-        } finally {
-        }
-
-
-        return d;
-    }
-
-    public ResponseDTO deleteLessonResources(List<LessonResourceDTO> resourceList, Integer lessonID)
-            throws DataException {
-        ResponseDTO d = new ResponseDTO();
-
 
         int cnt = 0;
         try {
@@ -1527,7 +1150,7 @@ public class AuthorUtil {
                 cnt++;
             }
 
-            Query q = em.createNamedQuery("LessonResource.findByLessonID",LessonResource.class);
+            Query q = em.createNamedQuery("LessonResource.findByLessonID", LessonResource.class);
             q.setParameter("id", lessonID);
             List<LessonResource> lsList = q.getResultList();
             List<LessonResourceDTO> dtoList = new ArrayList<>();
@@ -1543,7 +1166,6 @@ public class AuthorUtil {
             throw new DataException(DataUtil.getErrorString(e));
         } finally {
         }
-
 
         return d;
     }

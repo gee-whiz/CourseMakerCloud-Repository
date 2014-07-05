@@ -4,7 +4,6 @@ import com.boha.coursemaker.data.Activity;
 import com.boha.coursemaker.data.Course;
 import com.boha.coursemaker.data.CourseTrainee;
 import com.boha.coursemaker.data.CourseTraineeActivity;
-import com.boha.coursemaker.data.Lesson;
 import com.boha.coursemaker.data.TrainingClass;
 import com.boha.coursemaker.data.TrainingClassCourse;
 import com.boha.coursemaker.dto.platform.ResponseDTO;
@@ -19,6 +18,7 @@ import javax.ejb.TransactionManagementType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.RollbackException;
 
 /**
  *
@@ -31,40 +31,44 @@ public class DynamicUtil {
     @PersistenceContext
     EntityManager em;
 
-    public ResponseDTO updateActivityEnrolment(Integer trainingClassID, Integer instructorID,
+    public ResponseDTO updateActivityEnrolment(int trainingClassID, int instructorID,
             AdministratorUtil administratorUtil, InstructorUtil instructorUtil) throws
             DataException {
+        log.log(Level.INFO, "updateActivityEnrolment trainingClassID: {0} isntructorID: {1}", new Object[]{trainingClassID, instructorID});
         long start = System.currentTimeMillis();
         ResponseDTO d = new ResponseDTO();
-
         TrainingClass tc = DataUtil.getTrainingClassByID(trainingClassID, em);
         List<TrainingClassCourse> list = getTrainingClassCourseList(tc, em);
 
         int cnt = 0;
 
         try {
-
             for (TrainingClassCourse tcc : list) {
                 Course c = tcc.getCourse();
                 List<CourseTrainee> ctList = getCourseTraineeList(tcc, em);
                 for (CourseTrainee courseTrainee : ctList) {
-                    for (Lesson lesson : administratorUtil.getCourseLessons(c, em)) {
-                        List<Activity> acList = administratorUtil.getLessonActivities(lesson, em);
-                        for (Activity activity : acList) {
-                            if (!isEnrolled(courseTrainee, activity, em)) {
-                                CourseTraineeActivity cta = new CourseTraineeActivity();
-                                cta.setCourseTrainee(courseTrainee);
-                                cta.setActivity(activity);
-                                cta.setLesson(lesson);
-                                cta.setDateUpdated(new Date());
+                    for (Activity activ : administratorUtil.getCourseActivities(c)) {
+                        if (!isEnrolled(courseTrainee, activ, em)) {
+                            CourseTraineeActivity cta = new CourseTraineeActivity();
+                            cta.setCourseTrainee(courseTrainee);
+                            cta.setActivity(activ);
+                            cta.setDateUpdated(new Date());
+                            try {
                                 em.persist(cta);
                                 cnt++;
-                                log.log(Level.INFO, "Enrolled courseTraineeID {0} lesson - {1} \nactivity - {2}",
+                                log.log(Level.INFO, "Enrolled courseTraineeID {0} \nactivity - {2}",
                                         new Object[]{cta.getCourseTrainee().getCourseTraineeID(),
-                                            lesson.getLessonName(), activity.getActivityName()});
+                                            activ.getActivityName()});
+                            } catch (RollbackException e) {
+                                em.merge(cta);
+                                cnt++;
+                                log.log(Level.INFO, "** Updated Enrolled courseTraineeID {0} \nactivity - {2}",
+                                        new Object[]{cta.getCourseTrainee().getCourseTraineeID(),
+                                            activ.getActivityName()});
                             }
                         }
                     }
+
                 }
             }
 
@@ -101,13 +105,6 @@ public class DynamicUtil {
         Query q = em.createNamedQuery("CourseTrainee.findByClassCourse", CourseTrainee.class);
         q.setParameter("id", tc.getTrainingClassCourseID());
         List<CourseTrainee> list = q.getResultList();
-        return list;
-    }
-
-    private List<Activity> getLessonActivityList(Lesson tc, EntityManager em) {
-        Query q = em.createNamedQuery("Activity.findByLesson", Activity.class);
-        q.setParameter("id", tc.getLessonID());
-        List<Activity> list = q.getResultList();
         return list;
     }
 

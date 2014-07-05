@@ -12,7 +12,7 @@ import com.boha.coursemaker.data.ErrorStore;
  */
 public class ErrorStoreDTO {
 
-    private Integer errorStoreID;
+    private int errorStoreID;
     private int statusCode;
     private String message, origin;
     private long dateOccured;
@@ -25,11 +25,11 @@ public class ErrorStoreDTO {
         dateOccured = a.getDateOccured().getTime();
     }
 
-    public Integer getErrorStoreID() {
+    public int getErrorStoreID() {
         return errorStoreID;
     }
 
-    public void setErrorStoreID(Integer errorStoreID) {
+    public void setErrorStoreID(int errorStoreID) {
         this.errorStoreID = errorStoreID;
     }
 

@@ -17,7 +17,6 @@ import com.boha.coursemaker.data.Equipment;
 import com.boha.coursemaker.data.HelpType;
 import com.boha.coursemaker.data.Instructor;
 import com.boha.coursemaker.data.Inventory;
-import com.boha.coursemaker.data.Lesson;
 import com.boha.coursemaker.data.LessonResource;
 import com.boha.coursemaker.data.Province;
 import com.boha.coursemaker.data.Rating;
@@ -119,7 +118,7 @@ public class DataUtil {
             List<CityDTO> cList = getCityListByCountryCode(countryCode, em);
             for (ProvinceDTO p : dto) {
                 for (CityDTO city : cList) {
-                    if (city.getProvinceID().intValue() == p.getProvinceID().intValue()) {
+                    if (city.getProvinceID() == p.getProvinceID()) {
                         p.getCityList().add(city);
                     }
                 }
@@ -247,7 +246,7 @@ public class DataUtil {
             EntityTransaction tran = em.getTransaction();
 
             Administrator superUser = getAdministratorByID(administrationID, em);
-            if (superUser.getSuperUserFlag() == null || superUser.getSuperUserFlag() == 0) {
+            if (superUser.getSuperUserFlag() == 0) {
                 throw new DataException("A non-superUser admin tried to register another admin. This is a No-No!");
             }
             Company tc = getCompanyByID(companyID, em);
@@ -293,12 +292,7 @@ public class DataUtil {
         return c;
     }
 
-    public static Lesson getLessonByID(Integer id, EntityManager em) {
-
-        Lesson c = em.find(Lesson.class, id);
-        return c;
-    }
-
+   
     public static Objective getObjectiveByID(Integer id, EntityManager em) {
 
         Objective c = em.find(Objective.class, id);

@@ -16,10 +16,10 @@ import java.util.List;
  */
 public class TeamDTO {
 
-    private Integer teamID;
+    private int teamID;
     private String teamName, trainingClassName;
     private long dateRegistered;
-    private Integer trainingClassID;
+    private int trainingClassID;
     private List<TeamMemberDTO> teamMemberList;
     
     public TeamDTO(Team a) {
@@ -36,7 +36,7 @@ public class TeamDTO {
         }
     }
 
-    public Integer getTeamID() {
+    public int getTeamID() {
         return teamID;
     }
 
@@ -48,7 +48,7 @@ public class TeamDTO {
         this.trainingClassName = trainingClassName;
     }
 
-    public void setTeamID(Integer teamID) {
+    public void setTeamID(int teamID) {
         this.teamID = teamID;
     }
 
@@ -68,11 +68,11 @@ public class TeamDTO {
         this.dateRegistered = dateRegistered;
     }
 
-    public Integer getTrainingClassID() {
+    public int getTrainingClassID() {
         return trainingClassID;
     }
 
-    public void setTrainingClassID(Integer trainingClassID) {
+    public void setTrainingClassID(int trainingClassID) {
         this.trainingClassID = trainingClassID;
     }
 

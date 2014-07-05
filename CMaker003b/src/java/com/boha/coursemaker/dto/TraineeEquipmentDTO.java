@@ -13,13 +13,13 @@ import com.boha.coursemaker.data.TraineeEquipment;
  * @author aubreyM
  */
 public class TraineeEquipmentDTO {
-    private Integer traineeEquipmentID;
+    private int traineeEquipmentID;
     
     private long dateRegistered;
     
     private long dateReturned;
     
-    private Integer conditionFlag;
+    private int conditionFlag;
         
     private InventoryDTO inventory;
     
@@ -37,11 +37,11 @@ public class TraineeEquipmentDTO {
         
     }
 
-    public Integer getTraineeEquipmentID() {
+    public int getTraineeEquipmentID() {
         return traineeEquipmentID;
     }
 
-    public void setTraineeEquipmentID(Integer traineeEquipmentID) {
+    public void setTraineeEquipmentID(int traineeEquipmentID) {
         this.traineeEquipmentID = traineeEquipmentID;
     }
 
@@ -61,7 +61,7 @@ public class TraineeEquipmentDTO {
         this.dateReturned = dateReturned;
     }
 
-    public Integer getConditionFlag() {
+    public int getConditionFlag() {
         return conditionFlag;
     }
 
@@ -73,7 +73,7 @@ public class TraineeEquipmentDTO {
         this.inventory = inventory;
     }
 
-    public void setConditionFlag(Integer conditionFlag) {
+    public void setConditionFlag(int conditionFlag) {
         this.conditionFlag = conditionFlag;
     }
 

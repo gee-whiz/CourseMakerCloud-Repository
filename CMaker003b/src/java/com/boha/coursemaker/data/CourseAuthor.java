@@ -1,7 +1,9 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package com.boha.coursemaker.data;
 
 import java.io.Serializable;
@@ -38,7 +40,7 @@ public class CourseAuthor implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "courseAuthorID")
-    private Integer courseAuthorID;
+    private int courseAuthorID;
     @Basic(optional = false)
     @NotNull
     @Column(name = "dateUpdated")
@@ -54,20 +56,20 @@ public class CourseAuthor implements Serializable {
     public CourseAuthor() {
     }
 
-    public CourseAuthor(Integer courseAuthorID) {
+    public CourseAuthor(int courseAuthorID) {
         this.courseAuthorID = courseAuthorID;
     }
 
-    public CourseAuthor(Integer courseAuthorID, Date dateUpdated) {
+    public CourseAuthor(int courseAuthorID, Date dateUpdated) {
         this.courseAuthorID = courseAuthorID;
         this.dateUpdated = dateUpdated;
     }
 
-    public Integer getCourseAuthorID() {
+    public int getCourseAuthorID() {
         return courseAuthorID;
     }
 
-    public void setCourseAuthorID(Integer courseAuthorID) {
+    public void setCourseAuthorID(int courseAuthorID) {
         this.courseAuthorID = courseAuthorID;
     }
 
@@ -96,26 +98,6 @@ public class CourseAuthor implements Serializable {
     }
 
    
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (courseAuthorID != null ? courseAuthorID.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof CourseAuthor)) {
-            return false;
-        }
-        CourseAuthor other = (CourseAuthor) object;
-        if ((this.courseAuthorID == null && other.courseAuthorID != null) || (this.courseAuthorID != null && !this.courseAuthorID.equals(other.courseAuthorID))) {
-            return false;
-        }
-        return true;
-    }
 
     @Override
     public String toString() {

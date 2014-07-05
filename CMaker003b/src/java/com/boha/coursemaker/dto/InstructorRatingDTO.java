@@ -13,17 +13,17 @@ import com.boha.coursemaker.data.InstructorRating;
  * @author aubreyM
  */
 public class InstructorRatingDTO {
-   private Integer instructorRatingID;
+   private int instructorRatingID;
     private long dateUpdated;
     
     private String comment, activityName;
-    private Integer completedFlag;
+    private int completedFlag;
    
     private RatingDTO rating;
     
-    private Integer courseTraineeActivityID;
+    private int courseTraineeActivityID;
     
-    private Integer instructorID; 
+    private int instructorID; 
     
     public InstructorRatingDTO(InstructorRating a) {
         instructorRatingID = a.getInstructorRatingID();
@@ -38,11 +38,11 @@ public class InstructorRatingDTO {
         instructorID = a.getInstructor().getInstructorID();
     }
 
-    public Integer getInstructorRatingID() {
+    public int getInstructorRatingID() {
         return instructorRatingID;
     }
 
-    public void setInstructorRatingID(Integer instructorRatingID) {
+    public void setInstructorRatingID(int instructorRatingID) {
         this.instructorRatingID = instructorRatingID;
     }
 
@@ -70,11 +70,11 @@ public class InstructorRatingDTO {
         this.activityName = activityName;
     }
 
-    public Integer getCompletedFlag() {
+    public int getCompletedFlag() {
         return completedFlag;
     }
 
-    public void setCompletedFlag(Integer completedFlag) {
+    public void setCompletedFlag(int completedFlag) {
         this.completedFlag = completedFlag;
     }
 
@@ -86,19 +86,19 @@ public class InstructorRatingDTO {
         this.rating = rating;
     }
 
-    public Integer getCourseTraineeActivityID() {
+    public int getCourseTraineeActivityID() {
         return courseTraineeActivityID;
     }
 
-    public void setCourseTraineeActivityID(Integer courseTraineeActivityID) {
+    public void setCourseTraineeActivityID(int courseTraineeActivityID) {
         this.courseTraineeActivityID = courseTraineeActivityID;
     }
 
-    public Integer getInstructorID() {
+    public int getInstructorID() {
         return instructorID;
     }
 
-    public void setInstructorID(Integer instructorID) {
+    public void setInstructorID(int instructorID) {
         this.instructorID = instructorID;
     }
     

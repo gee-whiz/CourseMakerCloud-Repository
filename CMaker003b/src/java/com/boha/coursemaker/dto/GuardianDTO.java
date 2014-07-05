@@ -4,15 +4,11 @@
  */
 package com.boha.coursemaker.dto;
 
-import com.boha.coursemaker.dto.platform.ResponseDTO;
 import com.boha.coursemaker.data.Guardian;
-import com.boha.coursemaker.data.GuardianTrainee;
-import com.boha.coursemaker.data.Trainee;
 import com.boha.coursemaker.util.EMUtil;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 
 /**
  *
@@ -20,7 +16,7 @@ import javax.persistence.Query;
  */
 public class GuardianDTO {
 
-    private Integer guardianID;
+    private int guardianID;
     private String name;
     private String lastName;
     private String email;
@@ -41,11 +37,11 @@ public class GuardianDTO {
     }
     
 
-    public Integer getGuardianID() {
+    public int getGuardianID() {
         return guardianID;
     }
 
-    public void setGuardianID(Integer guardianID) {
+    public void setGuardianID(int guardianID) {
         this.guardianID = guardianID;
     }
 

@@ -12,19 +12,19 @@ import com.boha.coursemaker.data.GcmDevice;
  */
 public class GcmDeviceDTO {
 
-    private Integer gcmDeviceID;
+    private int gcmDeviceID;
     private String registrationID;
     private String manufacturer;
     private String model;
     private String product;
-    private Integer messageCount;
+    private int messageCount;
     private long dateRegistered;
     private String serialNumber;
-    private Integer reportUserID;
-    private Integer traineeID;
-    private Integer instructorID;
-    private Integer authorID;
-    private Integer administratorID;
+    private int reportUserID;
+    private int traineeID;
+    private int instructorID;
+    private int authorID;
+    private int administratorID;
     
     public GcmDeviceDTO(GcmDevice a) {
         gcmDeviceID = a.getGcmDeviceID();
@@ -52,11 +52,11 @@ public class GcmDeviceDTO {
         }
     }
 
-    public Integer getGcmDeviceID() {
+    public int getGcmDeviceID() {
         return gcmDeviceID;
     }
 
-    public void setGcmDeviceID(Integer gcmDeviceID) {
+    public void setGcmDeviceID(int gcmDeviceID) {
         this.gcmDeviceID = gcmDeviceID;
     }
 
@@ -92,11 +92,11 @@ public class GcmDeviceDTO {
         this.product = product;
     }
 
-    public Integer getMessageCount() {
+    public int getMessageCount() {
         return messageCount;
     }
 
-    public void setMessageCount(Integer messageCount) {
+    public void setMessageCount(int messageCount) {
         this.messageCount = messageCount;
     }
 
@@ -116,43 +116,43 @@ public class GcmDeviceDTO {
         this.serialNumber = serialNumber;
     }
 
-    public Integer getReportUserID() {
+    public int getReportUserID() {
         return reportUserID;
     }
 
-    public void setReportUserID(Integer reportUserID) {
+    public void setReportUserID(int reportUserID) {
         this.reportUserID = reportUserID;
     }
 
-    public Integer getTraineeID() {
+    public int getTraineeID() {
         return traineeID;
     }
 
-    public void setTraineeID(Integer traineeID) {
+    public void setTraineeID(int traineeID) {
         this.traineeID = traineeID;
     }
 
-    public Integer getInstructorID() {
+    public int getInstructorID() {
         return instructorID;
     }
 
-    public void setInstructorID(Integer instructorID) {
+    public void setInstructorID(int instructorID) {
         this.instructorID = instructorID;
     }
 
-    public Integer getAuthorID() {
+    public int getAuthorID() {
         return authorID;
     }
 
-    public void setAuthorID(Integer authorID) {
+    public void setAuthorID(int authorID) {
         this.authorID = authorID;
     }
 
-    public Integer getAdministratorID() {
+    public int getAdministratorID() {
         return administratorID;
     }
 
-    public void setAdministratorID(Integer administratorID) {
+    public void setAdministratorID(int administratorID) {
         this.administratorID = administratorID;
     }
 }

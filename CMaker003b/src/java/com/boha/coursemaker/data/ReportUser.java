@@ -1,7 +1,9 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package com.boha.coursemaker.data;
 
 import java.io.Serializable;
@@ -13,8 +15,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -39,20 +40,12 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "ReportUser.findByDateRegistered", query = "SELECT r FROM ReportUser r WHERE r.dateRegistered = :dateRegistered"),
     @NamedQuery(name = "ReportUser.findByPassword", query = "SELECT r FROM ReportUser r WHERE r.password = :password")})
 public class ReportUser implements Serializable {
-    @OneToMany(mappedBy = "reportUser")
-    private List<GcmDevice> gcmDeviceList;
-    @Size(max = 100)
-    @Column(name = "GCMRegistrationID")
-    private String gCMRegistrationID;
-    @JoinColumn(name = "companyID", referencedColumnName = "companyID")
-    @ManyToOne
-    private Company company;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "reportUserID")
-    private Integer reportUserID;
+    private int reportUserID;
     @Size(max = 45)
     @Column(name = "firstName")
     private String firstName;
@@ -72,19 +65,25 @@ public class ReportUser implements Serializable {
     @Size(max = 45)
     @Column(name = "password")
     private String password;
+    @Lob
+    @Size(max = 65535)
+    @Column(name = "GCMRegistrationID")
+    private String gCMRegistrationID;
+    @OneToMany(mappedBy = "reportUser")
+    private List<GcmDevice> gcmDeviceList;
 
     public ReportUser() {
     }
 
-    public ReportUser(Integer reportUserID) {
+    public ReportUser(int reportUserID) {
         this.reportUserID = reportUserID;
     }
 
-    public Integer getReportUserID() {
+    public int getReportUserID() {
         return reportUserID;
     }
 
-    public void setReportUserID(Integer reportUserID) {
+    public void setReportUserID(int reportUserID) {
         this.reportUserID = reportUserID;
     }
 
@@ -136,31 +135,6 @@ public class ReportUser implements Serializable {
         this.password = password;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (reportUserID != null ? reportUserID.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof ReportUser)) {
-            return false;
-        }
-        ReportUser other = (ReportUser) object;
-        if ((this.reportUserID == null && other.reportUserID != null) || (this.reportUserID != null && !this.reportUserID.equals(other.reportUserID))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "com.boha.coursemaker.data.ReportUser[ reportUserID=" + reportUserID + " ]";
-    }
-
     public String getGCMRegistrationID() {
         return gCMRegistrationID;
     }
@@ -169,20 +143,18 @@ public class ReportUser implements Serializable {
         this.gCMRegistrationID = gCMRegistrationID;
     }
 
-    public Company getCompany() {
-        return company;
-    }
-
-    public void setCompany(Company company) {
-        this.company = company;
-    }
-
     public List<GcmDevice> getGcmDeviceList() {
         return gcmDeviceList;
     }
 
     public void setGcmDeviceList(List<GcmDevice> gcmDeviceList) {
         this.gcmDeviceList = gcmDeviceList;
+    }
+
+
+    @Override
+    public String toString() {
+        return "com.boha.coursemaker.data.ReportUser[ reportUserID=" + reportUserID + " ]";
     }
     
 }

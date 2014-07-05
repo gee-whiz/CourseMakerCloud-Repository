@@ -10,7 +10,6 @@ import com.boha.coursemaker.data.City;
 import com.boha.coursemaker.data.CourseTrainee;
 import com.boha.coursemaker.data.CourseTraineeActivity;
 import com.boha.coursemaker.data.HelpRequest;
-import com.boha.coursemaker.data.Lesson;
 import com.boha.coursemaker.data.Trainee;
 import com.boha.coursemaker.data.TraineeRating;
 import com.boha.coursemaker.data.TrainingClassCourse;
@@ -33,7 +32,6 @@ import com.boha.coursemaker.dto.GcmDeviceDTO;
 import com.boha.coursemaker.dto.InstructorClassDTO;
 import com.boha.coursemaker.dto.InstructorDTO;
 import com.boha.coursemaker.dto.InstructorRatingDTO;
-import com.boha.coursemaker.dto.LessonDTO;
 import com.boha.coursemaker.dto.TraineeRatingDTO;
 import com.boha.coursemaker.dto.TrainingClassCourseDTO;
 import com.boha.coursemaker.dto.TrainingClassDTO;
@@ -95,17 +93,16 @@ public class TraineeUtil {
             throw new DataException("Failed to update trainee\n" + DataUtil.getErrorString(e));
         }
 
-
         return d;
     }
 
     public ResponseDTO getTraineeRatingsByActivity(
-            Integer courseTraineeActivityID)
+            int courseTraineeActivityID)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
 
-            Query q = em.createNamedQuery("TraineeRating.findByActivity",TraineeRating.class);
+            Query q = em.createNamedQuery("TraineeRating.findByActivity", TraineeRating.class);
             q.setParameter("id", courseTraineeActivityID);
             List<TraineeRating> list = q.getResultList();
             List<TraineeRatingDTO> dto = new ArrayList<>();
@@ -121,12 +118,12 @@ public class TraineeUtil {
     }
 
     public ResponseDTO getTraineeRatings(
-            Integer traineeID)
+            int traineeID)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
 
-            Query q = em.createNamedQuery("TraineeRating.findByTrainee",TraineeRating.class);
+            Query q = em.createNamedQuery("TraineeRating.findByTrainee", TraineeRating.class);
             q.setParameter("id", traineeID);
             List<TraineeRating> list = q.getResultList();
             List<TraineeRatingDTO> dto = new ArrayList<>();
@@ -142,14 +139,14 @@ public class TraineeUtil {
     }
 
     public ResponseDTO getInstructorsByClass(
-            Integer trainingClassID)
+            int trainingClassID)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
         TrainingClass tc = DataUtil.getTrainingClassByID(trainingClassID, em);
         Company co = tc.getCompany();
         try {
 
-            Query q = em.createNamedQuery("Instructor.findByClass",Instructor.class);
+            Query q = em.createNamedQuery("Instructor.findByClass", Instructor.class);
             q.setParameter("id", trainingClassID);
             List<Instructor> list = q.getResultList();
             List<InstructorDTO> dto = new ArrayList<>();
@@ -160,7 +157,7 @@ public class TraineeUtil {
             for (InstructorDTO ins : dto) {
                 ins.setInstructorClassList(new ArrayList<InstructorClassDTO>());
                 for (InstructorClassDTO ic : icList) {
-                    if (ic.getInstructorID().intValue() == ins.getInstructorID().intValue()) {
+                    if (ic.getInstructorID() == ins.getInstructorID()) {
                         ins.getInstructorClassList().add(ic);
                     }
                 }
@@ -174,12 +171,12 @@ public class TraineeUtil {
     }
 
     private List<InstructorClassDTO> getInstructorClassesByCompany(
-            Integer companyID)
+            int companyID)
             throws DataException {
         List<InstructorClassDTO> dtoList = null;
         try {
 
-            Query q = em.createNamedQuery("InstructorClass.findByCompany",InstructorClass.class);
+            Query q = em.createNamedQuery("InstructorClass.findByCompany", InstructorClass.class);
             q.setParameter("id", companyID);
             List<InstructorClass> list = q.getResultList();
             dtoList = new ArrayList<>();
@@ -200,8 +197,6 @@ public class TraineeUtil {
         ResponseDTO d = new ResponseDTO();
         try {
 
-
-
             HelpRequest a = new HelpRequest();
             a.setHelpType(DataUtil.getHelpTypeByID(help.getHelpType().
                     getHelpTypeID(), em));
@@ -220,9 +215,9 @@ public class TraineeUtil {
         return d;
     }
 
-    private List<TraineeDTO> getClassmates(Integer trainingClassID) {
+    private List<TraineeDTO> getClassmates(int trainingClassID) {
 
-        Query q = em.createNamedQuery("Trainee.findByClass",Trainee.class);
+        Query q = em.createNamedQuery("Trainee.findByClass", Trainee.class);
         q.setParameter("id", trainingClassID);
         List<Trainee> list = q.getResultList();
         List<TraineeDTO> dto = new ArrayList<>();
@@ -232,49 +227,32 @@ public class TraineeUtil {
         return dto;
     }
 
-    public ResponseDTO getTraineeData(Integer trainingClassID,
-            Integer traineeID, Integer companyID) throws DataException {
+    public ResponseDTO getTraineeData(int trainingClassID,
+            int traineeID, int companyID) throws DataException {
+        log.log(Level.OFF, "getTraineeData trainingClassID: {0} traineeID: {1} companyID: {2}", new Object[]{trainingClassID, traineeID, companyID});
         ResponseDTO d = new ResponseDTO();
         try {
-
-            d.setRatingList(DataUtil.getRatingList(companyID, em).getRatingList());
-            d.setHelpTypeList(DataUtil.getHelpTypeList(companyID, em).getHelpTypeList());
-
-            Query q = em.createNamedQuery("TrainingClassCourse.findByTrainingClassID",TrainingClassCourse.class);
+            List<CourseTraineeActivityDTO> ctaList = getActivitiesByTrainee(traineeID);
+            log.log(Level.OFF, "activities: {0}", ctaList.size());
+            Query q = em.createNamedQuery("TrainingClassCourse.findByTrainingClassID", TrainingClassCourse.class);
             q.setParameter("id", trainingClassID);
             List<TrainingClassCourse> xlist = q.getResultList();
             List<TrainingClassCourseDTO> list = new ArrayList<>();
             for (TrainingClassCourse tcc : xlist) {
                 TrainingClassCourseDTO z = new TrainingClassCourseDTO(tcc);
+                z.setCourseTraineeActivityList(new ArrayList());
+                 for (CourseTraineeActivityDTO cta : ctaList) {
+                     if (cta.getCourseID() == tcc.getCourse().getCourseID()) {
+                         z.getCourseTraineeActivityList().add(cta);
+                     }
+                 }
                 list.add(z);
             }
-            d.setTraineeList(getClassmates(trainingClassID));
-            //put activities into lesson buckets
-            List<CourseTraineeActivityDTO> ctaList = getActivitiesByTrainee(em, traineeID);
-            List<Bucket> bucketList = new ArrayList<>();
-
-            for (TrainingClassCourseDTO tcc : list) {
-                List<LessonDTO> ldList = getLessonsByCourse(em, tcc.getCourseID());
-                bucketList.add(new Bucket(tcc.getCourseID(), ldList));
-            }
-
-            for (Bucket bucket : bucketList) {
-                for (LessonDTO lesson : bucket.lessonList) {
-                    for (CourseTraineeActivityDTO cta : ctaList) {
-                        if (cta.getLessonID().intValue() == lesson.getLessonID().intValue()) {
-                            lesson.getCourseTraineeActivityList().add(cta);
-                        }
-                    }
-
-                }
-            }
-            //move bucket list to list
-            int index = 0;
-            for (Bucket bucket : bucketList) {
-                list.get(index).setLessonList(bucket.lessonList);
-                index++;
-            }
             d.setTrainingClassCourseList(list);
+            d.setTraineeList(getClassmates(trainingClassID));
+            d.setRatingList(DataUtil.getRatingList(companyID, em).getRatingList());
+            d.setHelpTypeList(DataUtil.getHelpTypeList(companyID, em).getHelpTypeList());
+            log.log(Level.WARNING, "Trainee data retrieved, number courses: {0} classMates: {1}", new Object[]{d.getTrainingClassCourseList().size(), d.getTraineeList().size()});
         } catch (Exception e) {
             log.log(Level.WARNING, "Failed to get Trainee data", e);
             throw new DataException(DataUtil.getErrorString(e));
@@ -283,31 +261,20 @@ public class TraineeUtil {
         return d;
     }
 
-    private int getCourseIndex(Integer courseID, List<Bucket> list) {
-        int index = 0;
-        for (Bucket bucket : list) {
-            if (bucket.courseID.intValue() == courseID) {
-                return index;
-            }
-            index++;
-        }
+    
 
-        return -1;
-    }
-
-    public class Bucket {
-
-        public Bucket(Integer courseID, List<LessonDTO> list) {
-            this.courseID = courseID;
-            for (LessonDTO lessonDTO : list) {
-                lessonDTO.setCourseTraineeActivityList(new ArrayList<CourseTraineeActivityDTO>());
-            }
-            lessonList = list;
-        }
-        Integer courseID;
-        List<LessonDTO> lessonList;
-    }
-
+//    public class Bucket {
+//
+//        public Bucket(int courseID, List<LessonDTO> list) {
+//            this.courseID = courseID;
+//            for (LessonDTO lessonDTO : list) {
+//                lessonDTO.setCourseTraineeActivityList(new ArrayList<CourseTraineeActivityDTO>());
+//            }
+//            lessonList = list;
+//        }
+//        int courseID;
+//        List<LessonDTO> lessonList;
+//    }
     /**
      * Register new trainee, typically from their mobile app
      *
@@ -319,17 +286,14 @@ public class TraineeUtil {
      * @throws DataException
      */
     public ResponseDTO registerTrainee(TraineeDTO trainee,
-            Integer trainingClassID, Integer cityID)
+            int trainingClassID, int cityID)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
 
-
-
             TrainingClass tc = DataUtil.getTrainingClassByID(trainingClassID, em);
             Company c = DataUtil.getCompanyByID(tc.getCompany().getCompanyID(), em);
             City city = DataUtil.getCityByID(cityID, em);
-
 
             Trainee tr = new Trainee();
             tr.setFirstName(trainee.getFirstName());
@@ -342,10 +306,11 @@ public class TraineeUtil {
             tr.setTrainingClass(tc);
             tr.setPassword(DataUtil.createPassword());
             tr.setDateRegistered(new Date());
+            tr.setActiveFlag(0);
             em.persist(tr);
 
             //
-            Query q = em.createNamedQuery("Trainee.findByCompany",Trainee.class);
+            Query q = em.createNamedQuery("Trainee.findByCompany", Trainee.class);
             q.setParameter("id", c.getCompanyID());
             List<Trainee> list = q.getResultList();
             d.setTraineeList(new ArrayList<TraineeDTO>());
@@ -355,12 +320,12 @@ public class TraineeUtil {
             d.setCompany(new CompanyDTO(c));
             try {
                 for (TrainingClassCourseDTO tcc : getCoursesByClass(trainingClassID)) {
-                    enrollTraineeInCourse(em, tr.getTraineeID(), tcc.getTrainingClassCourseID());
+                    enrollTraineeInCourse(tr.getTraineeID(), tcc.getTrainingClassCourseID());
                 }
             } catch (Exception e) {
                 //swallow exception - instructor can update later
             }
-            log.log(Level.INFO, "Trainee registered {0} {1} class: {2}", 
+            log.log(Level.INFO, "Trainee registered {0} {1} class: {2}",
                     new Object[]{tr.getFirstName(), tr.getLastName(), tc.getTrainingClassName()});
             d.setMessage("Trainee registered. OK!");
 
@@ -382,7 +347,7 @@ public class TraineeUtil {
         ResponseDTO d = new ResponseDTO();
         try {
 
-            Query q = em.createNamedQuery("Trainee.login",Trainee.class);
+            Query q = em.createNamedQuery("Trainee.login", Trainee.class);
             q.setParameter("email", email);
             q.setParameter("pswd", password);
             q.setMaxResults(1);
@@ -396,7 +361,7 @@ public class TraineeUtil {
                 }
                 d.setTrainingClass(new TrainingClassDTO(trainee.getTrainingClass()));
                 d.setTrainingClassCourseList(getCoursesByClass(trainee.getTrainingClass().getTrainingClassID()));
-                d.setCourseTraineeActivityList(getActivitiesByTrainee(em, trainee.getTraineeID()));
+                d.setCourseTraineeActivityList(getActivitiesByTrainee(trainee.getTraineeID()));
 
                 d.setRatingList(DataUtil.getRatingList(trainee.getCompany().getCompanyID(), em).getRatingList());
                 d.setHelpTypeList(DataUtil.getHelpTypeList(trainee.getCompany().getCompanyID(), em).getHelpTypeList());
@@ -411,7 +376,6 @@ public class TraineeUtil {
                         gcm.setDateRegistered(new Date());
                         gcm.setTrainee(trainee);
                         em.persist(gcm);
-
 
                         CloudMessagingRegistrar.sendRegistration(gcm.getRegistrationID(), platformUtil);
                     }
@@ -438,34 +402,20 @@ public class TraineeUtil {
         return d;
     }
 
-    public List<LessonDTO> getLessonsByCourse(EntityManager em,
-            Integer courseID) {
-        Query q = em.createNamedQuery("Lesson.findByCourse",Lesson.class);
-        q.setParameter("id", courseID);
-        List<Lesson> list = q.getResultList();
-        List<LessonDTO> dto = new ArrayList<>();
-        for (Lesson cta : list) {
-            dto.add(new LessonDTO(cta));
-        }
-        return dto;
-    }
-
-   
-
-    private List<CourseTraineeActivityDTO> getActivitiesByTrainee(EntityManager em, Integer traineeID) {
-        Query q = em.createNamedQuery("CourseTraineeActivity.findByTrainee",CourseTraineeActivity.class);
+    private List<CourseTraineeActivityDTO> getActivitiesByTrainee(int traineeID) {
+        Query q = em.createNamedQuery("CourseTraineeActivity.findByTrainee", CourseTraineeActivity.class);
         q.setParameter("id", traineeID);
         List<CourseTraineeActivity> list = q.getResultList();
         List<CourseTraineeActivityDTO> dto = new ArrayList<>();
-        
-        Query q2 = em.createNamedQuery("TraineeRating.findByTrainee",TraineeRating.class);
+
+        Query q2 = em.createNamedQuery("TraineeRating.findByTrainee", TraineeRating.class);
         q2.setParameter("id", traineeID);
         List<TraineeRating> trList = q2.getResultList();
-        
-        Query q3 = em.createNamedQuery("InstructorRating.findByTrainee",InstructorRating.class);
+
+        Query q3 = em.createNamedQuery("InstructorRating.findByTrainee", InstructorRating.class);
         q3.setParameter("id", traineeID);
         List<InstructorRating> irList = q3.getResultList();
-        
+
         for (CourseTraineeActivity cta : list) {
             dto.add(new CourseTraineeActivityDTO(cta));
         }
@@ -473,19 +423,23 @@ public class TraineeUtil {
             cta.setTraineeRatingList(new ArrayList<TraineeRatingDTO>());
             cta.setInstructorRatingList(new ArrayList<InstructorRatingDTO>());
             for (TraineeRating tr : trList) {
-                cta.getTraineeRatingList().add(new TraineeRatingDTO(tr));
+                if (tr.getCourseTraineeActivity().getCourseTraineeActivityID() == cta.getCourseTraineeActivityID()) {
+                    cta.getTraineeRatingList().add(new TraineeRatingDTO(tr));
+                }
             }
             for (InstructorRating ir : irList) {
-               cta.getInstructorRatingList().add(new InstructorRatingDTO(ir));
+                if (ir.getCourseTraineeActivity().getCourseTraineeActivityID() == cta.getCourseTraineeActivityID()) {
+                    cta.getInstructorRatingList().add(new InstructorRatingDTO(ir));
+                }
             }
         }
         return dto;
     }
 
-    public List<TrainingClassCourseDTO> getCoursesByClass(Integer trainingClassID) {
+    public List<TrainingClassCourseDTO> getCoursesByClass(int trainingClassID) {
         List<TrainingClassCourseDTO> list = new ArrayList<>();
 
-        Query q = em.createNamedQuery("TrainingClassCourse.findByTrainingClassID",TrainingClassCourse.class);
+        Query q = em.createNamedQuery("TrainingClassCourse.findByTrainingClassID", TrainingClassCourse.class);
         q.setParameter("id", trainingClassID);
         List<TrainingClassCourse> xlist = q.getResultList();
         for (TrainingClassCourse tcc : xlist) {
@@ -503,14 +457,12 @@ public class TraineeUtil {
      * @return
      * @throws DataException
      */
-    private void enrollTraineeInCourse(EntityManager em, Integer traineeID,
-            Integer trainingClassCourseID) throws DataException {
+    private void enrollTraineeInCourse(int traineeID,
+            int trainingClassCourseID) throws DataException {
         try {
-
 
             Trainee tc = DataUtil.getTraineeByID(traineeID, em);
             TrainingClassCourse tcc = DataUtil.getTrainingClassCourseByID(trainingClassCourseID, em);
-
             CourseTrainee a = new CourseTrainee();
             a.setDateEnrolled(new Date());
             a.setTrainee(tc);
@@ -522,21 +474,17 @@ public class TraineeUtil {
             Course c = tcc.getCourse();
 
             int cnt = 0;
-            for (Lesson l : c.getLessonList()) {
-                for (Activity act : l.getActivityList()) {
-                    CourseTraineeActivity cta = new CourseTraineeActivity();
-                    cta.setActivity(act);
-                    cta.setLesson(act.getLesson());
-                    cta.setCourseTrainee(a);
-                    cta.setDateUpdated(new Date());
-                    em.persist(cta);
-                    cnt++;
-
-                }
+            for (Activity act : c.getActivityList()) {
+                CourseTraineeActivity cta = new CourseTraineeActivity();
+                cta.setActivity(act);
+                cta.setCourseTrainee(a);
+                cta.setDateUpdated(new Date());
+                em.persist(cta);
+                cnt++;
 
             }
-
-
+            log.log(Level.INFO, "Trainee enrolled in course: {0} : {1} {2} activities: {3}", 
+                    new Object[]{tcc.getCourse().getCourseName(), tc.getFirstName(), tc.getLastName(), cnt});
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to enroll Trainee in Course", e);
             throw new DataException("Failed to enroll trainee in coures\n" + DataUtil.getErrorString(e));
@@ -552,12 +500,10 @@ public class TraineeUtil {
      * @return
      * @throws DataException
      */
-    public ResponseDTO traineeCourseEvaluation(Integer courseTraineeID,
-            Integer ratingID, String comment) throws DataException {
+    public ResponseDTO traineeCourseEvaluation(int courseTraineeID,
+            int ratingID, String comment) throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
-
-
 
             CourseTrainee tc = DataUtil.getCourseTraineeByID(courseTraineeID, em);
 
@@ -574,11 +520,9 @@ public class TraineeUtil {
     }
 
     public ResponseDTO addTraineeActivity(
-            Integer activityID, CourseTraineeDTO ct) throws DataException {
+            int activityID, CourseTraineeDTO ct) throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
-
-
 
             CourseTrainee courseTrainee = DataUtil.getCourseTraineeByID(ct.getCourseTraineeID(), em);
             Activity activity = DataUtil.getActivityByID(activityID, em);
@@ -613,11 +557,10 @@ public class TraineeUtil {
      * @throws DataException
      */
     public ResponseDTO traineeActivityEvaluation(
-            CourseTraineeActivityDTO cta, Integer traineeID) throws DataException {
+            CourseTraineeActivityDTO cta, int traineeID) throws DataException {
 
         ResponseDTO d = new ResponseDTO();
         try {
-
 
             CourseTraineeActivity tc = DataUtil.getCourseTraineeActivityByID(
                     cta.getCourseTraineeActivityID(), em);
@@ -629,7 +572,7 @@ public class TraineeUtil {
             tc.setRating(rating);
             tc.setDateUpdated(new Date());
             tc.setCompletedFlag(cta.getCompletedFlag());
-            if (cta.getCompletedFlag() != null && cta.getCompletedFlag() > 0) {
+            if (cta.getCompletedFlag() > 0) {
                 tc.setCompletionDate(new Date());
             }
             em.merge(tc);
@@ -644,9 +587,7 @@ public class TraineeUtil {
                 tr.setDateUpdated(new Date());
                 tr.setTrainee(DataUtil.getTraineeByID(traineeID, em));
 
-
                 em.persist(tr);
-
 
                 d.setTraineeRating(new TraineeRatingDTO(tr));
                 List<TraineeRatingDTO> trList = getTraineeRatingsByActivity(cta.getCourseTraineeActivityID()).getTraineeRatingList();
@@ -676,12 +617,11 @@ public class TraineeUtil {
      * @throws DataException
      */
     public ResponseDTO traineeActivityPeerEvaluation(
-            Integer traineeID,
-            Integer courseTraineeActivityID,
-            Integer ratingID, String comment) throws DataException {
+            int traineeID,
+            int courseTraineeActivityID,
+            int ratingID, String comment) throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
-
 
             Trainee trainee = DataUtil.getTraineeByID(traineeID, em);
             CourseTraineeActivity tc = DataUtil.getCourseTraineeActivityByID(courseTraineeActivityID, em);

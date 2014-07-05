@@ -23,7 +23,6 @@ import com.boha.coursemaker.data.HelpType;
 import com.boha.coursemaker.data.Instructor;
 import com.boha.coursemaker.data.InstructorClass;
 import com.boha.coursemaker.data.Inventory;
-import com.boha.coursemaker.data.Lesson;
 import com.boha.coursemaker.data.Province;
 import com.boha.coursemaker.data.Rating;
 import com.boha.coursemaker.data.Trainee;
@@ -123,7 +122,6 @@ public class AdministratorUtil {
             throws DataException {
         ResponseDTO d = new ResponseDTO();
 
-
         try {
             HelpType t = DataUtil.getHelpTypeByID(helpType.getHelpTypeID(), em);
             t.setHelpTypeName(helpType.getHelpTypeName());
@@ -146,7 +144,6 @@ public class AdministratorUtil {
     public ResponseDTO addRating(RatingDTO rating)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
-
 
         try {
             Rating t = new Rating();
@@ -172,7 +169,6 @@ public class AdministratorUtil {
             throws DataException {
         ResponseDTO d = new ResponseDTO();
 
-
         try {
             Rating t = DataUtil.getRatingByID(rating.getRatingID(), em);
             t.setRatingName(rating.getRatingName());
@@ -196,7 +192,6 @@ public class AdministratorUtil {
             throws DataException {
         ResponseDTO d = new ResponseDTO();
 
-
         try {
             Rating t = DataUtil.getRatingByID(rating.getRatingID(), em);
 
@@ -213,10 +208,9 @@ public class AdministratorUtil {
     }
 
     public ResponseDTO updateTrainee(TraineeDTO trainee,
-            Integer trainingClassID, Integer cityID)
+            int trainingClassID, int cityID)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
-
 
         try {
             Trainee t = DataUtil.getTraineeByID(trainee.getTraineeID(), em);
@@ -241,10 +235,9 @@ public class AdministratorUtil {
         return d;
     }
 
-    public ResponseDTO deleteClass(Integer trainingClassID)
+    public ResponseDTO deleteClass(int trainingClassID)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
-
 
         try {
 
@@ -260,7 +253,6 @@ public class AdministratorUtil {
                 }
             }
 
-
             d.setMessage("Class flagged/deleted");
 
         } catch (Exception e) {
@@ -275,14 +267,12 @@ public class AdministratorUtil {
             throws DataException {
         ResponseDTO d = new ResponseDTO();
 
-
         try {
             TrainingClass t = DataUtil.getTrainingClassByID(trainingClass.getTrainingClassID(), em);
             t.setTrainingClassName(trainingClass.getTrainingClassName());
             t.setStartDate(new Date(trainingClass.getStartDate()));
             t.setEndDate(new Date(trainingClass.getEndDate()));
             t.setIsOpen(trainingClass.getIsOpen());
-
 
             em.merge(t);
 
@@ -301,7 +291,6 @@ public class AdministratorUtil {
         ResponseDTO d = new ResponseDTO();
 
         try {
-
 
             Instructor t = DataUtil.getInstructorByID(instructor.getInstructorID(), em);
             t.setFirstName(instructor.getFirstName());
@@ -329,7 +318,6 @@ public class AdministratorUtil {
 
         try {
 
-
             Author t = DataUtil.getAuthorByID(author.getAuthorID(), em);
             t.setFirstName(author.getFirstName());
             t.setLastName(author.getLastName());
@@ -356,7 +344,6 @@ public class AdministratorUtil {
 
         try {
 
-
             Administrator t = DataUtil.getAdministratorByID(admin.getAdministratorID(), em);
             t.setFirstName(admin.getFirstName());
             t.setLastName(admin.getLastName());
@@ -378,28 +365,25 @@ public class AdministratorUtil {
     }
 
     public ResponseDTO addTrainee(TraineeDTO trainee,
-            Integer trainingClassID, Integer cityID, TraineeUtil traineeUtil)
+            int trainingClassID, int cityID, TraineeUtil traineeUtil)
             throws DataException {
 
         ResponseDTO r = traineeUtil.registerTrainee(trainee, trainingClassID, cityID);
-
         return r;
     }
 
     public ResponseDTO addAuthor(AuthorDTO author,
-            Integer companyID, AuthorUtil authorUtil)
+            int companyID, AuthorUtil authorUtil)
             throws DataException {
         ResponseDTO r = authorUtil.registerAuthor(author, companyID);
-
         return r;
     }
 
     public ResponseDTO addInstructor(InstructorDTO instructor,
-            Integer trainingClassID, Integer cityID, InstructorUtil instructorUtil)
+            int trainingClassID, int cityID, InstructorUtil instructorUtil)
             throws DataException {
 
         ResponseDTO r = instructorUtil.registerInstructor(instructor);
-
         return r;
     }
 
@@ -421,12 +405,10 @@ public class AdministratorUtil {
      * @return
      * @throws DataException
      */
-    public ResponseDTO addClassCourses(Integer trainingClassID,
+    public ResponseDTO addClassCourses(int trainingClassID,
             List<CourseDTO> companyCourses,
             List<Integer> flags) throws DataException {
         ResponseDTO d = new ResponseDTO();
-
-
 
         try {
             TrainingClass tc = DataUtil.getTrainingClassByID(trainingClassID, em);
@@ -451,9 +433,8 @@ public class AdministratorUtil {
 
             }
 
-
             if (cnt > 0) {
-                Query q = em.createNamedQuery("TrainingClassCourse.findByTrainingClassID",TrainingClassCourse.class);
+                Query q = em.createNamedQuery("TrainingClassCourse.findByTrainingClassID", TrainingClassCourse.class);
                 q.setParameter("id", trainingClassID);
                 List<TrainingClassCourse> list = q.getResultList();
                 List<TrainingClassCourseDTO> gList = new ArrayList<>();
@@ -479,9 +460,8 @@ public class AdministratorUtil {
     }
 
     public ResponseDTO assignInstructorClass(
-            Integer instructorID, Integer trainingClassID) throws DataException {
+            int instructorID, int trainingClassID) throws DataException {
         ResponseDTO resp = new ResponseDTO();
-
 
         try {
             Instructor instructor = DataUtil.getInstructorByID(instructorID, em);
@@ -497,7 +477,7 @@ public class AdministratorUtil {
             //log.log(Level.INFO, "Class assigned to instructor {0} {1} - {2}",
             //      new Object[]{instructor.getFirstName(), instructor.getLastName(),
             //trainingClass.getTrainingClassName()});
-            Query q = em.createNamedQuery("InstructorClass.findByInstructorID",InstructorClass.class);
+            Query q = em.createNamedQuery("InstructorClass.findByInstructorID", InstructorClass.class);
             q.setParameter("id", instructor.getInstructorID());
             List<InstructorClass> list = q.getResultList();
             List<InstructorClassDTO> dto = new ArrayList<>();
@@ -516,22 +496,17 @@ public class AdministratorUtil {
         return resp;
     }
 
-    public ResponseDTO assignClassCoursesToTrainees(Integer trainingClassID)
+    public ResponseDTO assignClassCoursesToTrainees(int trainingClassID)
             throws DataException {
         ResponseDTO resp = new ResponseDTO();
-
-
         Query q = em.createNamedQuery("TrainingClassCourse.findByTrainingClassID", TrainingClassCourse.class);
-        
         q.setParameter("id", trainingClassID);
         List<TrainingClassCourse> list = q.getResultList();
-        //log.log(Level.INFO, "TrainingClassCourses found: {0}", list.size());
-        int cntTr = 0, cntAc = 0;
+        log.log(Level.INFO, "TrainingClassCourses found: {0}", list.size());
         List<Trainee> traineeList = getTraineesByClass(trainingClassID);
-
         try {
             for (TrainingClassCourse tcc : list) {
-                List<Lesson> lessonList = getCourseLessons(tcc.getCourse(), em);
+                List<Activity> activityList = getCourseActivities(tcc.getCourse());
                 for (Trainee trainee : traineeList) {
                     if (!checkIfEnrolmentExists(trainee, tcc)) {
                         CourseTrainee ct = new CourseTrainee();
@@ -541,23 +516,15 @@ public class AdministratorUtil {
 
                         em.persist(ct);
 
-                        //log.log(Level.INFO, "Added CourseTrainee - {0} {1} - {2}", new Object[]{trainee.getFirstName(), trainee.getLastName(), tcc.getCourse().getCourseName()});
-                        //write activities ...
-
-                        for (Lesson lesson : lessonList) {
-                            List<Activity> aList = getLessonActivities(lesson, em);
-                            for (Activity activity : aList) {
-                                if (!checkIfCTAExists(ct, activity)) {
-                                    CourseTraineeActivity cta = new CourseTraineeActivity();
-                                    cta.setCourseTrainee(ct);
-                                    cta.setActivity(activity);
-                                    cta.setLesson(lesson);
-                                    cta.setDateUpdated(new Date());
-                                    em.persist(cta);
-                                    //log.log(Level.INFO, "Enrolled activity {0} {1} - {2}", new Object[]{trainee.getFirstName(), trainee.getLastName(), activity.getActivityName()});
-                                }
-
+                        for (Activity activity : activityList) {
+                            if (!checkIfCTAExists(ct, activity)) {
+                                CourseTraineeActivity cta = new CourseTraineeActivity();
+                                cta.setCourseTrainee(ct);
+                                cta.setActivity(activity);
+                                cta.setDateUpdated(new Date());
+                                em.persist(cta);
                             }
+
                         }
 
                     }
@@ -573,26 +540,19 @@ public class AdministratorUtil {
         return resp;
     }
 
-   
-
-    public List<Lesson> getCourseLessons(Course c, EntityManager em) {
-        Query q = em.createNamedQuery("Lesson.findByCourse", Lesson.class);
+    public List<Activity> getCourseActivities(Course c) {
+        Query q = em.createNamedQuery("Activity.findByCourseID", Activity.class);
         q.setParameter("id", c.getCourseID());
-        List<Lesson> list = q.getResultList();
-        return list;
-    }
-
-    public List<Activity> getLessonActivities(Lesson c, EntityManager em) {
-        Query q = em.createNamedQuery("Activity.findByLesson", Activity.class);
-        q.setParameter("id", c.getLessonID());
         List<Activity> list = q.getResultList();
         return list;
     }
 
+    
+
     private boolean checkIfCTAExists(CourseTrainee ct, Activity a) {
         boolean found = false;
 
-        Query q = em.createNamedQuery("CourseTraineeActivity.checkIfExists",CourseTraineeActivity.class);
+        Query q = em.createNamedQuery("CourseTraineeActivity.checkIfExists", CourseTraineeActivity.class);
         q.setParameter("ct", ct);
         q.setParameter("ac", a);
         List<CourseTrainee> list = q.getResultList();
@@ -615,8 +575,7 @@ public class AdministratorUtil {
         return found;
     }
 
-
-    private boolean checkIfExists(Integer trainingClassID, Integer courseID) {
+    private boolean checkIfExists(int trainingClassID, int courseID) {
         boolean found = false;
 
         Query q = em.createNamedQuery("TrainingClassCourse.checkIfExists", TrainingClassCourse.class);
@@ -638,11 +597,9 @@ public class AdministratorUtil {
      * @return
      * @throws DataException
      */
-    public ResponseDTO enrollClassTrainees(Integer administratorID, Integer trainingClassID,
+    public ResponseDTO enrollClassTrainees(int administratorID, int trainingClassID,
             List<TraineeDTO> traineeList) throws DataException {
         ResponseDTO d = new ResponseDTO();
-
-
 
         try {
             TrainingClass tc = DataUtil.getTrainingClassByID(trainingClassID, em);
@@ -656,7 +613,6 @@ public class AdministratorUtil {
                 em.merge(t);
 
             }
-
 
             //log.log(Level.INFO, "Trainees registered into class: {0}", tc.getTrainingClassName());
         } catch (RollbackException e) {
@@ -673,12 +629,11 @@ public class AdministratorUtil {
     }
 
     public ResponseDTO getHelpRequestListByPeriod(
-            Integer trainingClassID, long startDate, long endDate) throws DataException {
+            int trainingClassID, long startDate, long endDate) throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
 
-
-            Query q = em.createNamedQuery("HelpRequest.findByClassPeriod",HelpRequest.class);
+            Query q = em.createNamedQuery("HelpRequest.findByClassPeriod", HelpRequest.class);
             q.setParameter("id", trainingClassID);
             q.setParameter("start", new Date(startDate));
             q.setParameter("end", new Date(endDate));
@@ -695,12 +650,11 @@ public class AdministratorUtil {
         return d;
     }
 
-    public ResponseDTO getInventoryListByClass(Integer trainingClassID) throws DataException {
+    public ResponseDTO getInventoryListByClass(int trainingClassID) throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
 
-
-            Query q = em.createNamedQuery("TraineeEquipment.findByTrainingClassID",TraineeEquipment.class);
+            Query q = em.createNamedQuery("TraineeEquipment.findByTrainingClassID", TraineeEquipment.class);
             q.setParameter("id", trainingClassID);
             List<TraineeEquipment> list = q.getResultList();
             List<TraineeEquipmentDTO> dto = new ArrayList<>();
@@ -715,10 +669,9 @@ public class AdministratorUtil {
         return d;
     }
 
-    public ResponseDTO getInventoryList(Integer trainingCompanyID) throws DataException {
+    public ResponseDTO getInventoryList(int trainingCompanyID) throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
-
 
             Query q = em.createNamedQuery("Inventory.findByCompany");
             q.setParameter("id", trainingCompanyID);
@@ -736,11 +689,11 @@ public class AdministratorUtil {
         return d;
     }
 
-    public ResponseDTO getEquipmentList(Integer trainingCompanyID) throws DataException {
+    public ResponseDTO getEquipmentList(int trainingCompanyID) throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
 
-            Query q = em.createNamedQuery("Equipment.findByCompanyID",Equipment.class);
+            Query q = em.createNamedQuery("Equipment.findByCompanyID", Equipment.class);
             q.setParameter("id", trainingCompanyID);
             List<Equipment> list = q.getResultList();
             List<EquipmentDTO> dto = new ArrayList<>();
@@ -749,7 +702,7 @@ public class AdministratorUtil {
                 EquipmentDTO eDTO = new EquipmentDTO(equipment);
                 eDTO.setInventoryList(new ArrayList<InventoryDTO>());
                 for (InventoryDTO i : r.getInventoryList()) {
-                    if (i.getEquipment().getEquipmentID().intValue() == equipment.getEquipmentID().intValue()) {
+                    if (i.getEquipment().getEquipmentID() == equipment.getEquipmentID()) {
                         eDTO.getInventoryList().add(i);
                     }
                 }
@@ -773,8 +726,8 @@ public class AdministratorUtil {
      * @return
      * @throws DataException
      */
-    public ResponseDTO registerClass(Integer companyID,
-            TrainingClassDTO tClass, Integer administratorID) throws DataException {
+    public ResponseDTO registerClass(int companyID,
+            TrainingClassDTO tClass, int administratorID) throws DataException {
         ResponseDTO d = new ResponseDTO();
 
         try {
@@ -784,7 +737,7 @@ public class AdministratorUtil {
             TrainingClass cls = new TrainingClass();
             cls.setCompany(tc);
             cls.setAdministrator(adm);
-            cls.setIsOpen(Integer.valueOf(1));
+            cls.setIsOpen(1);
             cls.setTrainingClassName(tClass.getTrainingClassName());
             if (tClass.getStartDate() > 0) {
                 cls.setStartDate(new Date(tClass.getStartDate()));
@@ -810,10 +763,8 @@ public class AdministratorUtil {
     }
 
     public ResponseDTO updateInventory(InventoryDTO inventory,
-            Integer administratorID) throws DataException {
+            int administratorID) throws DataException {
         ResponseDTO d = new ResponseDTO();
-
-
 
         try {
             Administrator adm = DataUtil.getAdministratorByID(administratorID, em);
@@ -843,10 +794,8 @@ public class AdministratorUtil {
     }
 
     public ResponseDTO addEquipment(EquipmentDTO equipment,
-            Integer companyID, Integer administratorID) throws DataException {
+            int companyID, int administratorID) throws DataException {
         ResponseDTO d = new ResponseDTO();
-
-
 
         try {
             Company tc = DataUtil.getCompanyByID(companyID, em);
@@ -870,13 +819,12 @@ public class AdministratorUtil {
                 EquipmentDTO eDTO = new EquipmentDTO(e);
                 eDTO.setInventoryList(new ArrayList<InventoryDTO>());
                 for (Inventory inv : inlist) {
-                    if (inv.getEquipment().getEquipmentID().intValue() == e.getEquipmentID().intValue()) {
+                    if (inv.getEquipment().getEquipmentID() == e.getEquipmentID()) {
                         eDTO.getInventoryList().add(new InventoryDTO(inv));
                     }
                 }
                 d.getEquipmentList().add(eDTO);
             }
-
 
         } catch (RollbackException e) {
             log.log(Level.SEVERE, "Some kind of rollback ...duplicate found");
@@ -892,10 +840,8 @@ public class AdministratorUtil {
     }
 
     public ResponseDTO updateEquipment(EquipmentDTO equipment,
-            Integer administratorID) throws DataException {
+            int administratorID) throws DataException {
         ResponseDTO d = new ResponseDTO();
-
-
 
         try {
             Administrator adm = DataUtil.getAdministratorByID(administratorID, em);
@@ -921,10 +867,8 @@ public class AdministratorUtil {
     }
 
     public ResponseDTO addInventory(InventoryDTO inventory,
-            Integer administratorID) throws DataException {
+            int administratorID) throws DataException {
         ResponseDTO d = new ResponseDTO();
-
-
 
         try {
             Equipment tc = DataUtil.getEquipmentByID(inventory.getEquipment().getEquipmentID(), em);
@@ -963,9 +907,8 @@ public class AdministratorUtil {
     }
 
     public ResponseDTO addTraineeEquipment(
-            Integer traineeID, Integer inventoryID, Integer administratorID) throws DataException {
+            int traineeID, int inventoryID, int administratorID) throws DataException {
         ResponseDTO d = new ResponseDTO();
-
 
         try {
             Trainee tc = DataUtil.getTraineeByID(traineeID, em);
@@ -993,10 +936,10 @@ public class AdministratorUtil {
         }
         return d;
     }
-    
+
     public ResponseDTO updateTraineeEquipment(
-            Integer traineeEquipmentID, Integer conditionFlag,
-            boolean isReturn, Integer administratorID) throws DataException {
+            int traineeEquipmentID, int conditionFlag,
+            boolean isReturn, int administratorID) throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
             TraineeEquipment te = DataUtil.getTraineeEquipmentByID(
@@ -1004,9 +947,8 @@ public class AdministratorUtil {
             Administrator adm = DataUtil.getAdministratorByID(administratorID, em);
 
             te.setAdministrator(adm);
-            if (conditionFlag != null) {
-                te.setConditionFlag(conditionFlag);
-            }
+            te.setConditionFlag(conditionFlag);
+            
             if (isReturn) {
                 te.setDateReturned(new Date());
             }
@@ -1031,7 +973,7 @@ public class AdministratorUtil {
     }
 
     public ResponseDTO getEquipmentInventory(
-            Integer equipmentID) throws DataException {
+            int equipmentID) throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
 
@@ -1053,15 +995,13 @@ public class AdministratorUtil {
         return d;
     }
 
-    
-
     public ResponseDTO getTraineeEquipmentListByEquipmentID(
-            Integer equipmentID) throws DataException {
+            int equipmentID) throws DataException {
         ResponseDTO d = new ResponseDTO();
 
         try {
 
-            Query q = em.createNamedQuery("TraineeEquipment.findByEquipmentID",TraineeEquipment.class);
+            Query q = em.createNamedQuery("TraineeEquipment.findByEquipmentID", TraineeEquipment.class);
             q.setParameter("id", equipmentID);
             List<TraineeEquipment> list = q.getResultList();
             List<TraineeEquipmentDTO> dtoList = new ArrayList<>();
@@ -1081,12 +1021,12 @@ public class AdministratorUtil {
     }
 
     public ResponseDTO getTraineeEquipmentListByInventory(
-            Integer inventoryID) throws DataException {
+            int inventoryID) throws DataException {
         ResponseDTO d = new ResponseDTO();
 
         try {
 
-            Query q = em.createNamedQuery("TraineeEquipment.findByInventoryID",TraineeEquipment.class);
+            Query q = em.createNamedQuery("TraineeEquipment.findByInventoryID", TraineeEquipment.class);
             q.setParameter("id", inventoryID);
             List<TraineeEquipment> list = q.getResultList();
             List<TraineeEquipmentDTO> dtoList = new ArrayList<>();
@@ -1106,12 +1046,12 @@ public class AdministratorUtil {
     }
 
     public ResponseDTO getTraineeEquipmentListByClass(
-            Integer trainingClassID) throws DataException {
+            int trainingClassID) throws DataException {
         ResponseDTO d = new ResponseDTO();
 
         try {
 
-            Query q = em.createNamedQuery("TraineeEquipment.findByTrainingClassID",TraineeEquipment.class);
+            Query q = em.createNamedQuery("TraineeEquipment.findByTrainingClassID", TraineeEquipment.class);
             q.setParameter("id", trainingClassID);
             List<TraineeEquipment> list = q.getResultList();
             List<TraineeEquipmentDTO> dtoList = new ArrayList<>();
@@ -1138,12 +1078,12 @@ public class AdministratorUtil {
      * @throws DataException
      */
     public ResponseDTO getClassTraineeList(
-            Integer trainingClassID) throws DataException {
+            int trainingClassID) throws DataException {
         ResponseDTO d = new ResponseDTO();
 
         try {
 
-            Query q = em.createNamedQuery("Trainee.findByClass",Trainee.class);
+            Query q = em.createNamedQuery("Trainee.findByClass", Trainee.class);
             q.setParameter("id", trainingClassID);
             List<Trainee> list = q.getResultList();
             List<TraineeDTO> dtoList = new ArrayList<>();
@@ -1170,12 +1110,12 @@ public class AdministratorUtil {
      * @throws DataException
      */
     public ResponseDTO getClassCourseList(
-            Integer trainingClassID) throws DataException {
+            int trainingClassID) throws DataException {
         ResponseDTO d = new ResponseDTO();
 
         try {
 
-            Query q = em.createNamedQuery("TrainingClassCourse.findByTrainingClassID",TrainingClassCourse.class);
+            Query q = em.createNamedQuery("TrainingClassCourse.findByTrainingClassID", TrainingClassCourse.class);
             q.setParameter("id", trainingClassID);
             List<TrainingClassCourse> list = q.getResultList();
             List<TrainingClassCourseDTO> dtoList = new ArrayList<>();
@@ -1196,10 +1136,10 @@ public class AdministratorUtil {
     }
 
     public ResponseDTO getInstructorList(
-            Integer companyID) throws DataException {
+            int companyID) throws DataException {
         ResponseDTO d = new ResponseDTO();
-        try {            
-            Query q = em.createNamedQuery("Instructor.findByCompanyID",Instructor.class);
+        try {
+            Query q = em.createNamedQuery("Instructor.findByCompanyID", Instructor.class);
             q.setParameter("id", companyID);
             List<Instructor> list = q.getResultList();
             List<InstructorDTO> dtoList = new ArrayList<>();
@@ -1226,7 +1166,7 @@ public class AdministratorUtil {
      * @throws DataException
      */
     public ResponseDTO getCourseTraineeActivityList(
-            Integer trainingClassCourseID) throws DataException {
+            int trainingClassCourseID) throws DataException {
         ResponseDTO d = new ResponseDTO();
 
         try {
@@ -1277,7 +1217,6 @@ public class AdministratorUtil {
                 tc.setCity(city);
             }
 
-
             em.persist(tc);
 
             log.log(Level.INFO, "Company added ... Yay!");
@@ -1298,7 +1237,6 @@ public class AdministratorUtil {
             em.persist(administrator);
 
             //log.log(Level.INFO, "Super Admin added {0} {1}", new Object[]{admin.getFirstName(), admin.getLastName()});
-
             //add basic ratings
             d.setRatingList(addBasicRating(tc, em));
             d.setHelpTypeList(addBasicHelpType(tc, em));
@@ -1382,27 +1320,27 @@ public class AdministratorUtil {
 
             Rating r1 = new Rating();
             r1.setRatingName("Excellent");
-            r1.setRatingNumber(Integer.valueOf(100));
+            r1.setRatingNumber(100);
             r1.setCompany(co);
             //
             Rating r2 = new Rating();
             r2.setRatingName("Very Good");
-            r2.setRatingNumber(Integer.valueOf(80));
+            r2.setRatingNumber(80);
             r2.setCompany(co);
             //
             Rating r3 = new Rating();
             r3.setRatingName("Good");
-            r3.setRatingNumber(Integer.valueOf(60));
+            r3.setRatingNumber(60);
             r3.setCompany(co);
             //
             Rating r4 = new Rating();
             r4.setRatingName("Fair");
-            r4.setRatingNumber(Integer.valueOf(40));
+            r4.setRatingNumber(40);
             r4.setCompany(co);
             //
             Rating r5 = new Rating();
             r5.setRatingName("Poor");
-            r5.setRatingNumber(Integer.valueOf(20));
+            r5.setRatingNumber(20);
             r5.setCompany(co);
             //
 
@@ -1507,13 +1445,13 @@ public class AdministratorUtil {
         return dtoList;
     }
 
-    public Company getCompanyByID(Integer id) {
+    public Company getCompanyByID(int id) {
 
         Company c = em.find(Company.class, id);
         return c;
     }
 
-    private List<TrainingClass> getTrainingClasses(Integer companyID) {
+    private List<TrainingClass> getTrainingClasses(int companyID) {
 
         Query q = em.createNamedQuery("TrainingClass.findByCompanyID");
         q.setParameter("id", companyID);
@@ -1521,7 +1459,7 @@ public class AdministratorUtil {
         return list;
     }
 
-    private List<Equipment> getEquipment(Integer companyID) {
+    private List<Equipment> getEquipment(int companyID) {
 
         Query q = em.createNamedQuery("Equipment.findByCompanyID");
         q.setParameter("id", companyID);
@@ -1529,15 +1467,15 @@ public class AdministratorUtil {
         return list;
     }
 
-    private List<Instructor> getInstructors(Integer companyID) {
+    private List<Instructor> getInstructors(int companyID) {
 
-        Query q = em.createNamedQuery("Instructor.findByCompanyID",Instructor.class);
+        Query q = em.createNamedQuery("Instructor.findByCompanyID", Instructor.class);
         q.setParameter("id", companyID);
         List<Instructor> list = q.getResultList();
         return list;
     }
 
-    private List<Administrator> getAdmins(Integer companyID) {
+    private List<Administrator> getAdmins(int companyID) {
 
         Query q = em.createNamedQuery("Administrator.findByCompanyID");
         q.setParameter("id", companyID);
@@ -1545,7 +1483,7 @@ public class AdministratorUtil {
         return list;
     }
 
-    private List<Trainee> getTrainees(Integer companyID) {
+    private List<Trainee> getTrainees(int companyID) {
 
         Query q = em.createNamedQuery("Trainee.findByCompany", Trainee.class);
         q.setParameter("id", companyID);
@@ -1553,7 +1491,7 @@ public class AdministratorUtil {
         return list;
     }
 
-    private List<TrainingClassCourse> getTrainingClassCoursesByCompany(Integer companyID) {
+    private List<TrainingClassCourse> getTrainingClassCoursesByCompany(int companyID) {
 
         Query q = em.createNamedQuery("TrainingClassCourse.findByCompanyID", TrainingClassCourse.class);
         q.setParameter("id", companyID);
@@ -1561,7 +1499,7 @@ public class AdministratorUtil {
         return tcList;
     }
 
-    private List<Trainee> getTraineesByClass(Integer trainingClassID) {
+    private List<Trainee> getTraineesByClass(int trainingClassID) {
 
         Query q = em.createNamedQuery("Trainee.findByClass", Trainee.class);
         q.setParameter("id", trainingClassID);
@@ -1569,7 +1507,7 @@ public class AdministratorUtil {
         return list;
     }
 
-    private List<Author> getAuthors(Integer companyID) {
+    private List<Author> getAuthors(int companyID) {
         Query q = em.createNamedQuery("Author.findByCompany", Author.class);
         q.setParameter("id", companyID);
         List<Author> list = q.getResultList();
@@ -1587,20 +1525,20 @@ public class AdministratorUtil {
 
     private List<InstructorClass> getInstructorClasses(Company c) {
 
-        Query q = em.createNamedQuery("InstructorClass.findByCompany",InstructorClass.class);
+        Query q = em.createNamedQuery("InstructorClass.findByCompany", InstructorClass.class);
         q.setParameter("id", c.getCompanyID());
         List<InstructorClass> list = q.getResultList();
         return list;
     }
 
-    private List<CourseAuthor> getCourseAuthorList(Integer companyID) {
+    private List<CourseAuthor> getCourseAuthorList(int companyID) {
         Query q = em.createNamedQuery("CourseAuthor.findByCompany", CourseAuthor.class);
         q.setParameter("id", companyID);
         List<CourseAuthor> list = q.getResultList();
         return list;
     }
 
-    public ResponseDTO getCompanyData(Integer companyID)
+    public ResponseDTO getCompanyData(int companyID)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
         long start = System.currentTimeMillis();
@@ -1635,26 +1573,32 @@ public class AdministratorUtil {
                 List<CityDTO> cList = DataUtil.getCityListByCountryCode(co.getCity().getProvince().getCountry().getCountryCode(), em);
                 for (ProvinceDTO p : d.getProvinceList()) {
                     for (CityDTO city : cList) {
-                        if (city.getProvinceID().intValue() == p.getProvinceID().intValue()) {
+                        if (city.getProvinceID() == p.getProvinceID()) {
                             p.getCityList().add(city);
                         }
                     }
                 }
                 List<Trainee> trList = getTrainees(companyID);
+                log.log(Level.OFF, "TraineeList for company: {0}", trList.size());
                 List<TrainingClassCourse> tcc = getTrainingClassCoursesByCompany(companyID);
 
                 d.setTrainingClassList(new ArrayList<TrainingClassDTO>());
                 for (TrainingClass tc : getTrainingClasses(companyID)) {
+                    log.log(Level.OFF, "TrainingClass: {0} trainees: {1}", new Object[]{tc.getTrainingClassName(), tc.getTraineeList().size()});
                     TrainingClassDTO tcDTO = new TrainingClassDTO(tc);
                     tcDTO.setTraineeList(new ArrayList<TraineeDTO>());
                     tcDTO.setTrainingClassCourseList(new ArrayList<TrainingClassCourseDTO>());
                     for (Trainee trainee : trList) {
-                        if (trainee.getTrainingClass().getTrainingClassID().intValue() == tc.getTrainingClassID().intValue()) {
+                        if (trainee.getTraineeID() > 150) {
+                            log.log(Level.OFF, "#### {0} trainingClassID: {1} compare to: {2}", new Object[]{trainee.getFirstName(), trainee.getTrainingClass().getTrainingClassID(), tc.getTrainingClassID()});
+                        }
+                        if (trainee.getTrainingClass().getTrainingClassID() == tc.getTrainingClassID()) {
                             tcDTO.getTraineeList().add(new TraineeDTO(trainee));
+                            log.log(Level.INFO, "Trainee added to list: {0} {1}", new Object[]{trainee.getFirstName(), trainee.getLastName()});
                         }
                     }
                     for (TrainingClassCourse x : tcc) {
-                        if (x.getTrainingClass().getTrainingClassID().intValue() == tc.getTrainingClassID().intValue()) {
+                        if (x.getTrainingClass().getTrainingClassID() == tc.getTrainingClassID()) {
                             tcDTO.getTrainingClassCourseList().add(new TrainingClassCourseDTO(x));
                         }
                     }
@@ -1668,7 +1612,7 @@ public class AdministratorUtil {
                     EquipmentDTO edto = new EquipmentDTO(e);
                     edto.setInventoryList(new ArrayList<InventoryDTO>());
                     for (InventoryDTO inv : invList) {
-                        if (inv.getEquipment().getEquipmentID().intValue() == e.getEquipmentID().intValue()) {
+                        if (inv.getEquipment().getEquipmentID() == e.getEquipmentID()) {
                             edto.getInventoryList().add(inv);
                         }
                     }
@@ -1682,7 +1626,7 @@ public class AdministratorUtil {
                     InstructorDTO iDTO = new InstructorDTO(i);
                     iDTO.setInstructorClassList(new ArrayList<InstructorClassDTO>());
                     for (InstructorClass ic : icList) {
-                        if (ic.getInstructor().getInstructorID().intValue() == i.getInstructorID().intValue()) {
+                        if (ic.getInstructor().getInstructorID() == i.getInstructorID()) {
                             iDTO.getInstructorClassList().add(new InstructorClassDTO(ic));
                         }
                     }
@@ -1713,7 +1657,7 @@ public class AdministratorUtil {
         return d;
     }
 
-    public ResponseDTO updatePassword(Integer id, int type) throws DataException {
+    public ResponseDTO updatePassword(int id, int type) throws DataException {
         ResponseDTO d = new ResponseDTO();
         d.setCredential(DataUtil.getPassword(id, type, em));
         d.setMessage("Password updated");
@@ -1734,8 +1678,8 @@ public class AdministratorUtil {
             Administrator a = (Administrator) q.getSingleResult();
 
             if (a != null) {
-                Integer id = a.getCompany().getCompanyID();
-                log.log(Level.INFO, "company id from admin login: {0}", id.intValue());
+                int id = a.getCompany().getCompanyID();
+                log.log(Level.INFO, "company id from admin login: {0}", id);
                 d = getCompanyData(id);
                 try {
                     if (device != null) {
@@ -1750,7 +1694,6 @@ public class AdministratorUtil {
                         gcm.setDateRegistered(new Date());
                         gcm.setAdministrator(a);
                         em.persist(gcm);
-
 
                         CloudMessagingRegistrar.sendRegistration(gcm.getRegistrationID(), platformUtil);
 
@@ -1796,7 +1739,7 @@ public class AdministratorUtil {
             administrator.setDateRegistered(new Date());
             em.persist(administrator);
 
-            Query q = em.createNamedQuery("Administrator.findByCompanyID",Administrator.class);
+            Query q = em.createNamedQuery("Administrator.findByCompanyID", Administrator.class);
             q.setParameter("id", administrator.getCompany().getCompanyID());
             List<Administrator> list = q.getResultList();
             d.setAdministratorList(new ArrayList<AdministratorDTO>());
@@ -1834,13 +1777,11 @@ public class AdministratorUtil {
         }
         return dto;
 
-
     }
 
-    public ResponseDTO deactivateTrainee(TraineeDTO trainee, Integer administrationID)
+    public ResponseDTO deactivateTrainee(TraineeDTO trainee, int administrationID)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
-
 
         try {
 
@@ -1862,11 +1803,9 @@ public class AdministratorUtil {
         return d;
     }
 
-    public ResponseDTO deactivateInstructor(InstructorDTO instructor, Integer administrationID)
+    public ResponseDTO deactivateInstructor(InstructorDTO instructor, int administrationID)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
-
-
 
         try {
             Instructor tc = DataUtil.getInstructorByID(instructor.getInstructorID(), em);
@@ -1895,11 +1834,9 @@ public class AdministratorUtil {
      * @return
      * @throws DataException
      */
-    public ResponseDTO addSchedule(Integer trainingClassID,
+    public ResponseDTO addSchedule(int trainingClassID,
             List<LessonScheduleDTO> scheduleList) throws DataException {
         ResponseDTO d = new ResponseDTO();
-
-
 
         try {
             //log.log(Level.INFO, "");

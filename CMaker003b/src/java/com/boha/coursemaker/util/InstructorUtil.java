@@ -12,7 +12,6 @@ import com.boha.coursemaker.data.CourseTrainee;
 import com.boha.coursemaker.data.GcmDevice;
 import com.boha.coursemaker.data.HelpRequest;
 import com.boha.coursemaker.data.InstructorClass;
-import com.boha.coursemaker.data.Lesson;
 import com.boha.coursemaker.data.LessonResource;
 import com.boha.coursemaker.data.Trainee;
 import com.boha.coursemaker.data.TraineeRating;
@@ -29,7 +28,6 @@ import com.boha.coursemaker.dto.HelpRequestDTO;
 import com.boha.coursemaker.dto.InstructorClassDTO;
 import com.boha.coursemaker.dto.InstructorDTO;
 import com.boha.coursemaker.dto.InstructorRatingDTO;
-import com.boha.coursemaker.dto.LessonDTO;
 import com.boha.coursemaker.dto.LessonResourceDTO;
 import com.boha.coursemaker.dto.platform.ResponseDTO;
 import com.boha.coursemaker.dto.platform.TotalsDTO;
@@ -117,7 +115,7 @@ public class InstructorUtil {
         try {
             TrainingClass tc = DataUtil.getTrainingClassByID(event.getTrainingClassID(), em);
             TrainingClassEvent tce = new TrainingClassEvent();
-            if (event.getTrainingClassCourseID() != null) {
+            if (event.getTrainingClassCourseID() > 0) {
                 tcc = DataUtil.getTrainingClassCourseByID(event.getTrainingClassCourseID(), em);
                 tce.setTrainingClassCourse(tcc);
             }
@@ -181,7 +179,7 @@ public class InstructorUtil {
                 tc.setTrainingClassCourseList(new ArrayList<TrainingClassCourseDTO>());
                 int cnt = 0;
                 for (TrainingClassCourseDTO tcc : tccList) {
-                    if (tcc.getTrainingClassID().intValue() == tc.getTrainingClassID().intValue()) {
+                    if (tcc.getTrainingClassID() == tc.getTrainingClassID()) {
                         tc.getTrainingClassCourseList().add(tcc);
                         cnt++;
                     }
@@ -191,7 +189,7 @@ public class InstructorUtil {
                 tc.setTraineeList(new ArrayList<TraineeDTO>());
                 int cnt2 = 0;
                 for (TraineeDTO t : trList) {
-                    if (t.getTrainingClassID().intValue() == tc.getTrainingClassID().intValue()) {
+                    if (t.getTrainingClassID() == tc.getTrainingClassID()) {
                         tc.getTraineeList().add(t);
                         cnt2++;
                     }
@@ -232,48 +230,12 @@ public class InstructorUtil {
         for (TrainingClassCourse tcc : list) {
             dList.add(new TrainingClassCourseDTO(tcc));
         }
-        List<LessonDTO> lessonList = getLessonsByInstructor(instructorID);
-        //
-        for (TrainingClassCourseDTO tcc : dList) {
-            tcc.setLessonList(new ArrayList<LessonDTO>());
-            int cnt = 0;
-            for (LessonDTO lesson : lessonList) {
-                if (lesson.getCourseID().intValue() == tcc.getCourseID().intValue()) {
-                    //check if lesson exists 
-                    if (!exists(tcc, lesson)) {
-                        tcc.getLessonList().add(lesson);
-                        cnt++;
-                    }
-                }
-            }
-            log.log(Level.OFF, "Found {0} lessons for course: {1}", new Object[]{cnt, tcc.getCourseName()});
-        }
+        
         log.log(Level.OFF, "TrainingClassCourses for instructor: {0}", dList.size());
         return dList;
     }
 
-    private boolean exists(TrainingClassCourseDTO tcc, LessonDTO d) {
-        for (LessonDTO x : tcc.getLessonList()) {
-            if (d.getLessonID().intValue() == x.getLessonID().intValue()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private List<LessonDTO> getLessonsByInstructor(Integer instructorID) {
-
-        Query q = em.createNamedQuery("Lesson.findByInstructor",Lesson.class);
-        q.setParameter("id", instructorID);
-        List<Lesson> list = q.getResultList();
-        List<LessonDTO> dList = new ArrayList<>();
-        for (Lesson tcc : list) {
-            dList.add(new LessonDTO(tcc));
-        }
-        log.log(Level.OFF, "Lessons for instructor classes: {0}", dList.size());
-        return dList;
-    }
+    
 
     public ResponseDTO getTrainingClassEvents(Integer trainingClassID) throws DataException {
 
@@ -356,7 +318,7 @@ public class InstructorUtil {
             //log.log(Level.INFO, "Instructor rating added OK");
 
             //update trainee completion flag
-            if (dto.getCompletedFlag() != null) {
+            if (dto.getCompletedFlag() > 0) {
                 cta.setCompletedFlag(dto.getCompletedFlag());
                 cta.setDateUpdated(new Date());
                 if (dto.getCompletedFlag() == 1) {
@@ -424,12 +386,12 @@ public class InstructorUtil {
         try {
             Company company = DataUtil.getCompanyByID(companyID, em);
             for (TrainingClass tc : company.getTrainingClassList()) {
-                if (tc.getIsOpen() != null && tc.getIsOpen() > 0) {
+                if (tc.getIsOpen() > 0) {
                     for (Trainee trainee : tc.getTraineeList()) {
                         for (CourseTrainee ct : trainee.getCourseTraineeList()) {
                             int complete = 0, tasks = 0, totRatings = 0, totalRated = 0;
                             for (CourseTraineeActivity cta : ct.getCourseTraineeActivityList()) {
-                                if (cta.getCompletedFlag() != null && cta.getCompletedFlag() > 0) {
+                                if (cta.getCompletedFlag() > 0) {
                                     complete++;
                                 }
                                 if (cta.getRating() != null) {
@@ -611,16 +573,18 @@ public class InstructorUtil {
 
         try {
             Instructor instructor = DataUtil.getInstructorByID(instructorID, em);
+            response.setRatingList(DataUtil.getRatingList(instructor.getCompany().getCompanyID(), em).getRatingList());
+            response.setHelpTypeList(DataUtil.getHelpTypeList(instructor.getCompany().getCompanyID(), em).getHelpTypeList());
 
             for (InstructorClass tc : getInstructorClasses(instructor, em)) {
                 log.log(Level.WARNING, "Processing instructor class: {0} for {1} {2}", new Object[]{tc.getTrainingClass().getTrainingClassName(), tc.getInstructor().getFirstName(), tc.getInstructor().getLastName()});
-                if (tc.getTrainingClass().getIsOpen() != null && tc.getTrainingClass().getIsOpen() > 0) {
+                if (tc.getTrainingClass().getIsOpen() > 0) {
                     for (Trainee trainee : getTrainees(tc.getTrainingClass(), em)) {
                         //log.log(Level.INFO, "Processing trainee activities: {0} {1}", new Object[]{trainee.getFirstName(), trainee.getLastName()});
                         for (CourseTrainee ct : getCourseTrainees(trainee, em)) {
                             int complete = 0, tasks = 0, totRatings = 0, totalRated = 0;
                             for (CourseTraineeActivity cta : getCourseTraineeActivities(ct, em)) {
-                                if (cta.getCompletedFlag() != null && cta.getCompletedFlag() > 0) {
+                                if (cta.getCompletedFlag() > 0) {
                                     complete++;
                                 }
                                 if (cta.getRating() != null) {
@@ -698,7 +662,7 @@ public class InstructorUtil {
                 for (CourseTrainee ct : trainee.getCourseTraineeList()) {
                     int complete = 0, tasks = 0, totRatings = 0, totalRated = 0;
                     for (CourseTraineeActivity cta : ct.getCourseTraineeActivityList()) {
-                        if (cta.getCompletedFlag() != null && cta.getCompletedFlag() > 0) {
+                        if (cta.getCompletedFlag() > 0) {
                             complete++;
                         }
                         if (cta.getRating() != null) {
@@ -765,8 +729,8 @@ public class InstructorUtil {
                 List<Dates> dates = new ArrayList<>();
                 for (CourseTraineeActivity cta : ctaList) {
                     if (cta.getCourseTrainee().getTrainee()
-                            .getTraineeID().intValue() == t.getTraineeID().intValue()) {
-                        if (cta.getCompletedFlag() != null && cta.getCompletedFlag() > 0) {
+                            .getTraineeID() == t.getTraineeID()) {
+                        if (cta.getCompletedFlag() > 0) {
                             if (cta.getCompletionDate() != null) {
                                 t.setTotalCompleted(t.getTotalCompleted() + 1);
                                 dates.add(new Dates(cta.getCompletionDate().getTime()));
@@ -786,8 +750,8 @@ public class InstructorUtil {
                 int totalRating = 0, ratings = 0;
                 for (InstructorRating ir : irList) {
                     if (ir.getCourseTraineeActivity().getCourseTrainee()
-                            .getTrainee().getTraineeID().intValue()
-                            == t.getTraineeID().intValue()) {
+                            .getTrainee().getTraineeID()
+                            == t.getTraineeID()) {
                         totalRating += ir.getRating().getRatingNumber();
                         ratings++;
                     }
@@ -800,8 +764,8 @@ public class InstructorUtil {
                 ratings = 0;
                 List<TraineeRating> trList = getTraineeRatingsByClass(trainingClassID, em);
                 for (TraineeRating tr : trList) {
-                    if (tr.getTrainee().getTraineeID().intValue()
-                            == t.getTraineeID().intValue()) {
+                    if (tr.getTrainee().getTraineeID()
+                            == t.getTraineeID()) {
                         totalRating += tr.getRating().getRatingNumber();
                         ratings++;
                     }
@@ -886,7 +850,7 @@ public class InstructorUtil {
                         numberOfRatings++;
                         totalRating += cta.getRating().getRatingNumber();
                     }
-                    if (cta.getCompletedFlag() != null && cta.getCompletedFlag() > 0) {
+                    if (cta.getCompletedFlag() > 0) {
                         if (cta.getCompletionDate() != null) {
                             totCompleted++;
                             dates.add(new Dates(cta.getCompletionDate().getTime()));
@@ -945,23 +909,6 @@ public class InstructorUtil {
             for (TrainingClassCourse cta : list) {
                 dto.add(new TrainingClassCourseDTO(cta));
             }
-            List<LessonDTO> lessList = getLessonsByClass(trainingClassID);
-            List<TrainingClassEventDTO> eList = getEventsByClass(trainingClassID);
-            
-            for (TrainingClassCourseDTO course : dto) {
-                course.setLessonList(new ArrayList<LessonDTO>());
-                course.setTrainingClassEventList(new ArrayList<TrainingClassEventDTO>());
-                for (TrainingClassEventDTO tce : eList) {
-                    if (tce.getTrainingClassCourseID().intValue() == course.getTrainingClassCourseID()) {
-                        course.getTrainingClassEventList().add(tce);
-                    }
-                }
-                for (LessonDTO l : lessList) {
-                    if (l.getCourseID().intValue() == course.getCourseID().intValue()) {
-                        course.getLessonList().add(l);
-                    }
-                }
-            }
             
             d.setTrainingClassCourseList(dto);
         } catch (Exception e) {
@@ -971,16 +918,7 @@ public class InstructorUtil {
         return d;
     }
 
-    public List<LessonDTO> getLessonsByClass(Integer trainingClassID) {
-        Query q = em.createNamedQuery("Lesson.findByClass",Lesson.class);
-        q.setParameter("id", trainingClassID);
-        List<Lesson> list = q.getResultList();
-        List<LessonDTO> dto = new ArrayList<>();
-        for (Lesson lesson : list) {
-            dto.add(new LessonDTO(lesson));
-        }
-        return dto;
-    }
+    
 
     public List<TrainingClassEventDTO> getEventsByClass(Integer trainingClassID) {
         Query q = em.createNamedQuery("TrainingClassEvent.findByClass",TrainingClassEvent.class);
@@ -1011,7 +949,7 @@ public class InstructorUtil {
             for (CategoryDTO cat : dto) {
                 cat.setCourseList(new ArrayList<CourseDTO>());
                 for (CourseDTO c : corsList) {
-                    if (c.getCategoryID().intValue() == cat.getCategoryID().intValue()) {
+                    if (c.getCategoryID() == cat.getCategoryID()) {
                         cat.getCourseList().add(c);
                     }
                 }

@@ -1,14 +1,15 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package com.boha.coursemaker.data;
 
 import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -44,7 +45,7 @@ public class Objective implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "objectiveID")
-    private Integer objectiveID;
+    private int objectiveID;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
@@ -57,27 +58,27 @@ public class Objective implements Serializable {
     @Column(name = "description")
     private String description;
     @JoinColumn(name = "courseID", referencedColumnName = "courseID")
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false)
     private Course course;
 
     public Objective() {
     }
 
-    public Objective(Integer objectiveID) {
+    public Objective(int objectiveID) {
         this.objectiveID = objectiveID;
     }
 
-    public Objective(Integer objectiveID, String objectiveName, String description) {
+    public Objective(int objectiveID, String objectiveName, String description) {
         this.objectiveID = objectiveID;
         this.objectiveName = objectiveName;
         this.description = description;
     }
 
-    public Integer getObjectiveID() {
+    public int getObjectiveID() {
         return objectiveID;
     }
 
-    public void setObjectiveID(Integer objectiveID) {
+    public void setObjectiveID(int objectiveID) {
         this.objectiveID = objectiveID;
     }
 
@@ -97,14 +98,6 @@ public class Objective implements Serializable {
         this.description = description;
     }
 
-  
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (objectiveID != null ? objectiveID.hashCode() : 0);
-        return hash;
-    }
-
     public Course getCourse() {
         return course;
     }
@@ -113,18 +106,7 @@ public class Objective implements Serializable {
         this.course = course;
     }
 
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Objective)) {
-            return false;
-        }
-        Objective other = (Objective) object;
-        if ((this.objectiveID == null && other.objectiveID != null) || (this.objectiveID != null && !this.objectiveID.equals(other.objectiveID))) {
-            return false;
-        }
-        return true;
-    }
+   
 
     @Override
     public String toString() {

@@ -1,7 +1,9 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package com.boha.coursemaker.data;
 
 import java.io.Serializable;
@@ -30,14 +32,20 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "guardian")
 @NamedQueries({
-    @NamedQuery(name = "Guardian.findAll", query = "SELECT g FROM Guardian g")})
+    @NamedQuery(name = "Guardian.findAll", query = "SELECT g FROM Guardian g"),
+    @NamedQuery(name = "Guardian.findByGuardianID", query = "SELECT g FROM Guardian g WHERE g.guardianID = :guardianID"),
+    @NamedQuery(name = "Guardian.findByName", query = "SELECT g FROM Guardian g WHERE g.name = :name"),
+    @NamedQuery(name = "Guardian.findByLastName", query = "SELECT g FROM Guardian g WHERE g.lastName = :lastName"),
+    @NamedQuery(name = "Guardian.findByEmail", query = "SELECT g FROM Guardian g WHERE g.email = :email"),
+    @NamedQuery(name = "Guardian.findByCellphone", query = "SELECT g FROM Guardian g WHERE g.cellphone = :cellphone"),
+    @NamedQuery(name = "Guardian.findByDateRegistered", query = "SELECT g FROM Guardian g WHERE g.dateRegistered = :dateRegistered")})
 public class Guardian implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "guardianID")
-    private Integer guardianID;
+    private int guardianID;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 50)
@@ -68,11 +76,11 @@ public class Guardian implements Serializable {
     public Guardian() {
     }
 
-    public Guardian(Integer guardianID) {
+    public Guardian(int guardianID) {
         this.guardianID = guardianID;
     }
 
-    public Guardian(Integer guardianID, String name, String email, String cellphone, Date dateRegistered) {
+    public Guardian(int guardianID, String name, String email, String cellphone, Date dateRegistered) {
         this.guardianID = guardianID;
         this.name = name;
         this.email = email;
@@ -80,11 +88,11 @@ public class Guardian implements Serializable {
         this.dateRegistered = dateRegistered;
     }
 
-    public Integer getGuardianID() {
+    public int getGuardianID() {
         return guardianID;
     }
 
-    public void setGuardianID(Integer guardianID) {
+    public void setGuardianID(int guardianID) {
         this.guardianID = guardianID;
     }
 
@@ -136,25 +144,6 @@ public class Guardian implements Serializable {
         this.guardianTraineeList = guardianTraineeList;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (guardianID != null ? guardianID.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Guardian)) {
-            return false;
-        }
-        Guardian other = (Guardian) object;
-        if ((this.guardianID == null && other.guardianID != null) || (this.guardianID != null && !this.guardianID.equals(other.guardianID))) {
-            return false;
-        }
-        return true;
-    }
 
     @Override
     public String toString() {

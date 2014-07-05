@@ -1,7 +1,9 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package com.boha.coursemaker.data;
 
 import java.io.Serializable;
@@ -32,13 +34,12 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "Institution.findByInstitutionID", query = "SELECT i FROM Institution i WHERE i.institutionID = :institutionID"),
     @NamedQuery(name = "Institution.findByInstitutionName", query = "SELECT i FROM Institution i WHERE i.institutionName = :institutionName")})
 public class Institution implements Serializable {
-   
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "institutionID")
-    private Integer institutionID;
+    private int institutionID;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 100)
@@ -53,20 +54,20 @@ public class Institution implements Serializable {
     public Institution() {
     }
 
-    public Institution(Integer institutionID) {
+    public Institution(int institutionID) {
         this.institutionID = institutionID;
     }
 
-    public Institution(Integer institutionID, String institutionName) {
+    public Institution(int institutionID, String institutionName) {
         this.institutionID = institutionID;
         this.institutionName = institutionName;
     }
 
-    public Integer getInstitutionID() {
+    public int getInstitutionID() {
         return institutionID;
     }
 
-    public void setInstitutionID(Integer institutionID) {
+    public void setInstitutionID(int institutionID) {
         this.institutionID = institutionID;
     }
 
@@ -94,32 +95,10 @@ public class Institution implements Serializable {
         this.city = city;
     }
 
-   
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (institutionID != null ? institutionID.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Institution)) {
-            return false;
-        }
-        Institution other = (Institution) object;
-        if ((this.institutionID == null && other.institutionID != null) || (this.institutionID != null && !this.institutionID.equals(other.institutionID))) {
-            return false;
-        }
-        return true;
-    }
 
     @Override
     public String toString() {
         return "com.boha.coursemaker.data.Institution[ institutionID=" + institutionID + " ]";
     }
-
- 
+    
 }

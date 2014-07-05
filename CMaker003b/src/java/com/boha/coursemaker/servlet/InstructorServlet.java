@@ -51,6 +51,8 @@ public class InstructorServlet extends HttpServlet {
     AdministratorUtil administratorUtil;
     @EJB
     DynamicUtil dynamicUtil;
+    @EJB
+    CloudMsgUtil cloudMsgUtil;
     /**
      * Processes requests for all CourseMaker Instructor API commands It
      * processes both <code>GET</code> and <code>POST</code> methods.
@@ -102,8 +104,8 @@ public class InstructorServlet extends HttpServlet {
                     case RequestDTO.GET_COUNTRY_LIST:
                         resp = DataUtil.getProvinceListByCountryCode(dto.getCountryCode(), administratorUtil.getEm());
                         break;
-                    case RequestDTO.GCM_SEND_TRAINEE_TO_INSTRUCTOR_MSG:
-                        resp = CloudMsgUtil.sendInstructorToTraineeMessage(dto.getHelpResponse(), platformUtil);
+                    case RequestDTO.GCM_SEND_INSTRUCTOR_TO_TRAINEE_MSG:
+                        resp = cloudMsgUtil.sendInstructorToTraineeMessage(dto.getHelpResponse(), platformUtil);
                         break;
                     case RequestDTO.REGISTER_INSTRUCTOR:
                         resp = instructorUtil.registerInstructor(dto.getInstructor());

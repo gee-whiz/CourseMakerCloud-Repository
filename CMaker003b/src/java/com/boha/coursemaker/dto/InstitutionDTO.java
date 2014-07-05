@@ -13,7 +13,7 @@ import com.boha.coursemaker.data.Institution;
  * @author aubreyM
  */
 public class InstitutionDTO {
-     private Integer institutionID;
+     private int institutionID;
    
     private String institutionName;
     private CityDTO city;
@@ -26,11 +26,11 @@ public class InstitutionDTO {
         }
     }
 
-    public Integer getInstitutionID() {
+    public int getInstitutionID() {
         return institutionID;
     }
 
-    public void setInstitutionID(Integer institutionID) {
+    public void setInstitutionID(int institutionID) {
         this.institutionID = institutionID;
     }
 

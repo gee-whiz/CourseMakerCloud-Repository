@@ -5,7 +5,6 @@
  */
 package com.boha.coursemaker.dto;
 
-import com.boha.coursemaker.data.Course;
 import com.boha.coursemaker.data.CourseTraineeActivity;
 import com.boha.coursemaker.data.Trainee;
 import java.util.List;
@@ -16,21 +15,23 @@ import java.util.List;
  */
 public class CourseTraineeActivityDTO {
 
-    private Integer courseTraineeActivityID, courseID, trainingClassID, companyID;
-    private Integer completedFlag, lessonID, cityID, traineeID;
-    private Integer refreshRequested;
+    private int courseTraineeActivityID, courseID, trainingClassID, companyID;
+    private int completedFlag, cityID, traineeID;
+    private int refreshRequested;
     private String comment;
     private long dateUpdated;
     private long completionDate;
     private RatingDTO rating;
-    private Integer courseTraineeID;
-    private String lessonName, courseName, traineeName,
+    private int courseTraineeID;
+    private String courseName, traineeName,
             trainingClassName, companyName;
-    private ActivityDTO activity;
     private List<InstructorRatingDTO> instructorRatingList;
     private List<TraineeRatingDTO> traineeRatingList;
+    private ActivityDTO activity;
 
-    public CourseTraineeActivityDTO() {}
+    public CourseTraineeActivityDTO() {
+    }
+
     /**
      * Constructor to create Data Transfer Object
      *
@@ -44,13 +45,14 @@ public class CourseTraineeActivityDTO {
         refreshRequested = a.getRefreshRequested();
         dateUpdated = a.getDateUpdated().getTime();
         comment = a.getComment();
-         
-        lessonID = a.getLesson().getLessonID();
-        
+
+        courseID = a.getActivity().getCourse().getCourseID();
+        courseName = a.getActivity().getCourse().getCourseName();
+
         if (a.getCourseTrainee().getTrainee() != null) {
             Trainee tr = a.getCourseTrainee().getTrainee();
             traineeName = tr.getFirstName()
-                   + " " + tr.getLastName();
+                    + " " + tr.getLastName();
             traineeID = tr.getTraineeID();
             cityID = tr.getCity().getCityID();
             companyID = tr.getCompany().getCompanyID();
@@ -58,15 +60,7 @@ public class CourseTraineeActivityDTO {
             trainingClassID = tr.getTrainingClass().getTrainingClassID();
             //trainingClassName = tr.getTrainingClass().getTrainingClassName();
         }
-        if (a.getCourseTrainee().
-                getTrainingClassCourse().
-                getCourse() != null) {
-            Course c = a.getCourseTrainee()
-                    .getTrainingClassCourse().getCourse();
-            courseName = c.getCourseName();
-            courseID = c.getCourseID();
 
-        }
         if (a.getCompletionDate() != null) {
             completionDate = a.getCompletionDate().getTime();
         }
@@ -76,14 +70,22 @@ public class CourseTraineeActivityDTO {
         if (a.getActivity() != null) {
             activity = new ActivityDTO(a.getActivity());
         }
-        
+
     }
 
-    public Integer getCourseTraineeActivityID() {
+    public ActivityDTO getActivity() {
+        return activity;
+    }
+
+    public void setActivity(ActivityDTO activity) {
+        this.activity = activity;
+    }
+
+    public int getCourseTraineeActivityID() {
         return courseTraineeActivityID;
     }
 
-    public void setCourseTraineeActivityID(Integer courseTraineeActivityID) {
+    public void setCourseTraineeActivityID(int courseTraineeActivityID) {
         this.courseTraineeActivityID = courseTraineeActivityID;
     }
 
@@ -103,27 +105,27 @@ public class CourseTraineeActivityDTO {
         this.traineeRatingList = traineeRatingList;
     }
 
-    public Integer getCityID() {
+    public int getCityID() {
         return cityID;
     }
 
-    public void setCityID(Integer cityID) {
+    public void setCityID(int cityID) {
         this.cityID = cityID;
     }
 
-    public Integer getTrainingClassID() {
+    public int getTrainingClassID() {
         return trainingClassID;
     }
 
-    public void setTrainingClassID(Integer trainingClassID) {
+    public void setTrainingClassID(int trainingClassID) {
         this.trainingClassID = trainingClassID;
     }
 
-    public Integer getCompanyID() {
+    public int getCompanyID() {
         return companyID;
     }
 
-    public void setCompanyID(Integer companyID) {
+    public void setCompanyID(int companyID) {
         this.companyID = companyID;
     }
 
@@ -143,11 +145,11 @@ public class CourseTraineeActivityDTO {
         this.companyName = companyName;
     }
 
-    public Integer getTraineeID() {
+    public int getTraineeID() {
         return traineeID;
     }
 
-    public void setTraineeID(Integer traineeID) {
+    public void setTraineeID(int traineeID) {
         this.traineeID = traineeID;
     }
 
@@ -155,32 +157,16 @@ public class CourseTraineeActivityDTO {
         return traineeName;
     }
 
-    public Integer getCourseID() {
+    public int getCourseID() {
         return courseID;
     }
 
-    public Integer getLessonID() {
-        return lessonID;
-    }
-
-    public void setLessonID(Integer lessonID) {
-        this.lessonID = lessonID;
-    }
-
-    public void setCourseID(Integer courseID) {
+    public void setCourseID(int courseID) {
         this.courseID = courseID;
     }
 
     public void setTraineeName(String traineeName) {
         this.traineeName = traineeName;
-    }
-
-    public String getLessonName() {
-        return lessonName;
-    }
-
-    public void setLessonName(String lessonName) {
-        this.lessonName = lessonName;
     }
 
     public String getCourseName() {
@@ -191,11 +177,11 @@ public class CourseTraineeActivityDTO {
         this.courseName = courseName;
     }
 
-    public Integer getCompletedFlag() {
+    public int getCompletedFlag() {
         return completedFlag;
     }
 
-    public void setCompletedFlag(Integer completedFlag) {
+    public void setCompletedFlag(int completedFlag) {
         this.completedFlag = completedFlag;
     }
 
@@ -211,11 +197,11 @@ public class CourseTraineeActivityDTO {
         return dateUpdated;
     }
 
-    public Integer getRefreshRequested() {
+    public int getRefreshRequested() {
         return refreshRequested;
     }
 
-    public void setRefreshRequested(Integer refreshRequested) {
+    public void setRefreshRequested(int refreshRequested) {
         this.refreshRequested = refreshRequested;
     }
 
@@ -239,19 +225,12 @@ public class CourseTraineeActivityDTO {
         this.rating = rating;
     }
 
-    public Integer getCourseTraineeID() {
+    public int getCourseTraineeID() {
         return courseTraineeID;
     }
 
-    public void setCourseTraineeID(Integer courseTraineeID) {
+    public void setCourseTraineeID(int courseTraineeID) {
         this.courseTraineeID = courseTraineeID;
     }
 
-    public ActivityDTO getActivity() {
-        return activity;
-    }
-
-    public void setActivity(ActivityDTO activity) {
-        this.activity = activity;
-    }
 }

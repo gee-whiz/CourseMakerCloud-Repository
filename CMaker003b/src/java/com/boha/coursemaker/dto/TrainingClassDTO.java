@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class TrainingClassDTO {
 
-    private Integer trainingClassID, isOpen;
+    private int trainingClassID, isOpen;
     private String trainingClassName;
     private AdministratorDTO administrator;
     private long startDate;
@@ -22,7 +22,7 @@ public class TrainingClassDTO {
     private List<TrainingClassCourseDTO> trainingClassCourseList;
     private List<TraineeDTO> traineeList;
     private List<TrainingClassEventDTO> trainingClassEventList;
-    private Integer companyID;
+    private int companyID;
 
     public TrainingClassDTO(TrainingClass a) {
         trainingClassID = a.getTrainingClassID();
@@ -40,7 +40,7 @@ public class TrainingClassDTO {
    
     }
 
-    public Integer getTrainingClassID() {
+    public int getTrainingClassID() {
         return trainingClassID;
     }
 
@@ -68,11 +68,11 @@ public class TrainingClassDTO {
         return administrator;
     }
 
-    public Integer getIsOpen() {
+    public int getIsOpen() {
         return isOpen;
     }
 
-    public void setIsOpen(Integer isOpen) {
+    public void setIsOpen(int isOpen) {
         this.isOpen = isOpen;
     }
 
@@ -88,7 +88,7 @@ public class TrainingClassDTO {
         this.trainingClassCourseList = trainingClassCourseList;
     }
 
-    public void setTrainingClassID(Integer trainingClassID) {
+    public void setTrainingClassID(int trainingClassID) {
         this.trainingClassID = trainingClassID;
     }
 
@@ -116,11 +116,11 @@ public class TrainingClassDTO {
         this.endDate = endDate;
     }
 
-    public Integer getCompanyID() {
+    public int getCompanyID() {
         return companyID;
     }
 
-    public void setCompanyID(Integer companyID) {
+    public void setCompanyID(int companyID) {
         this.companyID = companyID;
     }
 }

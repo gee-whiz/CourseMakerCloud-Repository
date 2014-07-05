@@ -28,7 +28,6 @@ import com.boha.coursemaker.dto.InstructorClassDTO;
 import com.boha.coursemaker.dto.InstructorDTO;
 import com.boha.coursemaker.dto.InstructorRatingDTO;
 import com.boha.coursemaker.dto.InventoryDTO;
-import com.boha.coursemaker.dto.LessonDTO;
 import com.boha.coursemaker.dto.LessonResourceDTO;
 import com.boha.coursemaker.dto.ObjectiveDTO;
 import com.boha.coursemaker.dto.ProvinceDTO;
@@ -74,7 +73,6 @@ public class ResponseDTO {
     private TrainingClassDTO trainingClass;
     private HelpRequestDTO helpRequest;
     private HelpResponseDTO helpResponse;
-    private LessonDTO lesson;
     private ObjectiveDTO objective;
     private LessonResourceDTO lessonResource;
     private ActivityDTO activity;
@@ -89,7 +87,6 @@ public class ResponseDTO {
     private List<ErrorStoreDTO> errorStoreList;
     private List<HelpRequestDTO> helpRequestList;
     private List<HelpTypeDTO> helpTypeList;
-    private List<LessonDTO> lessonList;
     private List<ObjectiveDTO> objectiveList;
     private List<ActivityDTO> activityList;
     private List<CourseDTO> courseList;
@@ -371,14 +368,6 @@ public class ResponseDTO {
         this.courseList = courseList;
     }
 
-    public LessonDTO getLesson() {
-        return lesson;
-    }
-
-    public void setLesson(LessonDTO lesson) {
-        this.lesson = lesson;
-    }
-
     public ObjectiveDTO getObjective() {
         return objective;
     }
@@ -507,9 +496,6 @@ public class ResponseDTO {
         this.courseTraineeActivity = courseTraineeActivity;
     }
 
-    public List<LessonDTO> getLessonList() {
-        return lessonList;
-    }
 
     public TraineeDTO getTrainee() {
         return trainee;
@@ -542,12 +528,6 @@ public class ResponseDTO {
     public void setInstructorList(List<InstructorDTO> instructorList) {
         this.instructorList = instructorList;
     }
-
-    public void setLessonList(List<LessonDTO> lessonList) {
-        this.lessonList = lessonList;
-    }
-
-   
 
     public List<ActivityDTO> getActivityList() {
         return activityList;

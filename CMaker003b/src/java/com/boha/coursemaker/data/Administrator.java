@@ -1,7 +1,9 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package com.boha.coursemaker.data;
 
 import java.io.Serializable;
@@ -15,6 +17,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -42,18 +45,12 @@ import javax.validation.constraints.Size;
         "select a from Administrator a where a.email = :email "
                     + " and a.password = :pswd")})
 public class Administrator implements Serializable {
-
-    @OneToMany(mappedBy = "administrator")
-    private List<GcmDevice> gcmDeviceList;
-    @Size(max = 100)
-    @Column(name = "GCMRegistrationID")
-    private String gCMRegistrationID;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "administratorID")
-    private Integer administratorID;
+    private int administratorID;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 45)
@@ -86,9 +83,13 @@ public class Administrator implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateRegistered;
     @Column(name = "activeFlag")
-    private Integer activeFlag;
+    private int activeFlag;
     @Column(name = "superUserFlag")
-    private Integer superUserFlag;
+    private int superUserFlag;
+    @Lob
+    @Size(max = 65535)
+    @Column(name = "GCMRegistrationID")
+    private String gCMRegistrationID;
     @OneToMany(mappedBy = "administrator")
     private List<Instructor> instructorList;
     @OneToMany(mappedBy = "administrator")
@@ -104,15 +105,17 @@ public class Administrator implements Serializable {
     private Company company;
     @OneToMany(mappedBy = "administrator")
     private List<TraineeEquipment> traineeEquipmentList;
+    @OneToMany(mappedBy = "administrator")
+    private List<GcmDevice> gcmDeviceList;
 
     public Administrator() {
     }
 
-    public Administrator(Integer administratorID) {
+    public Administrator(int administratorID) {
         this.administratorID = administratorID;
     }
 
-    public Administrator(Integer administratorID, String firstName, String lastName, String email, String cellphone, String password, Date dateRegistered) {
+    public Administrator(int administratorID, String firstName, String lastName, String email, String cellphone, String password, Date dateRegistered) {
         this.administratorID = administratorID;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -122,11 +125,11 @@ public class Administrator implements Serializable {
         this.dateRegistered = dateRegistered;
     }
 
-    public Integer getAdministratorID() {
+    public int getAdministratorID() {
         return administratorID;
     }
 
-    public void setAdministratorID(Integer administratorID) {
+    public void setAdministratorID(int administratorID) {
         this.administratorID = administratorID;
     }
 
@@ -178,20 +181,28 @@ public class Administrator implements Serializable {
         this.dateRegistered = dateRegistered;
     }
 
-    public Integer getActiveFlag() {
+    public int getActiveFlag() {
         return activeFlag;
     }
 
-    public void setActiveFlag(Integer activeFlag) {
+    public void setActiveFlag(int activeFlag) {
         this.activeFlag = activeFlag;
     }
 
-    public Integer getSuperUserFlag() {
+    public int getSuperUserFlag() {
         return superUserFlag;
     }
 
-    public void setSuperUserFlag(Integer superUserFlag) {
+    public void setSuperUserFlag(int superUserFlag) {
         this.superUserFlag = superUserFlag;
+    }
+
+    public String getGCMRegistrationID() {
+        return gCMRegistrationID;
+    }
+
+    public void setGCMRegistrationID(String gCMRegistrationID) {
+        this.gCMRegistrationID = gCMRegistrationID;
     }
 
     public List<Instructor> getInstructorList() {
@@ -250,39 +261,6 @@ public class Administrator implements Serializable {
         this.traineeEquipmentList = traineeEquipmentList;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (administratorID != null ? administratorID.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Administrator)) {
-            return false;
-        }
-        Administrator other = (Administrator) object;
-        if ((this.administratorID == null && other.administratorID != null) || (this.administratorID != null && !this.administratorID.equals(other.administratorID))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "com.boha.coursemaker.data.Administrator[ administratorID=" + administratorID + " ]";
-    }
-
-    public String getGCMRegistrationID() {
-        return gCMRegistrationID;
-    }
-
-    public void setGCMRegistrationID(String gCMRegistrationID) {
-        this.gCMRegistrationID = gCMRegistrationID;
-    }
-
     public List<GcmDevice> getGcmDeviceList() {
         return gcmDeviceList;
     }
@@ -290,4 +268,11 @@ public class Administrator implements Serializable {
     public void setGcmDeviceList(List<GcmDevice> gcmDeviceList) {
         this.gcmDeviceList = gcmDeviceList;
     }
+
+   
+    @Override
+    public String toString() {
+        return "com.boha.coursemaker.data.Administrator[ administratorID=" + administratorID + " ]";
+    }
+    
 }

@@ -11,7 +11,7 @@ import com.boha.coursemaker.data.HelpType;
  * @author aubreyM
  */
 public class HelpTypeDTO {
-   private Integer helpTypeID, companyID;
+   private int helpTypeID, companyID;
    private String helpTypeName;
    
    public HelpTypeDTO(HelpType a) {
@@ -20,11 +20,11 @@ public class HelpTypeDTO {
        companyID = a.getCompany().getCompanyID();
    }
 
-    public Integer getHelpTypeID() {
+    public int getHelpTypeID() {
         return helpTypeID;
     }
 
-    public void setHelpTypeID(Integer helpTypeID) {
+    public void setHelpTypeID(int helpTypeID) {
         this.helpTypeID = helpTypeID;
     }
 
@@ -32,11 +32,11 @@ public class HelpTypeDTO {
         return helpTypeName;
     }
 
-    public Integer getCompanyID() {
+    public int getCompanyID() {
         return companyID;
     }
 
-    public void setCompanyID(Integer companyID) {
+    public void setCompanyID(int companyID) {
         this.companyID = companyID;
     }
 

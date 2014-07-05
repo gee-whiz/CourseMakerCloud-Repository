@@ -1,7 +1,9 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package com.boha.coursemaker.data;
 
 import java.io.Serializable;
@@ -15,6 +17,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -34,7 +37,7 @@ import javax.validation.constraints.Size;
 @NamedQueries({
     @NamedQuery(name = "Instructor.findByCompanyID", query = "select a from Instructor a "
                 + "where a.company.companyID = :id "
-                + " and a.activeFlag is null "
+                + " and (a.activeFlag is null or a.activeFlag = 0) "
                 + " order by a.lastName, a.firstName"),
     
     @NamedQuery(name = "Instructor.login", 
@@ -47,21 +50,12 @@ import javax.validation.constraints.Size;
                     + " and a.instructorID = b.instructor.instructorID "
                     + " order by a.lastName, a.firstName ")})
 public class Instructor implements Serializable {
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "instructor")
-    private List<HelpResponse> helpResponseList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "instructor")
-    private List<InstructorClass> instructorClassList;
-    @OneToMany(mappedBy = "instructor")
-    private List<GcmDevice> gcmDeviceList;
-    @Size(max = 100)
-    @Column(name = "GCMRegistrationID")
-    private String GCMRegistrationID;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "instructorID")
-    private Integer instructorID;
+    private int instructorID;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 45)
@@ -72,6 +66,7 @@ public class Instructor implements Serializable {
     @Size(min = 1, max = 45)
     @Column(name = "lastName")
     private String lastName;
+    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 100)
@@ -91,30 +86,39 @@ public class Instructor implements Serializable {
     @Column(name = "password")
     private String password;
     @Column(name = "activeFlag")
-    private Integer activeFlag;
+    private int activeFlag;
+    @Lob
+    @Size(max = 65535)
+    @Column(name = "GCMRegistrationID")
+    private String gCMRegistrationID;
     @JoinColumn(name = "administratorID", referencedColumnName = "administratorID")
     @ManyToOne
     private Administrator administrator;
     @JoinColumn(name = "companyID", referencedColumnName = "companyID")
     @ManyToOne(optional = false)
     private Company company;
-    @JoinColumn(name = "cityID", referencedColumnName = "cityID")   
+    @JoinColumn(name = "cityID", referencedColumnName = "cityID")
     @ManyToOne(optional = false)
     private City city;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "instructor")
     private List<InstructorRating> instructorRatingList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "instructor")
+    private List<HelpResponse> helpResponseList;
     @OneToMany(mappedBy = "instructor")
     private List<LessonResource> lessonResourceList;
-    
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "instructor")
+    private List<InstructorClass> instructorClassList;
+    @OneToMany(mappedBy = "instructor")
+    private List<GcmDevice> gcmDeviceList;
 
     public Instructor() {
     }
 
-    public Instructor(Integer instructorID) {
+    public Instructor(int instructorID) {
         this.instructorID = instructorID;
     }
 
-    public Instructor(Integer instructorID, String firstName, String lastName, String email, String cellphone, Date dateRegistered) {
+    public Instructor(int instructorID, String firstName, String lastName, String email, String cellphone, Date dateRegistered) {
         this.instructorID = instructorID;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -123,11 +127,11 @@ public class Instructor implements Serializable {
         this.dateRegistered = dateRegistered;
     }
 
-    public Integer getInstructorID() {
+    public int getInstructorID() {
         return instructorID;
     }
 
-    public void setInstructorID(Integer instructorID) {
+    public void setInstructorID(int instructorID) {
         this.instructorID = instructorID;
     }
 
@@ -179,12 +183,20 @@ public class Instructor implements Serializable {
         this.password = password;
     }
 
-    public Integer getActiveFlag() {
+    public int getActiveFlag() {
         return activeFlag;
     }
 
-    public void setActiveFlag(Integer activeFlag) {
+    public void setActiveFlag(int activeFlag) {
         this.activeFlag = activeFlag;
+    }
+
+    public String getGCMRegistrationID() {
+        return gCMRegistrationID;
+    }
+
+    public void setGCMRegistrationID(String gCMRegistrationID) {
+        this.gCMRegistrationID = gCMRegistrationID;
     }
 
     public Administrator getAdministrator() {
@@ -211,13 +223,20 @@ public class Instructor implements Serializable {
         this.city = city;
     }
 
-   
     public List<InstructorRating> getInstructorRatingList() {
         return instructorRatingList;
     }
 
     public void setInstructorRatingList(List<InstructorRating> instructorRatingList) {
         this.instructorRatingList = instructorRatingList;
+    }
+
+    public List<HelpResponse> getHelpResponseList() {
+        return helpResponseList;
+    }
+
+    public void setHelpResponseList(List<HelpResponse> helpResponseList) {
+        this.helpResponseList = helpResponseList;
     }
 
     public List<LessonResource> getLessonResourceList() {
@@ -228,38 +247,12 @@ public class Instructor implements Serializable {
         this.lessonResourceList = lessonResourceList;
     }
 
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (instructorID != null ? instructorID.hashCode() : 0);
-        return hash;
+    public List<InstructorClass> getInstructorClassList() {
+        return instructorClassList;
     }
 
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Instructor)) {
-            return false;
-        }
-        Instructor other = (Instructor) object;
-        if ((this.instructorID == null && other.instructorID != null) || (this.instructorID != null && !this.instructorID.equals(other.instructorID))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "com.boha.coursemaker.data.Instructor[ instructorID=" + instructorID + " ]";
-    }
-
-    public String getGCMRegistrationID() {
-        return GCMRegistrationID;
-    }
-
-    public void setGCMRegistrationID(String gCMRegistrationID) {
-        this.GCMRegistrationID = gCMRegistrationID;
+    public void setInstructorClassList(List<InstructorClass> instructorClassList) {
+        this.instructorClassList = instructorClassList;
     }
 
     public List<GcmDevice> getGcmDeviceList() {
@@ -270,20 +263,10 @@ public class Instructor implements Serializable {
         this.gcmDeviceList = gcmDeviceList;
     }
 
-    public List<InstructorClass> getInstructorClassList() {
-        return instructorClassList;
-    }
 
-    public void setInstructorClassList(List<InstructorClass> instructorClassList) {
-        this.instructorClassList = instructorClassList;
-    }
-
-    public List<HelpResponse> getHelpResponseList() {
-        return helpResponseList;
-    }
-
-    public void setHelpResponseList(List<HelpResponse> helpResponseList) {
-        this.helpResponseList = helpResponseList;
+    @Override
+    public String toString() {
+        return "com.boha.coursemaker.data.Instructor[ instructorID=" + instructorID + " ]";
     }
     
 }

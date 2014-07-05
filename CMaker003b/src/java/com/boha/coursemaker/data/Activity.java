@@ -1,11 +1,11 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
 package com.boha.coursemaker.data;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
@@ -34,38 +34,29 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "activity")
 @NamedQueries({
-    @NamedQuery(name = "Activity.findByLesson", query = "select a from Activity a "
-                + "where a.lesson.lessonID = :id order by a.priorityFlag"),
-    @NamedQuery(name = "Activity.findByCourseID", 
-        query = "select a from Activity a where "
-                + "a.lesson.course.courseID = :id"
-                + " order by a.priorityFlag"),
-    @NamedQuery(name = "Activity.findByCategory", 
-        query = "select a from Activity a "
-                + "where a.lesson.course.category.categoryID = :id"),
-    @NamedQuery(name = "Activity.findByAuthor", 
-        query = "select a from Activity a, CourseAuthor b "
-                + " where a.lesson.course.courseID = b.course.courseID and b.author.authorID = :authorID "
-                + " order by a.lesson.lessonID, a.priorityFlag"),
-@NamedQuery(name = "Activity.findByCompany", 
-        query = "select a from Activity a "
-                + " where a.lesson.course.company.companyID = :id "
-                + " order by a.lesson.lessonID, a.priorityFlag")})
+   
+    @NamedQuery(name = "Activity.findByCourseID",
+            query = "select a from Activity a where a.course.courseID = :id"
+            + " order by a.priorityFlag"),
+    @NamedQuery(name = "Activity.findByCategory",
+            query = "select a from Activity a "
+            + "where a.course.category.categoryID = :id"),
+    @NamedQuery(name = "Activity.findByAuthor",
+            query = "select a from Activity a, CourseAuthor b "
+            + " where a.course.courseID = b.course.courseID and b.author.authorID = :authorID "
+            + " order by a.course.courseID, a.priorityFlag"),
+    @NamedQuery(name = "Activity.findByCompany",
+            query = "select a from Activity a "
+            + " where a.course.company.companyID = :id "
+            + " order by a.course.courseID, a.priorityFlag")})
 public class Activity implements Serializable {
-    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    @Column(name = "durationInDays")
-    private Double durationInDays;
-    @Column(name = "localID")
-    private BigInteger localID;
-    @Column(name = "syncDate")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date syncDate;
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "activityID")
-    private Integer activityID;
+    private int activityID;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
@@ -76,30 +67,41 @@ public class Activity implements Serializable {
     @Column(name = "description")
     private String description;
     @Column(name = "priorityFlag")
-    private Integer priorityFlag;
+    private int priorityFlag;
+    @Column(name = "localID")
+    private long localID;
+    @Column(name = "syncDate")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date syncDate;
+    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
+    @Column(name = "durationInDays")
+    private double durationInDays;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "activity")
     private List<CourseTraineeActivity> courseTraineeActivityList;
-    @JoinColumn(name = "lessonID", referencedColumnName = "lessonID")
+    @OneToMany(mappedBy = "activity")
+    private List<LessonSchedule> lessonScheduleList;
+    @JoinColumn(name = "courseID", referencedColumnName = "courseID")
     @ManyToOne(optional = false)
-    private Lesson lesson;
+    private Course course;
+    
 
     public Activity() {
     }
 
-    public Activity(Integer activityID) {
+    public Activity(int activityID) {
         this.activityID = activityID;
     }
 
-    public Activity(Integer activityID, String activityName) {
+    public Activity(int activityID, String activityName) {
         this.activityID = activityID;
         this.activityName = activityName;
     }
 
-    public Integer getActivityID() {
+    public int getActivityID() {
         return activityID;
     }
 
-    public void setActivityID(Integer activityID) {
+    public void setActivityID(int activityID) {
         this.activityID = activityID;
     }
 
@@ -119,54 +121,20 @@ public class Activity implements Serializable {
         this.description = description;
     }
 
-    public Integer getPriorityFlag() {
+    public int getPriorityFlag() {
         return priorityFlag;
     }
 
-    public void setPriorityFlag(Integer priorityFlag) {
+    public void setPriorityFlag(int priorityFlag) {
         this.priorityFlag = priorityFlag;
     }
 
-    public List<CourseTraineeActivity> getCourseTraineeActivityList() {
-        return courseTraineeActivityList;
+    public long getLocalID() {
+        return localID;
     }
 
-    public void setCourseTraineeActivityList(List<CourseTraineeActivity> courseTraineeActivityList) {
-        this.courseTraineeActivityList = courseTraineeActivityList;
-    }
-
-    public Lesson getLesson() {
-        return lesson;
-    }
-
-    public void setLesson(Lesson lesson) {
-        this.lesson = lesson;
-    }
-
- 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (activityID != null ? activityID.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Activity)) {
-            return false;
-        }
-        Activity other = (Activity) object;
-        if ((this.activityID == null && other.activityID != null) || (this.activityID != null && !this.activityID.equals(other.activityID))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "com.boha.coursemaker.data.Activity[ activityID=" + activityID + " ]";
+    public void setLocalID(long localID) {
+        this.localID = localID;
     }
 
     public Date getSyncDate() {
@@ -177,20 +145,42 @@ public class Activity implements Serializable {
         this.syncDate = syncDate;
     }
 
-    public BigInteger getLocalID() {
-        return localID;
-    }
-
-    public void setLocalID(BigInteger localID) {
-        this.localID = localID;
-    }
-
-    public Double getDurationInDays() {
+    public double getDurationInDays() {
         return durationInDays;
     }
 
-    public void setDurationInDays(Double durationInDays) {
+    public void setDurationInDays(double durationInDays) {
         this.durationInDays = durationInDays;
     }
-    
+
+    public List<CourseTraineeActivity> getCourseTraineeActivityList() {
+        return courseTraineeActivityList;
+    }
+
+    public void setCourseTraineeActivityList(List<CourseTraineeActivity> courseTraineeActivityList) {
+        this.courseTraineeActivityList = courseTraineeActivityList;
+    }
+
+    public List<LessonSchedule> getLessonScheduleList() {
+        return lessonScheduleList;
+    }
+
+    public void setLessonScheduleList(List<LessonSchedule> lessonScheduleList) {
+        this.lessonScheduleList = lessonScheduleList;
+    }
+
+    public Course getCourse() {
+        return course;
+    }
+
+    public void setCourse(Course course) {
+        this.course = course;
+    }
+
+
+    @Override
+    public String toString() {
+        return "com.boha.coursemaker.data.Activity[ activityID=" + activityID + " ]";
+    }
+
 }

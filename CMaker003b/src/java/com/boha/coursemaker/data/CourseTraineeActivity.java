@@ -1,7 +1,9 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package com.boha.coursemaker.data;
 
 import java.io.Serializable;
@@ -53,18 +55,17 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "CourseTraineeActivity.findByTrainee",
             query = "select a from CourseTraineeActivity a "
             + " where a.courseTrainee.trainee.traineeID = :id "
-            + "  order by a.lesson.lessonID")
+            + "  ")
 })
 public class CourseTraineeActivity implements Serializable {
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "courseTraineeActivityID")
-    private Integer courseTraineeActivityID;
+    private int courseTraineeActivityID;
     @Column(name = "completedFlag")
-    private Integer completedFlag;
+    private int completedFlag;
     @Lob
     @Size(max = 65535)
     @Column(name = "comment")
@@ -76,64 +77,45 @@ public class CourseTraineeActivity implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date completionDate;
     @Column(name = "refreshRequested")
-    private Integer refreshRequested;
+    private int refreshRequested;
     @Column(name = "completionPercentage")
-    private Integer completionPercentage;
+    private int completionPercentage;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "courseTraineeActivity")
     private List<TraineeRating> traineeRatingList;
     @JoinColumn(name = "ratingID", referencedColumnName = "ratingID")
     @ManyToOne
     private Rating rating;
-    @JoinColumn(name = "courseTraineeID", referencedColumnName = "courseTraineeID")
-    @ManyToOne(optional = false)
-    private CourseTrainee courseTrainee;
     @JoinColumn(name = "activityID", referencedColumnName = "activityID")
     @ManyToOne(optional = false)
     private Activity activity;
-    @JoinColumn(name = "lessonID", referencedColumnName = "lessonID")
+    @JoinColumn(name = "courseTraineeID", referencedColumnName = "courseTraineeID")
     @ManyToOne(optional = false)
-    private Lesson lesson;
+    private CourseTrainee courseTrainee;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "courseTraineeActivity")
     private List<InstructorRating> instructorRatingList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "courseTraineeActivity")
+    @OneToMany(mappedBy = "courseTraineeActivity")
     private List<HelpRequest> helpRequestList;
 
     public CourseTraineeActivity() {
     }
 
-    public CourseTraineeActivity(Integer courseTraineeActivityID) {
+    public CourseTraineeActivity(int courseTraineeActivityID) {
         this.courseTraineeActivityID = courseTraineeActivityID;
     }
 
-    public Integer getCourseTraineeActivityID() {
+    public int getCourseTraineeActivityID() {
         return courseTraineeActivityID;
     }
 
-    public void setCourseTraineeActivityID(Integer courseTraineeActivityID) {
+    public void setCourseTraineeActivityID(int courseTraineeActivityID) {
         this.courseTraineeActivityID = courseTraineeActivityID;
     }
 
-    public Lesson getLesson() {
-        return lesson;
-    }
-
-    public void setLesson(Lesson lesson) {
-        this.lesson = lesson;
-    }
-
-    public Integer getCompletedFlag() {
+    public int getCompletedFlag() {
         return completedFlag;
     }
 
-    public Integer getCompletionPercentage() {
-        return completionPercentage;
-    }
-
-    public void setCompletionPercentage(Integer completionPercentage) {
-        this.completionPercentage = completionPercentage;
-    }
-
-    public void setCompletedFlag(Integer completedFlag) {
+    public void setCompletedFlag(int completedFlag) {
         this.completedFlag = completedFlag;
     }
 
@@ -161,12 +143,20 @@ public class CourseTraineeActivity implements Serializable {
         this.completionDate = completionDate;
     }
 
-    public Integer getRefreshRequested() {
+    public int getRefreshRequested() {
         return refreshRequested;
     }
 
-    public void setRefreshRequested(Integer refreshRequested) {
+    public void setRefreshRequested(int refreshRequested) {
         this.refreshRequested = refreshRequested;
+    }
+
+    public int getCompletionPercentage() {
+        return completionPercentage;
+    }
+
+    public void setCompletionPercentage(int completionPercentage) {
+        this.completionPercentage = completionPercentage;
     }
 
     public List<TraineeRating> getTraineeRatingList() {
@@ -185,20 +175,20 @@ public class CourseTraineeActivity implements Serializable {
         this.rating = rating;
     }
 
-    public CourseTrainee getCourseTrainee() {
-        return courseTrainee;
-    }
-
-    public void setCourseTrainee(CourseTrainee courseTrainee) {
-        this.courseTrainee = courseTrainee;
-    }
-
     public Activity getActivity() {
         return activity;
     }
 
     public void setActivity(Activity activity) {
         this.activity = activity;
+    }
+
+    public CourseTrainee getCourseTrainee() {
+        return courseTrainee;
+    }
+
+    public void setCourseTrainee(CourseTrainee courseTrainee) {
+        this.courseTrainee = courseTrainee;
     }
 
     public List<InstructorRating> getInstructorRatingList() {
@@ -217,28 +207,10 @@ public class CourseTraineeActivity implements Serializable {
         this.helpRequestList = helpRequestList;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (courseTraineeActivityID != null ? courseTraineeActivityID.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof CourseTraineeActivity)) {
-            return false;
-        }
-        CourseTraineeActivity other = (CourseTraineeActivity) object;
-        if ((this.courseTraineeActivityID == null && other.courseTraineeActivityID != null) || (this.courseTraineeActivityID != null && !this.courseTraineeActivityID.equals(other.courseTraineeActivityID))) {
-            return false;
-        }
-        return true;
-    }
 
     @Override
     public String toString() {
         return "com.boha.coursemaker.data.CourseTraineeActivity[ courseTraineeActivityID=" + courseTraineeActivityID + " ]";
     }
+    
 }

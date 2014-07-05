@@ -13,17 +13,17 @@ import com.boha.coursemaker.data.TraineeRating;
  * @author aubreyM
  */
 public class TraineeRatingDTO {
-    private Integer traineeRatingID;
+    private int traineeRatingID;
     
     private long dateUpdated;
     
     private String comment, activityName;
     
-    private Integer traineeID;
+    private int traineeID;
    
     private RatingDTO rating;
     
-    private Integer courseTraineeActivityID;
+    private int courseTraineeActivityID;
     
     public TraineeRatingDTO(TraineeRating a) {
         traineeRatingID = a.getTraineeRatingID();
@@ -37,11 +37,11 @@ public class TraineeRatingDTO {
         traineeID = a.getTrainee().getTraineeID();
     }
 
-    public Integer getTraineeRatingID() {
+    public int getTraineeRatingID() {
         return traineeRatingID;
     }
 
-    public void setTraineeRatingID(Integer traineeRatingID) {
+    public void setTraineeRatingID(int traineeRatingID) {
         this.traineeRatingID = traineeRatingID;
     }
 
@@ -69,11 +69,11 @@ public class TraineeRatingDTO {
         this.activityName = activityName;
     }
 
-    public Integer getTraineeID() {
+    public int getTraineeID() {
         return traineeID;
     }
 
-    public void setTraineeID(Integer traineeID) {
+    public void setTraineeID(int traineeID) {
         this.traineeID = traineeID;
     }
 
@@ -85,11 +85,11 @@ public class TraineeRatingDTO {
         this.rating = rating;
     }
 
-    public Integer getCourseTraineeActivityID() {
+    public int getCourseTraineeActivityID() {
         return courseTraineeActivityID;
     }
 
-    public void setCourseTraineeActivityID(Integer courseTraineeActivityID) {
+    public void setCourseTraineeActivityID(int courseTraineeActivityID) {
         this.courseTraineeActivityID = courseTraineeActivityID;
     }
 }

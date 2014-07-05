@@ -1,7 +1,9 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package com.boha.coursemaker.data;
 
 import java.io.Serializable;
@@ -38,15 +40,12 @@ import javax.validation.constraints.Size;
                 + " where a.instructor.company.companyID = :id "
                 + " order by a.instructor.instructorID")})
 public class GcmDevice implements Serializable {
-    @JoinColumn(name = "instructorID", referencedColumnName = "instructorID")
-    @ManyToOne
-    private Instructor instructor;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "gcmDeviceID")
-    private Integer gcmDeviceID;
+    private int gcmDeviceID;
     @Basic(optional = false)
     @NotNull
     @Lob
@@ -63,7 +62,7 @@ public class GcmDevice implements Serializable {
     @Column(name = "product")
     private String product;
     @Column(name = "messageCount")
-    private Integer messageCount;
+    private int messageCount;
     @Basic(optional = false)
     @NotNull
     @Column(name = "dateRegistered")
@@ -78,7 +77,9 @@ public class GcmDevice implements Serializable {
     @JoinColumn(name = "traineeID", referencedColumnName = "traineeID")
     @ManyToOne
     private Trainee trainee;
-   
+    @JoinColumn(name = "instructorID", referencedColumnName = "instructorID")
+    @ManyToOne
+    private Instructor instructor;
     @JoinColumn(name = "authorID", referencedColumnName = "authorID")
     @ManyToOne
     private Author author;
@@ -89,21 +90,21 @@ public class GcmDevice implements Serializable {
     public GcmDevice() {
     }
 
-    public GcmDevice(Integer gcmDeviceID) {
+    public GcmDevice(int gcmDeviceID) {
         this.gcmDeviceID = gcmDeviceID;
     }
 
-    public GcmDevice(Integer gcmDeviceID, String registrationID, Date dateRegistered) {
+    public GcmDevice(int gcmDeviceID, String registrationID, Date dateRegistered) {
         this.gcmDeviceID = gcmDeviceID;
         this.registrationID = registrationID;
         this.dateRegistered = dateRegistered;
     }
 
-    public Integer getGcmDeviceID() {
+    public int getGcmDeviceID() {
         return gcmDeviceID;
     }
 
-    public void setGcmDeviceID(Integer gcmDeviceID) {
+    public void setGcmDeviceID(int gcmDeviceID) {
         this.gcmDeviceID = gcmDeviceID;
     }
 
@@ -139,11 +140,11 @@ public class GcmDevice implements Serializable {
         this.product = product;
     }
 
-    public Integer getMessageCount() {
+    public int getMessageCount() {
         return messageCount;
     }
 
-    public void setMessageCount(Integer messageCount) {
+    public void setMessageCount(int messageCount) {
         this.messageCount = messageCount;
     }
 
@@ -163,41 +164,6 @@ public class GcmDevice implements Serializable {
         this.serialNumber = serialNumber;
     }
 
- 
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (gcmDeviceID != null ? gcmDeviceID.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof GcmDevice)) {
-            return false;
-        }
-        GcmDevice other = (GcmDevice) object;
-        if ((this.gcmDeviceID == null && other.gcmDeviceID != null) || (this.gcmDeviceID != null && !this.gcmDeviceID.equals(other.gcmDeviceID))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "com.boha.coursemaker.data.GcmDevice[ gcmDeviceID=" + gcmDeviceID + " ]";
-    }
-
-    public Instructor getInstructor() {
-        return instructor;
-    }
-
-    public void setInstructor(Instructor instructor) {
-        this.instructor = instructor;
-    }
-
     public ReportUser getReportUser() {
         return reportUser;
     }
@@ -212,6 +178,14 @@ public class GcmDevice implements Serializable {
 
     public void setTrainee(Trainee trainee) {
         this.trainee = trainee;
+    }
+
+    public Instructor getInstructor() {
+        return instructor;
+    }
+
+    public void setInstructor(Instructor instructor) {
+        this.instructor = instructor;
     }
 
     public Author getAuthor() {
@@ -231,5 +205,10 @@ public class GcmDevice implements Serializable {
     }
 
   
+
+    @Override
+    public String toString() {
+        return "com.boha.coursemaker.data.GcmDevice[ gcmDeviceID=" + gcmDeviceID + " ]";
+    }
     
 }

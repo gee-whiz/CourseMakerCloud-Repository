@@ -1,7 +1,9 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package com.boha.coursemaker.data;
 
 import java.io.Serializable;
@@ -19,6 +21,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -41,41 +44,51 @@ public class Attendance implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "attendanceID")
-    private Integer attendanceID;
+    private int attendanceID;
+    @Basic(optional = false)
+    @NotNull
     @Column(name = "checkInDate")
     @Temporal(TemporalType.TIMESTAMP)
     private Date checkInDate;
+    @Basic(optional = false)
+    @NotNull
     @Column(name = "checkOutDate")
     @Temporal(TemporalType.TIMESTAMP)
     private Date checkOutDate;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "checkInLatitude")
-    private Double checkInLatitude;
+    private double checkInLatitude;
     @Column(name = "checkInLongitude")
-    private Double checkInLongitude;
+    private double checkInLongitude;
     @Column(name = "checkOutLatitude")
-    private Double checkOutLatitude;
+    private double checkOutLatitude;
     @Column(name = "checkOutLongitude")
-    private Double checkOutLongitude;
-    @JoinColumn(name = "trainingClassID", referencedColumnName = "trainingClassID")
-    @ManyToOne(optional = false)
-    private TrainingClass trainingClass;
+    private double checkOutLongitude;
     @JoinColumn(name = "traineeID", referencedColumnName = "traineeID")
     @ManyToOne(optional = false)
     private Trainee trainee;
+    @JoinColumn(name = "trainingClassID", referencedColumnName = "trainingClassID")
+    @ManyToOne(optional = false)
+    private TrainingClass trainingClass;
 
     public Attendance() {
     }
 
-    public Attendance(Integer attendanceID) {
+    public Attendance(int attendanceID) {
         this.attendanceID = attendanceID;
     }
 
-    public Integer getAttendanceID() {
+    public Attendance(int attendanceID, Date checkInDate, Date checkOutDate) {
+        this.attendanceID = attendanceID;
+        this.checkInDate = checkInDate;
+        this.checkOutDate = checkOutDate;
+    }
+
+    public int getAttendanceID() {
         return attendanceID;
     }
 
-    public void setAttendanceID(Integer attendanceID) {
+    public void setAttendanceID(int attendanceID) {
         this.attendanceID = attendanceID;
     }
 
@@ -95,44 +108,36 @@ public class Attendance implements Serializable {
         this.checkOutDate = checkOutDate;
     }
 
-    public Double getCheckInLatitude() {
+    public double getCheckInLatitude() {
         return checkInLatitude;
     }
 
-    public void setCheckInLatitude(Double checkInLatitude) {
+    public void setCheckInLatitude(double checkInLatitude) {
         this.checkInLatitude = checkInLatitude;
     }
 
-    public Double getCheckInLongitude() {
+    public double getCheckInLongitude() {
         return checkInLongitude;
     }
 
-    public void setCheckInLongitude(Double checkInLongitude) {
+    public void setCheckInLongitude(double checkInLongitude) {
         this.checkInLongitude = checkInLongitude;
     }
 
-    public Double getCheckOutLatitude() {
+    public double getCheckOutLatitude() {
         return checkOutLatitude;
     }
 
-    public void setCheckOutLatitude(Double checkOutLatitude) {
+    public void setCheckOutLatitude(double checkOutLatitude) {
         this.checkOutLatitude = checkOutLatitude;
     }
 
-    public Double getCheckOutLongitude() {
+    public double getCheckOutLongitude() {
         return checkOutLongitude;
     }
 
-    public void setCheckOutLongitude(Double checkOutLongitude) {
+    public void setCheckOutLongitude(double checkOutLongitude) {
         this.checkOutLongitude = checkOutLongitude;
-    }
-
-    public TrainingClass getTrainingClass() {
-        return trainingClass;
-    }
-
-    public void setTrainingClass(TrainingClass trainingClass) {
-        this.trainingClass = trainingClass;
     }
 
     public Trainee getTrainee() {
@@ -143,27 +148,15 @@ public class Attendance implements Serializable {
         this.trainee = trainee;
     }
 
-  
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (attendanceID != null ? attendanceID.hashCode() : 0);
-        return hash;
+    public TrainingClass getTrainingClass() {
+        return trainingClass;
     }
 
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Attendance)) {
-            return false;
-        }
-        Attendance other = (Attendance) object;
-        if ((this.attendanceID == null && other.attendanceID != null) || (this.attendanceID != null && !this.attendanceID.equals(other.attendanceID))) {
-            return false;
-        }
-        return true;
+    public void setTrainingClass(TrainingClass trainingClass) {
+        this.trainingClass = trainingClass;
     }
+
+
 
     @Override
     public String toString() {
