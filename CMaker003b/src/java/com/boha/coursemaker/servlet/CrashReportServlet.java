@@ -63,6 +63,13 @@ public class CrashReportServlet extends HttpServlet {
     @EJB
     PlatformUtil platformUtil;
 
+    /**
+     * Extract error data from Android app crash. Error identified by company in custom data.
+     * This method receives the stack trace data sent by the ACRA implementation in the mobile app.
+     * Writes the data to the ErrorStoreAndroid table in the database
+     * @param request
+     * @throws DataException 
+     */
     private void getErrorData(HttpServletRequest request) throws DataException {
         ErrorStoreAndroid e = new ErrorStoreAndroid();
         e.setAndroidVersion(request.getParameter("ANDROID_VERSION"));
