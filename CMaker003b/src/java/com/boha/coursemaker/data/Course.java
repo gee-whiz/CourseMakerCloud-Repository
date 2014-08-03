@@ -34,6 +34,9 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "course")
 @NamedQueries({
+    @NamedQuery(name = "Course.findByNameInCategory",
+            query = "select a from Course a where a.courseName = :courseName "
+            + "and a.category.categoryID = :id"),
     @NamedQuery(name = "Course.findByCategoryID",
             query = "select a from Course a "
             + "where a.category.categoryID = :id"

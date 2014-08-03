@@ -45,6 +45,10 @@ import javax.validation.constraints.Size;
         "select a from Administrator a where a.email = :email "
                     + " and a.password = :pswd")})
 public class Administrator implements Serializable {
+    @Column(name = "activeFlag")
+    private Integer activeFlag;
+    @Column(name = "superUserFlag")
+    private Integer superUserFlag;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -82,10 +86,6 @@ public class Administrator implements Serializable {
     @Column(name = "dateRegistered")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateRegistered;
-    @Column(name = "activeFlag")
-    private int activeFlag;
-    @Column(name = "superUserFlag")
-    private int superUserFlag;
     @Lob
     @Size(max = 65535)
     @Column(name = "GCMRegistrationID")
@@ -181,21 +181,6 @@ public class Administrator implements Serializable {
         this.dateRegistered = dateRegistered;
     }
 
-    public int getActiveFlag() {
-        return activeFlag;
-    }
-
-    public void setActiveFlag(int activeFlag) {
-        this.activeFlag = activeFlag;
-    }
-
-    public int getSuperUserFlag() {
-        return superUserFlag;
-    }
-
-    public void setSuperUserFlag(int superUserFlag) {
-        this.superUserFlag = superUserFlag;
-    }
 
     public String getGCMRegistrationID() {
         return gCMRegistrationID;
@@ -273,6 +258,22 @@ public class Administrator implements Serializable {
     @Override
     public String toString() {
         return "com.boha.coursemaker.data.Administrator[ administratorID=" + administratorID + " ]";
+    }
+
+    public Integer getActiveFlag() {
+        return activeFlag;
+    }
+
+    public void setActiveFlag(Integer activeFlag) {
+        this.activeFlag = activeFlag;
+    }
+
+    public Integer getSuperUserFlag() {
+        return superUserFlag;
+    }
+
+    public void setSuperUserFlag(Integer superUserFlag) {
+        this.superUserFlag = superUserFlag;
     }
     
 }

@@ -90,7 +90,7 @@ public class AuthorServlet extends HttpServlet {
                         break;
                     
                     case RequestDTO.ADD_CATEGORY:
-                        resp = authorUtil.addCategory(dto.getCompanyID(), dto.getCategory());
+                        resp = authorUtil.addCategory(dto.getCategory());
                         break;
                     case RequestDTO.LOGIN_AUTHOR:
                         resp = authorUtil.loginAuthor(dto.getEmail(), dto.getPassword(), dto.getGcmDevice(), platformUtil);

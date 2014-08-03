@@ -188,6 +188,11 @@ public class RequestDTO {
     public static final int GET_OVERALL_STATS = 1012;
     public static final int GET_COMPANY_STATS = 1013;
     public static final int GET_SERVER_LOG = 1014;
+    
+    public static final int GET_SKILLS_LOOKUP = 1100;
+    public static final int ADD_TRAINEE_SKILLS = 1101;
+    public static final int GET_TRAINEE_SKILLS = 1102;
+    public static final int GET_TRAINING_CLASS_SKILLS = 1103;
 
     public static String getRequestString(int requestType) {
         switch (requestType) {

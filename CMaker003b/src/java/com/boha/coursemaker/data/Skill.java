@@ -1,0 +1,93 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package com.boha.coursemaker.data;
+
+import java.io.Serializable;
+import java.util.List;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
+/**
+ *
+ * @author aubreyM
+ */
+@Entity
+@Table(name = "skill")
+@NamedQueries({
+    @NamedQuery(name = "Skill.findAll", query = "SELECT s FROM Skill s"),
+    @NamedQuery(name = "Skill.findBySkillID", query = "SELECT s FROM Skill s WHERE s.skillID = :skillID"),
+    @NamedQuery(name = "Skill.findBySkillName", query = "SELECT s FROM Skill s WHERE s.skillName = :skillName")})
+public class Skill implements Serializable {
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "skillID")
+    private int skillID;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 255)
+    @Column(name = "skillName")
+    private String skillName;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "skill")
+    private List<TraineeSkill> traineeSkillList;
+
+    public Skill() {
+    }
+
+    public Skill(int skillID) {
+        this.skillID = skillID;
+    }
+
+    public Skill(int skillID, String skillName) {
+        this.skillID = skillID;
+        this.skillName = skillName;
+    }
+
+    public int getSkillID() {
+        return skillID;
+    }
+
+    public void setSkillID(int skillID) {
+        this.skillID = skillID;
+    }
+
+    public String getSkillName() {
+        return skillName;
+    }
+
+    public void setSkillName(String skillName) {
+        this.skillName = skillName;
+    }
+
+    public List<TraineeSkill> getTraineeSkillList() {
+        return traineeSkillList;
+    }
+
+    public void setTraineeSkillList(List<TraineeSkill> traineeSkillList) {
+        this.traineeSkillList = traineeSkillList;
+    }
+
+ 
+
+    @Override
+    public String toString() {
+        return "com.boha.coursemaker.data.Skill[ skillID=" + skillID + " ]";
+    }
+    
+}

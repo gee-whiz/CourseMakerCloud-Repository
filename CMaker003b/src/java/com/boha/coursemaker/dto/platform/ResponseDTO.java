@@ -32,12 +32,15 @@ import com.boha.coursemaker.dto.LessonResourceDTO;
 import com.boha.coursemaker.dto.ObjectiveDTO;
 import com.boha.coursemaker.dto.ProvinceDTO;
 import com.boha.coursemaker.dto.RatingDTO;
+import com.boha.coursemaker.dto.SkillDTO;
+import com.boha.coursemaker.dto.SkillLevelDTO;
 import com.boha.coursemaker.dto.TeamDTO;
 import com.boha.coursemaker.dto.TeamMemberDTO;
 import com.boha.coursemaker.dto.TraineeDTO;
 import com.boha.coursemaker.dto.TraineeEquipmentDTO;
 import com.boha.coursemaker.dto.TraineeRatingDTO;
 import com.boha.coursemaker.dto.TraineeShoutDTO;
+import com.boha.coursemaker.dto.TraineeSkillDTO;
 import com.boha.coursemaker.dto.TrainingClassCourseDTO;
 import com.boha.coursemaker.dto.TrainingClassDTO;
 import com.boha.coursemaker.dto.TrainingClassEventDTO;
@@ -127,7 +130,35 @@ public class ResponseDTO {
     
     private DemoAnnouncementDTO demoAnnouncement;
     private List<DemoAnnouncementDTO> demoAnnouncementList;
+    private List<SkillDTO> skillList;
+    private List<SkillLevelDTO> skillLevelList;
+    private List<TraineeSkillDTO> traineeSkillList;
 
+    public List<SkillDTO> getSkillList() {
+        return skillList;
+    }
+
+    public void setSkillList(List<SkillDTO> skillList) {
+        this.skillList = skillList;
+    }
+
+    public List<SkillLevelDTO> getSkillLevelList() {
+        return skillLevelList;
+    }
+
+    public void setSkillLevelList(List<SkillLevelDTO> skillLevelList) {
+        this.skillLevelList = skillLevelList;
+    }
+
+    public List<TraineeSkillDTO> getTraineeSkillList() {
+        return traineeSkillList;
+    }
+
+    public void setTraineeSkillList(List<TraineeSkillDTO> traineeSkillList) {
+        this.traineeSkillList = traineeSkillList;
+    }
+
+    
     public TeamDTO getTeam() {
         return team;
     }

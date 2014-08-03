@@ -32,6 +32,9 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "Objective.findByCourse", 
         query = "select a from Objective a where "
                     + " a.course.courseID = :id "),
+     @NamedQuery(name = "Objective.findByNameInCourse", 
+        query = "select a from Objective a where a.objectiveName = :name and " 
+                    + " a.course.courseID = :id "),
     @NamedQuery(name = "Objective.findByLesson", 
         query = "select a from Objective a where "
                     + " a.course.courseID = :id "),
@@ -51,10 +54,8 @@ public class Objective implements Serializable {
     @Size(min = 1, max = 255)
     @Column(name = "objectiveName")
     private String objectiveName;
-    @Basic(optional = false)
-    @NotNull
+    
     @Lob
-    @Size(min = 1, max = 65535)
     @Column(name = "description")
     private String description;
     @JoinColumn(name = "courseID", referencedColumnName = "courseID")

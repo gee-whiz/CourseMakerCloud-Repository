@@ -38,6 +38,8 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "Activity.findByCourseID",
             query = "select a from Activity a where a.course.courseID = :id"
             + " order by a.priorityFlag"),
+    @NamedQuery(name = "Activity.findByActivityNameInCourse",
+            query = "select a from Activity a where a.course.courseID = :id and a.activityName = :name "),
     @NamedQuery(name = "Activity.findByCategory",
             query = "select a from Activity a "
             + "where a.course.category.categoryID = :id"),

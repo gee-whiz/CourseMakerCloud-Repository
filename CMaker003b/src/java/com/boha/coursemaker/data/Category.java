@@ -33,6 +33,8 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "category")
 @NamedQueries({
+     @NamedQuery(name = "Category.findByNameInCompany", 
+             query = "select a from Category a where a.company.companyID = :id and a.categoryName = :name "),
     @NamedQuery(name = "Category.findByCompanyID", query = "select a from Category a "
                     + " where a.company.companyID = :id"
                     + " order by a.categoryName")})

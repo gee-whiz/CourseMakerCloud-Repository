@@ -48,6 +48,12 @@ import javax.validation.constraints.Size;
             query = "select a from Trainee a "
             + "where a.email = :email and a.password = :pswd")})
 public class Trainee implements Serializable {
+    @Column(name = "gender")
+    private int gender;
+    @Column(name = "activeFlag")
+    private int activeFlag;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "trainee")
+    private List<TraineeSkill> traineeSkillList;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -68,7 +74,6 @@ public class Trainee implements Serializable {
     @Size(min = 1, max = 45)
     @Column(name = "lastName")
     private String lastName;
-    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 100)
@@ -84,8 +89,6 @@ public class Trainee implements Serializable {
     @Column(name = "dateRegistered")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateRegistered;
-    @Column(name = "gender")
-    private int gender;
     @Size(max = 45)
     @Column(name = "IDNumber")
     private String iDNumber;
@@ -95,8 +98,6 @@ public class Trainee implements Serializable {
     @Size(max = 45)
     @Column(name = "password")
     private String password;
-    @Column(name = "activeFlag")
-    private int activeFlag;
     @Lob
     @Size(max = 65535)
     @Column(name = "GCMRegistrationID")
@@ -214,13 +215,6 @@ public class Trainee implements Serializable {
         this.dateRegistered = dateRegistered;
     }
 
-    public int getGender() {
-        return gender;
-    }
-
-    public void setGender(int gender) {
-        this.gender = gender;
-    }
 
     public String getIDNumber() {
         return iDNumber;
@@ -246,13 +240,6 @@ public class Trainee implements Serializable {
         this.password = password;
     }
 
-    public int getActiveFlag() {
-        return activeFlag;
-    }
-
-    public void setActiveFlag(int activeFlag) {
-        this.activeFlag = activeFlag;
-    }
 
     public String getGCMRegistrationID() {
         return gCMRegistrationID;
@@ -401,6 +388,30 @@ public class Trainee implements Serializable {
     @Override
     public String toString() {
         return "com.boha.coursemaker.data.Trainee[ traineeID=" + traineeID + " ]";
+    }
+
+    public int getGender() {
+        return gender;
+    }
+
+    public void setGender(int gender) {
+        this.gender = gender;
+    }
+
+    public int getActiveFlag() {
+        return activeFlag;
+    }
+
+    public void setActiveFlag(int activeFlag) {
+        this.activeFlag = activeFlag;
+    }
+
+    public List<TraineeSkill> getTraineeSkillList() {
+        return traineeSkillList;
+    }
+
+    public void setTraineeSkillList(List<TraineeSkill> traineeSkillList) {
+        this.traineeSkillList = traineeSkillList;
     }
 
 }

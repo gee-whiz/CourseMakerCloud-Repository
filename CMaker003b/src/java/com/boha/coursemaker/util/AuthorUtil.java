@@ -35,6 +35,7 @@ import javax.ejb.TransactionManagementType;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import javax.persistence.RollbackException;
 
@@ -325,43 +326,63 @@ public class AuthorUtil {
         return dto;
     }
 
-    public ResponseDTO addCategory(int companyID,
+    public ResponseDTO addCategory(
             CategoryDTO category) throws DataException {
-
+        log.log(Level.INFO, "......starting to add category");
         ResponseDTO d = new ResponseDTO();
-
         try {
-            Company tc = DataUtil.getCompanyByID(companyID, em);
-
-            Category a = new Category();
-            a.setCategoryName(category.getCategoryName());
-            a.setCompany(tc);
-            em.persist(a);
-
-            d.setCategory(new CategoryDTO(a));
-
-            Query q = em.createNamedQuery("Category.findByCompanyID", Category.class);
-            q.setParameter("id", companyID);
-            List<Category> list = q.getResultList();
-            List<CategoryDTO> dto = new ArrayList<>();
-            for (Category c : list) {
-                dto.add(new CategoryDTO(c));
+            Query q = em.createNamedQuery("Category.findByNameInCompany", Category.class);
+            q.setParameter("id", category.getCompanyID());
+            q.setParameter("name", category.getCategoryName());
+            Category cat = null;
+            try {
+                cat = (Category) q.getSingleResult();
+            } catch (javax.persistence.NoResultException e) {
             }
-            d.setCategoryList(dto);
-            d.setMessage("category added on server");
-            //log.log(Level.INFO, "Category loaded: {0}",
-            //      new Object[]{a.getCategoryName()});
-        } catch (RollbackException e) {
-            d.setStatusCode(ResponseDTO.ERROR_DUPLICATE);
+
+            Company tc = em.find(Company.class, category.getCompanyID());
+            if (cat == null) {
+                log.log(Level.INFO, "new category to be added: {0}", category.getCategoryName());
+                Category a = new Category();
+                a.setCategoryName(category.getCategoryName());
+                a.setCompany(tc);
+                em.persist(a);
+                cat = (Category) q.getSingleResult();
+            }
+            d.setCategory(new CategoryDTO(cat));
+            d.setCategoryList(getCompanyCategories(category.getCompanyID()));
+
+            log.log(Level.INFO, "category added or ignored: {0}", category.getCategoryName());
+
+        } catch (PersistenceException e) {
+            log.log(Level.WARNING, "Duplicate category", e);
             d.setMessage("The category already exists");
+            d.setCategoryList(getCompanyCategories(category.getCompanyID()));
+            for (CategoryDTO c : d.getCategoryList()) {
+                if (c.getCategoryName().equalsIgnoreCase(category.getCategoryName())) {
+                    d.setCategory(c);
+                    break;
+                }
+            }
 
         } catch (Exception e) {
             log.log(Level.SEVERE, "***ERROR*** Adding category", e);
             throw new DataException(DataUtil.getErrorString(e));
-        } finally {
         }
 
         return d;
+    }
+
+    private List<CategoryDTO> getCompanyCategories(int companyID) {
+        em.clear();
+        Query q = em.createNamedQuery("Category.findByCompanyID", Category.class);
+        q.setParameter("id", companyID);
+        List<Category> list = q.getResultList();
+        List<CategoryDTO> dto = new ArrayList<>();
+        for (Category c : list) {
+            dto.add(new CategoryDTO(c));
+        }
+        return dto;
     }
 
     public ResponseDTO deleteCategory(
@@ -939,25 +960,119 @@ public class AuthorUtil {
             throws DataException {
         log.log(Level.INFO, "### adding course, company: {0} author: {1}", new Object[]{companyID, authorID});
         ResponseDTO d = new ResponseDTO();
-
+        boolean isNew = false;
         try {
+            Query qx = em.createNamedQuery("Course.findByNameInCategory", Course.class);
+            qx.setParameter("id", course.getCategoryID());
+            qx.setParameter("courseName", course.getCourseName());
+            qx.setMaxResults(1);
+            Course cx = null;
+            try {
+                cx = (Course) qx.getSingleResult();
+            } catch (javax.persistence.NoResultException e) {
+            }
+            if (cx == null) {
+                isNew = true;
+                Course c = new Course();
+                c.setCourseName(course.getCourseName());
+                c.setDescription(course.getDescription());
+                c.setDateUpdated(new Date());
+                c.setCategory(em.find(Category.class, course.getCategoryID()));
+                c.setCompany(em.find(Company.class, companyID));
+                c.setDateUpdated(new Date());
+                em.persist(c);
+                cx = (Course) qx.getSingleResult();
+            } else {
+                cx.setDescription(course.getDescription());
+                cx.setDateUpdated(new Date());
+                em.merge(cx);
+            }
 
-            Course c = new Course();
-            c.setCourseName(course.getCourseName());
-            c.setDescription(course.getDescription());
-            c.setDateUpdated(new Date());
-            c.setCategory(em.find(Category.class, course.getCategoryID()));
-            c.setCompany(em.find(Company.class, companyID));
-            c.setDateUpdated(new Date());
+            d.setCourse(new CourseDTO(cx));
+            if (authorID > 0 && isNew) {
 
-            em.persist(c);
-            if (authorID > 0) {
                 CourseAuthor ca = new CourseAuthor();
                 ca.setAuthor(em.find(Author.class, authorID));
-                ca.setCourse(c);
+                ca.setCourse(cx);
                 ca.setDateUpdated(new Date());
                 em.persist(ca);
+
             }
+            if (course.getActivityList() != null) {
+                for (ActivityDTO a : course.getActivityList()) {
+                    Query qv = em.createNamedQuery("Activity.findByActivityNameInCourse", Activity.class);
+                    qv.setParameter("id", cx.getCourseID());
+                    qv.setParameter("name", a.getActivityName());
+                    qv.setMaxResults(1);
+                    Activity realActivity = null;
+                    try { 
+                        realActivity = (Activity) qv.getSingleResult();
+                    } catch (javax.persistence.NoResultException e) {}
+                    if (realActivity == null) {
+                        Activity act = new Activity();
+                        act.setCourse(cx);
+                        act.setActivityName(a.getActivityName());
+                        act.setDescription(a.getDescription());
+                        em.persist(act);
+                        realActivity = (Activity) qv.getSingleResult();
+                    } else {
+                        realActivity.setDescription(a.getDescription());
+                        em.merge(realActivity);
+                    }
+
+                }
+            }
+            if (course.getLessonResourceList() != null) {
+                for (LessonResourceDTO a : course.getLessonResourceList()) {
+                    Query qv = em.createNamedQuery("LessonResource.findByLinkInCourse", LessonResource.class);
+                    qv.setParameter("id", cx.getCourseID());
+                    qv.setParameter("url", a.getUrl());
+                    qv.setMaxResults(1);
+                    LessonResource realLink = null;
+                    try {
+                        realLink = (LessonResource) qv.getSingleResult();
+                    } catch (javax.persistence.NoResultException e) {}
+                    if (realLink == null) {
+                        LessonResource link = new LessonResource();
+                        link.setCourse(cx);
+                        link.setUrl(a.getUrl());
+                        link.setDateUpdated(new Date());
+                        link.setResourceName(a.getResourceName());
+                        link.setAuthor(em.find(Author.class, authorID));
+                        em.persist(link);
+                        realLink = (LessonResource) qv.getSingleResult();
+                    } else {
+                        realLink.setResourceName(a.getResourceName());
+                        em.merge(realLink);
+                    }
+                }
+            }
+            if (course.getObjectiveList() != null) {
+                for (ObjectiveDTO a : course.getObjectiveList()) {
+                    Query qv = em.createNamedQuery("Objective.findByNameInCourse", Objective.class);
+                    qv.setParameter("id", cx.getCourseID());
+                    qv.setParameter("name", a.getObjectiveName());
+                    qv.setMaxResults(1);
+                    Objective realObj = null;
+                    try {
+                        realObj = (Objective) qv.getSingleResult();
+                    } catch (javax.persistence.NoResultException e) {}
+                    if (realObj == null) {
+                        Objective objective = new Objective();
+                        objective.setCourse(cx);
+                        objective.setObjectiveName(a.getObjectiveName());
+                        if (a.getDescription() == null) {
+                            a.setDescription("");
+                        }
+                        objective.setDescription(a.getDescription());
+                        em.persist(objective);
+                    } else {
+                        realObj.setDescription(a.getDescription());
+                        em.merge(realObj);
+                    }
+                }
+            }
+
             Query q = em.createNamedQuery("Course.findByCategoryID", Course.class);
             q.setParameter("id", course.getCategoryID());
             List<Course> list = q.getResultList();
@@ -968,7 +1083,7 @@ public class AuthorUtil {
             d.setCourseList(dto);
             d.setMessage("course added on server");
             log.log(Level.INFO, "### Course added: {0} courses: {1}", new Object[]{course.getCourseName(), dto.size()});
-        } catch (RollbackException e) {
+        } catch (PersistenceException e) {
             d.setStatusCode(ResponseDTO.ERROR_DUPLICATE);
             d.setMessage("The course already exists");
 

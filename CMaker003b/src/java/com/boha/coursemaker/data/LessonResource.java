@@ -32,6 +32,8 @@ import javax.validation.constraints.Size;
 @NamedQueries({
     @NamedQuery(name = "LessonResource.findByCategoryID", query = "select a from LessonResource a "
             + "where a.course.category.categoryID = :id"),
+    @NamedQuery(name = "LessonResource.findByLinkInCourse", query = "select a from LessonResource a "
+            + "where a.url = :url and a.course.courseID = :id "),
     
     @NamedQuery(name = "LessonResource.findByAuthorID",
             query = "select a from LessonResource a, CourseAuthor b "

@@ -45,6 +45,10 @@ import javax.validation.constraints.Size;
     
     })
 public class TrainingClass implements Serializable {
+    @Column(name = "isOpen")
+    private Integer isOpen;
+    @Column(name = "calendarID")
+    private Integer calendarID;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -66,10 +70,6 @@ public class TrainingClass implements Serializable {
     @Column(name = "endDate")
     @Temporal(TemporalType.TIMESTAMP)
     private Date endDate;
-    @Column(name = "isOpen")
-    private int isOpen;
-    @Column(name = "calendarID")
-    private int calendarID;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "trainingClass")
     private List<TrainingClassEvent> trainingClassEventList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "trainingClass")
@@ -141,21 +141,6 @@ public class TrainingClass implements Serializable {
         this.endDate = endDate;
     }
 
-    public int getIsOpen() {
-        return isOpen;
-    }
-
-    public void setIsOpen(int isOpen) {
-        this.isOpen = isOpen;
-    }
-
-    public int getCalendarID() {
-        return calendarID;
-    }
-
-    public void setCalendarID(int calendarID) {
-        this.calendarID = calendarID;
-    }
 
     public List<TrainingClassEvent> getTrainingClassEventList() {
         return trainingClassEventList;
@@ -248,6 +233,22 @@ public class TrainingClass implements Serializable {
     @Override
     public String toString() {
         return "com.boha.coursemaker.data.TrainingClass[ trainingClassID=" + trainingClassID + " ]";
+    }
+
+    public Integer getIsOpen() {
+        return isOpen;
+    }
+
+    public void setIsOpen(Integer isOpen) {
+        this.isOpen = isOpen;
+    }
+
+    public Integer getCalendarID() {
+        return calendarID;
+    }
+
+    public void setCalendarID(Integer calendarID) {
+        this.calendarID = calendarID;
     }
     
 }

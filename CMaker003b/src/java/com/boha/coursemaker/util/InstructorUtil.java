@@ -13,8 +13,11 @@ import com.boha.coursemaker.data.GcmDevice;
 import com.boha.coursemaker.data.HelpRequest;
 import com.boha.coursemaker.data.InstructorClass;
 import com.boha.coursemaker.data.LessonResource;
+import com.boha.coursemaker.data.Skill;
+import com.boha.coursemaker.data.SkillLevel;
 import com.boha.coursemaker.data.Trainee;
 import com.boha.coursemaker.data.TraineeRating;
+import com.boha.coursemaker.data.TraineeSkill;
 import com.boha.coursemaker.data.TrainingClass;
 import com.boha.coursemaker.data.TrainingClassCourse;
 import com.boha.coursemaker.data.TrainingClassEvent;
@@ -29,9 +32,12 @@ import com.boha.coursemaker.dto.InstructorClassDTO;
 import com.boha.coursemaker.dto.InstructorDTO;
 import com.boha.coursemaker.dto.InstructorRatingDTO;
 import com.boha.coursemaker.dto.LessonResourceDTO;
+import com.boha.coursemaker.dto.SkillDTO;
+import com.boha.coursemaker.dto.SkillLevelDTO;
 import com.boha.coursemaker.dto.platform.ResponseDTO;
 import com.boha.coursemaker.dto.platform.TotalsDTO;
 import com.boha.coursemaker.dto.TraineeDTO;
+import com.boha.coursemaker.dto.TraineeSkillDTO;
 import com.boha.coursemaker.dto.TrainingClassCourseDTO;
 import com.boha.coursemaker.dto.TrainingClassDTO;
 import com.boha.coursemaker.dto.TrainingClassEventDTO;
@@ -69,7 +75,72 @@ public class InstructorUtil {
     @PersistenceContext
     EntityManager em;
 
-    public ResponseDTO deleteTrainingClassEvent(Integer id) throws DataException {
+    public ResponseDTO getSkillLookups() throws DataException {
+        ResponseDTO d = new ResponseDTO();
+        try {
+            Query q = em.createNamedQuery("Skill.findAll", Skill.class);
+            List<Skill> list = q.getResultList();
+            d.setSkillList(new ArrayList<SkillDTO>());
+            for (Skill ts : list) {
+                d.getSkillList().add(new SkillDTO(ts));
+            }
+             q = em.createNamedQuery("SkillLevel.findAll", SkillLevel.class);
+            List<SkillLevel> blist = q.getResultList();
+            d.setSkillLevelList(new ArrayList<SkillLevelDTO>());
+            for (SkillLevel ts : blist) {
+                d.getSkillLevelList().add(new SkillLevelDTO(ts));
+            }
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to get skill lookups", e);
+            throw new DataException("Failed to get skill lookups\n" + DataUtil.getErrorString(e));
+        }
+
+        return d;
+    }
+    public ResponseDTO getTraineeSkills(int traineeID) throws DataException {
+        ResponseDTO d = new ResponseDTO();
+        try {
+            Query q = em.createNamedQuery("TraineeSkill.findByTrainee", TraineeSkill.class);
+            q.setParameter("id", traineeID);
+            List<TraineeSkill> list = q.getResultList();
+            d.setTraineeSkillList(new ArrayList<TraineeSkillDTO>());
+            for (TraineeSkill ts : list) {
+                d.getTraineeSkillList().add(new TraineeSkillDTO(ts));
+            }
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to add trainee skills", e);
+            throw new DataException("Failed to add trainee skills\n" + DataUtil.getErrorString(e));
+        }
+
+        return d;
+    }
+
+    public ResponseDTO addTraineeSkills(List<TraineeSkillDTO> list) throws DataException {
+        ResponseDTO d = new ResponseDTO();
+        try {
+            Trainee t = em.find(Trainee.class, list.get(0).getTraineeID());
+            Instructor i = em.find(Instructor.class, list.get(0).getInstructorID());
+            Skill s = em.find(Skill.class, list.get(0).getSkillID());
+            SkillLevel sl = em.find(SkillLevel.class, list.get(0).getSkillLevelID());
+            for (TraineeSkillDTO x : list) {
+                TraineeSkill z = new TraineeSkill();
+                z.setDateAssessed(new Date());
+                z.setInstructor(i);
+                z.setSkill(s);
+                z.setSkillLevel(sl);
+                z.setTrainee(t);
+                em.persist(z);
+            }
+
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to add trainee skills", e);
+            throw new DataException("Failed to add trainee skills\n" + DataUtil.getErrorString(e));
+        }
+
+        return d;
+    }
+
+    public ResponseDTO deleteTrainingClassEvent(int id) throws DataException {
 
         ResponseDTO d = new ResponseDTO();
         try {
@@ -132,9 +203,8 @@ public class InstructorUtil {
             tce.setStartDate(new Date(event.getStartDate()));
             tce.setEndDate(new Date(event.getEndDate()));
 
-
             em.persist(tce);
-            Query q = em.createNamedQuery("TrainingClassEvent.findByClass",TrainingClassEvent.class);
+            Query q = em.createNamedQuery("TrainingClassEvent.findByClass", TrainingClassEvent.class);
             q.setParameter("id", tc.getTrainingClassID());
             List<TrainingClassEvent> list = q.getResultList();
             List<TrainingClassEventDTO> dto = new ArrayList<>();
@@ -158,13 +228,13 @@ public class InstructorUtil {
         return d;
     }
 
-    public ResponseDTO getTrainingClassesByInstructor(Integer instructorID) throws DataException {
+    public ResponseDTO getTrainingClassesByInstructor(int instructorID) throws DataException {
         long s = System.currentTimeMillis();
         ResponseDTO r = new ResponseDTO();
 
         try {
 
-            Query q = em.createNamedQuery("TrainingClass.findByInstructor",TrainingClass.class);
+            Query q = em.createNamedQuery("TrainingClass.findByInstructor", TrainingClass.class);
             q.setParameter("id", instructorID);
             List<TrainingClass> rList = q.getResultList();
             List<TrainingClassDTO> dto = new ArrayList<>();
@@ -209,9 +279,9 @@ public class InstructorUtil {
         return r;
     }
 
-    private List<TraineeDTO> getTraineesByInstructor(Integer instructorID) {
+    private List<TraineeDTO> getTraineesByInstructor(int instructorID) {
 
-        Query q2 = em.createNamedQuery("Trainee.findByInstructor",Trainee.class);
+        Query q2 = em.createNamedQuery("Trainee.findByInstructor", Trainee.class);
         q2.setParameter("id", instructorID);
         List<Trainee> tList = q2.getResultList();
         List<TraineeDTO> traineeList = new ArrayList<>();
@@ -221,28 +291,26 @@ public class InstructorUtil {
         return traineeList;
     }
 
-    private List<TrainingClassCourseDTO> getTrainingClassCoursesByInstructor(Integer instructorID) {
+    private List<TrainingClassCourseDTO> getTrainingClassCoursesByInstructor(int instructorID) {
 
-        Query q = em.createNamedQuery("TrainingClassCourse.findByInstructor",TrainingClassCourse.class);
+        Query q = em.createNamedQuery("TrainingClassCourse.findByInstructor", TrainingClassCourse.class);
         q.setParameter("id", instructorID);
         List<TrainingClassCourse> list = q.getResultList();
         List<TrainingClassCourseDTO> dList = new ArrayList<>();
         for (TrainingClassCourse tcc : list) {
             dList.add(new TrainingClassCourseDTO(tcc));
         }
-        
+
         log.log(Level.OFF, "TrainingClassCourses for instructor: {0}", dList.size());
         return dList;
     }
 
-    
-
-    public ResponseDTO getTrainingClassEvents(Integer trainingClassID) throws DataException {
+    public ResponseDTO getTrainingClassEvents(int trainingClassID) throws DataException {
 
         ResponseDTO r = new ResponseDTO();
         List<TrainingClassEventDTO> list = new ArrayList<>();
 
-        Query q = em.createNamedQuery("TrainingClassEvent.findByClass",TrainingClassEvent.class);
+        Query q = em.createNamedQuery("TrainingClassEvent.findByClass", TrainingClassEvent.class);
         q.setParameter("id", trainingClassID);
         List<TrainingClassEvent> rList = q.getResultList();
         for (TrainingClassEvent tce : rList) {
@@ -252,11 +320,11 @@ public class InstructorUtil {
         return r;
     }
 
-    public List<InstructorRatingDTO> getInstructorRatings(Integer courseTraineeActivityID) throws DataException {
+    public List<InstructorRatingDTO> getInstructorRatings(int courseTraineeActivityID) throws DataException {
 
         List<InstructorRatingDTO> list = new ArrayList<>();
 
-        Query q = em.createNamedQuery("InstructorRating.findByInstructor",InstructorRating.class);
+        Query q = em.createNamedQuery("InstructorRating.findByInstructor", InstructorRating.class);
         q.setParameter("id", courseTraineeActivityID);
         List<InstructorRating> rList = q.getResultList();
         for (InstructorRating r : rList) {
@@ -266,7 +334,7 @@ public class InstructorUtil {
         return list;
     }
 
-    public ResponseDTO deleteInstructorClass(Integer classID) throws DataException {
+    public ResponseDTO deleteInstructorClass(int classID) throws DataException {
         InstructorClass ic = DataUtil.getInstructorClassByID(classID, em);
         if (ic == null) {
             throw new DataException("InstructorClass is NULL, cannot delete the record");
@@ -278,7 +346,7 @@ public class InstructorUtil {
 
             em.remove(ic);
 
-            Query q = em.createNamedQuery("InstructorClass.findByInstructorID",InstructorClass.class);
+            Query q = em.createNamedQuery("InstructorClass.findByInstructorID", InstructorClass.class);
             q.setParameter("id", ins.getInstructorID());
             List<InstructorClass> rList = q.getResultList();
             List<InstructorClassDTO> dto = new ArrayList<>();
@@ -299,7 +367,7 @@ public class InstructorUtil {
     }
 
     public ResponseDTO rateTrainee(CourseTraineeActivityDTO dto,
-            Integer instructorID) throws DataException {
+            int instructorID) throws DataException {
         ResponseDTO resp = new ResponseDTO();
 
         try {
@@ -316,7 +384,6 @@ public class InstructorUtil {
             em.persist(ir);
 
             //log.log(Level.INFO, "Instructor rating added OK");
-
             //update trainee completion flag
             if (dto.getCompletedFlag() > 0) {
                 cta.setCompletedFlag(dto.getCompletedFlag());
@@ -339,16 +406,16 @@ public class InstructorUtil {
         return resp;
     }
 
-    public ResponseDTO getHelpRequests(Integer instructorID,
+    public ResponseDTO getHelpRequests(int instructorID,
             long startDate, long endDate) {
         ResponseDTO resp = new ResponseDTO();
 
         Query q;
         if (startDate == 0) {
-            q = em.createNamedQuery("HelpRequest.findByInstructor",HelpRequest.class);
+            q = em.createNamedQuery("HelpRequest.findByInstructor", HelpRequest.class);
             q.setMaxResults(100);
         } else {
-            q = em.createNamedQuery("HelpRequest.findByInstructorPeriod",HelpRequest.class);
+            q = em.createNamedQuery("HelpRequest.findByInstructorPeriod", HelpRequest.class);
             q.setParameter("start", new Date(startDate));
             q.setParameter("end", new Date(endDate));
         }
@@ -363,7 +430,7 @@ public class InstructorUtil {
         return resp;
     }
 
-    public List<Instructor> getInstructorsByClass(Integer trainingClassID) {
+    public List<Instructor> getInstructorsByClass(int trainingClassID) {
 
         Query q = em.createNamedQuery("Instructor.findByClass", Instructor.class);
         q.setParameter("id", trainingClassID);
@@ -379,7 +446,7 @@ public class InstructorUtil {
 
     }
 
-    public ResponseDTO getTraineeActivityByCompany(Integer companyID) throws DataException {
+    public ResponseDTO getTraineeActivityByCompany(int companyID) throws DataException {
         ResponseDTO response = new ResponseDTO();
         response.setTotals(new ArrayList<TotalsDTO>());
 
@@ -443,7 +510,7 @@ public class InstructorUtil {
         return response;
     }
 
-    public long countTrainingClassCoursesByInstructor(Integer instructorID) {
+    public long countTrainingClassCoursesByInstructor(int instructorID) {
 
         Query q = em.createNamedQuery("TrainingClassCourse.countByInstructor");
         q.setParameter("instructorID", instructorID);
@@ -453,11 +520,11 @@ public class InstructorUtil {
 
     }
 
-    public ResponseDTO getClassCoursesByInstructor(Integer instructorID) throws DataException {
+    public ResponseDTO getClassCoursesByInstructor(int instructorID) throws DataException {
         ResponseDTO response = new ResponseDTO();
 
         try {
-            Query q = em.createNamedQuery("TrainingClassCourse.findByInstructor",TrainingClassCourse.class);
+            Query q = em.createNamedQuery("TrainingClassCourse.findByInstructor", TrainingClassCourse.class);
             q.setParameter("instructorID", instructorID);
             List<TrainingClassCourse> list = q.getResultList();
             response.setTrainingClassCourseList(new ArrayList<TrainingClassCourseDTO>());
@@ -475,7 +542,7 @@ public class InstructorUtil {
     }
 
     private List<InstructorClass> getInstructorClasses(Instructor instructor, EntityManager em) {
-        Query q = em.createNamedQuery("InstructorClass.findByInstructorID",InstructorClass.class);
+        Query q = em.createNamedQuery("InstructorClass.findByInstructorID", InstructorClass.class);
         q.setParameter("id", instructor.getInstructorID());
         List<InstructorClass> list = q.getResultList();
         //log.log(Level.INFO, "Instructor classes found: {0}", list.size());
@@ -483,17 +550,17 @@ public class InstructorUtil {
     }
 
     private List<Trainee> getTrainees(TrainingClass tc, EntityManager em) {
-        Query q = em.createNamedQuery("Trainee.findByClass",Trainee.class);
+        Query q = em.createNamedQuery("Trainee.findByClass", Trainee.class);
         q.setParameter("id", tc.getTrainingClassID());
         List<Trainee> list = q.getResultList();
         return list;
     }
 
-    private List<TraineeRating> getTraineeRatingsByClass(Integer trainingClassID, EntityManager em) {
+    private List<TraineeRating> getTraineeRatingsByClass(int trainingClassID, EntityManager em) {
         if (em == null) {
             em = EMUtil.getEntityManager();
         }
-        Query q = em.createNamedQuery("TraineeRating.findByClass",TraineeRating.class);
+        Query q = em.createNamedQuery("TraineeRating.findByClass", TraineeRating.class);
         q.setParameter("id", trainingClassID);
         List<TraineeRating> list = q.getResultList();
         return list;
@@ -503,23 +570,21 @@ public class InstructorUtil {
         if (em == null) {
             em = EMUtil.getEntityManager();
         }
-        Query q = em.createNamedQuery("TraineeRating.findByTrainee",TraineeRating.class);
+        Query q = em.createNamedQuery("TraineeRating.findByTrainee", TraineeRating.class);
         q.setParameter("id", tc.getTraineeID());
         List<TraineeRating> list = q.getResultList();
         return list;
     }
 
-    private List<InstructorRating> getInstructorRatingsByClass(Integer trainingClassID, EntityManager em) {
+    private List<InstructorRating> getInstructorRatingsByClass(int trainingClassID, EntityManager em) {
         if (em == null) {
             em = EMUtil.getEntityManager();
         }
-        Query q = em.createNamedQuery("InstructorRating.findByClass",InstructorRating.class);
+        Query q = em.createNamedQuery("InstructorRating.findByClass", InstructorRating.class);
         q.setParameter("id", trainingClassID);
         List<InstructorRating> list = q.getResultList();
         return list;
     }
-
-    
 
     private List<CourseTrainee> getCourseTrainees(Trainee tc, EntityManager em) {
         if (em == null) {
@@ -531,22 +596,22 @@ public class InstructorUtil {
         return list;
     }
 
-    public List<CourseTrainee> getCourseTraineesByClass(Integer trainingClassID, EntityManager em) {
+    public List<CourseTrainee> getCourseTraineesByClass(int trainingClassID, EntityManager em) {
         if (em == null) {
             em = EMUtil.getEntityManager();
         }
-        Query q = em.createNamedQuery("CourseTrainee.findByClass",CourseTrainee.class);
+        Query q = em.createNamedQuery("CourseTrainee.findByClass", CourseTrainee.class);
         q.setParameter("id", trainingClassID);
         List<CourseTrainee> list = q.getResultList();
         return list;
     }
 
     public List<CourseTraineeActivity> getCourseTraineeActivitiesByClass(
-            Integer trainingClassID, EntityManager em) {
+            int trainingClassID, EntityManager em) {
         if (em == null) {
             em = EMUtil.getEntityManager();
         }
-        Query q = em.createNamedQuery("CourseTraineeActivity.findByClass",CourseTraineeActivity.class);
+        Query q = em.createNamedQuery("CourseTraineeActivity.findByClass", CourseTraineeActivity.class);
         q.setParameter("id", trainingClassID);
         List<CourseTraineeActivity> list = q.getResultList();
         return list;
@@ -557,19 +622,18 @@ public class InstructorUtil {
         if (em == null) {
             em = EMUtil.getEntityManager();
         }
-        Query q = em.createNamedQuery("CourseTraineeActivity.findByCourseTrainee",CourseTraineeActivity.class);
+        Query q = em.createNamedQuery("CourseTraineeActivity.findByCourseTrainee", CourseTraineeActivity.class);
         q.setParameter("tc", tc);
         List<CourseTraineeActivity> list = q.getResultList();
         return list;
     }
 
-    public ResponseDTO getTraineeActivityByInstructor(Integer instructorID) throws DataException {
+    public ResponseDTO getTraineeActivityByInstructor(int instructorID) throws DataException {
         ResponseDTO response = new ResponseDTO();
         response.setTotals(new ArrayList<TotalsDTO>());
         // response.setTrainingClassCourseList(
         //       getTrainingClassCoursesByInstructor(instructorID)
         //     .getTrainingClassCourseList());
-
 
         try {
             Instructor instructor = DataUtil.getInstructorByID(instructorID, em);
@@ -639,9 +703,9 @@ public class InstructorUtil {
         return response;
     }
 
-    private List<InstructorClassDTO> getInstructorClassList(Integer id) {
+    private List<InstructorClassDTO> getInstructorClassList(int id) {
 
-        Query q = em.createNamedQuery("InstructorClass.findByInstructorID",InstructorClass.class);
+        Query q = em.createNamedQuery("InstructorClass.findByInstructorID", InstructorClass.class);
         q.setParameter("id", id);
         List<InstructorClass> list = q.getResultList();
         List<InstructorClassDTO> dto = new ArrayList<>();
@@ -651,7 +715,7 @@ public class InstructorUtil {
         return dto;
     }
 
-    public ResponseDTO getTraineeActivityTotalsByClass(Integer trainingClassID) throws DataException {
+    public ResponseDTO getTraineeActivityTotalsByClass(int trainingClassID) throws DataException {
         ResponseDTO response = new ResponseDTO();
         response.setTotals(new ArrayList<TotalsDTO>());
 
@@ -708,13 +772,13 @@ public class InstructorUtil {
         if (em == null) {
             em = EMUtil.getEntityManager();
         }
-        Query q = em.createNamedQuery("GcmDevice.findByTrainee",GcmDevice.class);
+        Query q = em.createNamedQuery("GcmDevice.findByTrainee", GcmDevice.class);
         q.setParameter("t", t);
         List<GcmDevice> list = q.getResultList();
         return list;
     }
 
-    public ResponseDTO getClassTrainees(Integer trainingClassID) throws DataException {
+    public ResponseDTO getClassTrainees(int trainingClassID) throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
 
@@ -874,12 +938,12 @@ public class InstructorUtil {
         return t;
     }
 
-    public ResponseDTO getInstructorClasses(Integer instructorID)
+    public ResponseDTO getInstructorClasses(int instructorID)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
 
-            Query q = em.createNamedQuery("InstructorClass.findByInstructorID",InstructorClass.class);
+            Query q = em.createNamedQuery("InstructorClass.findByInstructorID", InstructorClass.class);
 
             q.setParameter("id", instructorID);
             List<InstructorClass> list = q.getResultList();
@@ -896,12 +960,12 @@ public class InstructorUtil {
         return d;
     }
 
-    public ResponseDTO getCourseByClass(Integer trainingClassID)
+    public ResponseDTO getCourseByClass(int trainingClassID)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
 
-            Query q = em.createNamedQuery("TrainingClassCourse.findByTrainingClassID",TrainingClassCourse.class);
+            Query q = em.createNamedQuery("TrainingClassCourse.findByTrainingClassID", TrainingClassCourse.class);
             q.setParameter("id", trainingClassID);
             List<TrainingClassCourse> list = q.getResultList();
             List<TrainingClassCourseDTO> dto = new ArrayList<>();
@@ -909,7 +973,7 @@ public class InstructorUtil {
             for (TrainingClassCourse cta : list) {
                 dto.add(new TrainingClassCourseDTO(cta));
             }
-            
+
             d.setTrainingClassCourseList(dto);
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed", e);
@@ -918,10 +982,8 @@ public class InstructorUtil {
         return d;
     }
 
-    
-
-    public List<TrainingClassEventDTO> getEventsByClass(Integer trainingClassID) {
-        Query q = em.createNamedQuery("TrainingClassEvent.findByClass",TrainingClassEvent.class);
+    public List<TrainingClassEventDTO> getEventsByClass(int trainingClassID) {
+        Query q = em.createNamedQuery("TrainingClassEvent.findByClass", TrainingClassEvent.class);
         q.setParameter("id", trainingClassID);
         List<TrainingClassEvent> list = q.getResultList();
         List<TrainingClassEventDTO> dto = new ArrayList<>();
@@ -931,12 +993,12 @@ public class InstructorUtil {
         return dto;
     }
 
-    public ResponseDTO getCategoriesByCompany(Integer companyID)
+    public ResponseDTO getCategoriesByCompany(int companyID)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
 
-            Query q = em.createNamedQuery("Category.findByCompanyID",Category.class);
+            Query q = em.createNamedQuery("Category.findByCompanyID", Category.class);
             q.setParameter("id", companyID);
             List<Category> list = q.getResultList();
             List<CategoryDTO> dto = new ArrayList<>();
@@ -963,8 +1025,8 @@ public class InstructorUtil {
         return d;
     }
 
-    public List<CourseDTO> getCourseByCompany(Integer companyID) {
-        Query q = em.createNamedQuery("Course.findByCompanyID",Course.class);
+    public List<CourseDTO> getCourseByCompany(int companyID) {
+        Query q = em.createNamedQuery("Course.findByCompanyID", Course.class);
         q.setParameter("id", companyID);
         List<Course> list = q.getResultList();
         List<CourseDTO> dto = new ArrayList<>();
@@ -974,8 +1036,8 @@ public class InstructorUtil {
         return dto;
     }
 
-    public List<ActivityDTO> getActivitiesByCategory(Integer categoryID) {
-        Query q = em.createNamedQuery("Activity.findByCategory",Activity.class);
+    public List<ActivityDTO> getActivitiesByCategory(int categoryID) {
+        Query q = em.createNamedQuery("Activity.findByCategory", Activity.class);
         q.setParameter("id", categoryID);
         List<Activity> list = q.getResultList();
         List<ActivityDTO> dto = new ArrayList<>();
@@ -985,8 +1047,8 @@ public class InstructorUtil {
         return dto;
     }
 
-    public List<LessonResourceDTO> getLinksByCategory(Integer categoryID) {
-        Query q = em.createNamedQuery("LessonResource.findByCategoryID",LessonResource.class);
+    public List<LessonResourceDTO> getLinksByCategory(int categoryID) {
+        Query q = em.createNamedQuery("LessonResource.findByCategoryID", LessonResource.class);
         q.setParameter("id", categoryID);
         List<LessonResource> list = q.getResultList();
         List<LessonResourceDTO> dto = new ArrayList<>();
@@ -996,12 +1058,12 @@ public class InstructorUtil {
         return dto;
     }
 
-    public ResponseDTO getClassActivities(Integer trainingClassID)
+    public ResponseDTO getClassActivities(int trainingClassID)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
 
-            Query q = em.createNamedQuery("CourseTraineeActivity.findByClass",CourseTraineeActivity.class);
+            Query q = em.createNamedQuery("CourseTraineeActivity.findByClass", CourseTraineeActivity.class);
             q.setParameter("id", trainingClassID);
             List<CourseTraineeActivity> list = q.getResultList();
             List<CourseTraineeActivityDTO> dto = new ArrayList<>();
@@ -1017,12 +1079,10 @@ public class InstructorUtil {
     }
 
     public ResponseDTO rateTraineeActivities(List<CourseTraineeActivityDTO> list,
-            Integer instructorID)
+            int instructorID)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
-
-
 
             Instructor tc = DataUtil.getInstructorByID(instructorID, em);
 
@@ -1052,7 +1112,7 @@ public class InstructorUtil {
         ResponseDTO d = new ResponseDTO();
         try {
 
-            Query q = em.createNamedQuery("Instructor.login",Instructor.class);
+            Query q = em.createNamedQuery("Instructor.login", Instructor.class);
             q.setParameter("email", email);
             q.setParameter("pswd", password);
             q.setMaxResults(1);
@@ -1078,7 +1138,6 @@ public class InstructorUtil {
                         gcm.setDateRegistered(new Date());
                         gcm.setInstructor(inst);
                         em.persist(gcm);
-
 
                         CloudMessagingRegistrar.sendRegistration(gcm.getRegistrationID(), platformUtil);
                     }
@@ -1125,7 +1184,7 @@ public class InstructorUtil {
             a.setDateRegistered(new Date());
             em.persist(a);
 
-            Query q = em.createNamedQuery("Instructor.findByCompanyID",Instructor.class);
+            Query q = em.createNamedQuery("Instructor.findByCompanyID", Instructor.class);
             q.setParameter("id", tc.getCompanyID());
             List<Instructor> list = q.getResultList();
             List<InstructorDTO> dto = new ArrayList<>();

@@ -50,6 +50,10 @@ import javax.validation.constraints.Size;
                     + " and a.instructorID = b.instructor.instructorID "
                     + " order by a.lastName, a.firstName ")})
 public class Instructor implements Serializable {
+    @Column(name = "activeFlag")
+    private int activeFlag;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "instructor")
+    private List<TraineeSkill> traineeSkillList;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -85,8 +89,6 @@ public class Instructor implements Serializable {
     @Size(max = 45)
     @Column(name = "password")
     private String password;
-    @Column(name = "activeFlag")
-    private int activeFlag;
     @Lob
     @Size(max = 65535)
     @Column(name = "GCMRegistrationID")
@@ -183,13 +185,6 @@ public class Instructor implements Serializable {
         this.password = password;
     }
 
-    public int getActiveFlag() {
-        return activeFlag;
-    }
-
-    public void setActiveFlag(int activeFlag) {
-        this.activeFlag = activeFlag;
-    }
 
     public String getGCMRegistrationID() {
         return gCMRegistrationID;
@@ -267,6 +262,22 @@ public class Instructor implements Serializable {
     @Override
     public String toString() {
         return "com.boha.coursemaker.data.Instructor[ instructorID=" + instructorID + " ]";
+    }
+
+    public int getActiveFlag() {
+        return activeFlag;
+    }
+
+    public void setActiveFlag(int activeFlag) {
+        this.activeFlag = activeFlag;
+    }
+
+    public List<TraineeSkill> getTraineeSkillList() {
+        return traineeSkillList;
+    }
+
+    public void setTraineeSkillList(List<TraineeSkill> traineeSkillList) {
+        this.traineeSkillList = traineeSkillList;
     }
     
 }
