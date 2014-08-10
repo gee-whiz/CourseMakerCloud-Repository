@@ -8,6 +8,7 @@ package com.boha.coursemaker.servlet;
 import com.boha.coursemaker.dto.platform.RequestDTO;
 import com.boha.coursemaker.dto.platform.ResponseDTO;
 import com.boha.coursemaker.util.AuthorUtil;
+import com.boha.coursemaker.util.CloudMsgUtil;
 import com.boha.coursemaker.util.DataException;
 import com.boha.coursemaker.util.DataUtil;
 import com.boha.coursemaker.util.PlatformUtil;
@@ -40,6 +41,10 @@ public class AuthorServlet extends HttpServlet {
     PlatformUtil platformUtil;
     @EJB
     AuthorUtil authorUtil;
+    @EJB
+    CloudMsgUtil cloudMsgUtil;
+    @EJB
+    CMWSEndpoint webSocketEndpoint;
 
     /**
      * Processes requests for both HTTP
@@ -90,7 +95,7 @@ public class AuthorServlet extends HttpServlet {
                         break;
                     
                     case RequestDTO.ADD_CATEGORY:
-                        resp = authorUtil.addCategory(dto.getCategory());
+                        resp = authorUtil.addCategory(dto.getCategory(), cloudMsgUtil, platformUtil);
                         break;
                     case RequestDTO.LOGIN_AUTHOR:
                         resp = authorUtil.loginAuthor(dto.getEmail(), dto.getPassword(), dto.getGcmDevice(), platformUtil);
@@ -105,7 +110,7 @@ public class AuthorServlet extends HttpServlet {
                         break;
                     case RequestDTO.REGISTER_COURSE:
                         resp = authorUtil.addCourse(dto.getCourse(),
-                                dto.getCompanyID(), dto.getAuthorID());
+                                dto.getCompanyID(), dto.getAuthorID(), cloudMsgUtil, platformUtil);
                         break;
                    
                     case RequestDTO.ADD_OBJECTIVES:

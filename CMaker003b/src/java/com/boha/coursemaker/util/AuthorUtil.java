@@ -327,7 +327,7 @@ public class AuthorUtil {
     }
 
     public ResponseDTO addCategory(
-            CategoryDTO category) throws DataException {
+            CategoryDTO category, CloudMsgUtil cloudMsgUtil, PlatformUtil platformUtil) throws DataException {
         log.log(Level.INFO, "......starting to add category");
         ResponseDTO d = new ResponseDTO();
         try {
@@ -353,7 +353,7 @@ public class AuthorUtil {
             d.setCategoryList(getCompanyCategories(category.getCompanyID()));
 
             log.log(Level.INFO, "category added or ignored: {0}", category.getCategoryName());
-
+             cloudMsgUtil.sendNewCourseMessageToInstructors(category.getCompanyID(), platformUtil);
         } catch (PersistenceException e) {
             log.log(Level.WARNING, "Duplicate category", e);
             d.setMessage("The category already exists");
@@ -956,7 +956,7 @@ public class AuthorUtil {
      */
     public ResponseDTO addCourse(CourseDTO course,
             int companyID,
-            int authorID)
+            int authorID, CloudMsgUtil cloudMsgUtil, PlatformUtil platformUtil)
             throws DataException {
         log.log(Level.INFO, "### adding course, company: {0} author: {1}", new Object[]{companyID, authorID});
         ResponseDTO d = new ResponseDTO();
@@ -1077,12 +1077,14 @@ public class AuthorUtil {
             q.setParameter("id", course.getCategoryID());
             List<Course> list = q.getResultList();
             List<CourseDTO> dto = new ArrayList<>();
+            
             for (Course crs : list) {
                 dto.add(new CourseDTO(crs));
             }
             d.setCourseList(dto);
             d.setMessage("course added on server");
             log.log(Level.INFO, "### Course added: {0} courses: {1}", new Object[]{course.getCourseName(), dto.size()});
+            cloudMsgUtil.sendNewCourseMessageToInstructors(companyID, platformUtil);
         } catch (PersistenceException e) {
             d.setStatusCode(ResponseDTO.ERROR_DUPLICATE);
             d.setMessage("The course already exists");

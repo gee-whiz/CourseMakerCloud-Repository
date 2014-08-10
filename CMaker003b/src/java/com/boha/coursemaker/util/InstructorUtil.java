@@ -709,8 +709,16 @@ public class InstructorUtil {
         q.setParameter("id", id);
         List<InstructorClass> list = q.getResultList();
         List<InstructorClassDTO> dto = new ArrayList<>();
+        q = em.createNamedQuery("Trainee.CountByClass", Trainee.class);
+        
+        
         for (InstructorClass ic : list) {
-            dto.add(new InstructorClassDTO(ic));
+            InstructorClassDTO d = new InstructorClassDTO(ic);
+            q.setParameter("id", ic.getTrainingClass().getTrainingClassID());
+            Number cResults=(Number) q.getSingleResult();
+            d.setNumberOfTrainees(cResults.intValue());
+            log.log(Level.OFF, "Number of trainees " + cResults.intValue());
+            dto.add(d);
         }
         return dto;
     }

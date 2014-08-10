@@ -47,6 +47,50 @@ public class CloudMsgUtil {
     private static final int RETRIES = 5;
     public static final String API_KEY = "AIzaSyCJIUMPXsL-GVAfNAl1i-fDy6qf7g5TtCU";
 
+    public  ResponseDTO sendNewCourseMessageToInstructors(int companyID, PlatformUtil platformUtil) throws
+            Exception, DataException {
+        ResponseDTO resp = new ResponseDTO();
+        //send message to Google servers
+        Sender sender = new Sender(API_KEY);
+        Message message = new Message.Builder()
+                .addData("message", "refresh class activities")
+                .addData("dateStamp", "" + new Date().getTime()).build();
+
+        Query q = em.createNamedQuery("GcmDevice.findInstructorDevices", GcmDevice.class);
+        q.setParameter("id", companyID);
+        List<GcmDevice> gList = q.getResultList();
+        List<String> registrationIDs = new ArrayList<>();
+        for (GcmDevice m : gList) {
+            registrationIDs.add(m.getRegistrationID());
+        }
+        if (registrationIDs.isEmpty()) {
+            LOG.log(Level.SEVERE, "#### No instructor registrationIDs found ");
+            resp.setMessage("No instructor found or their devices are not registered");
+            resp.setStatusCode(RETRIES);
+            platformUtil.addErrorStore(889, "#### No intructor devices found ", "Cloud Message Services");
+            return resp;
+        }
+        boolean OK;
+        String rMsg;
+        if (registrationIDs.size() == 1) {
+            Result result = sender.send(message, registrationIDs.get(0), RETRIES);
+            OK = handleResult(result, platformUtil);
+        } else {
+            MulticastResult multiCastResult = sender.send(
+                    message, registrationIDs, RETRIES);
+            OK = handleMultiCastResult(multiCastResult, platformUtil);
+        }
+        if (OK) {
+            rMsg = "Google GCM - message has been sent to Google servers";
+        } else {
+            rMsg = "Google GCM - message has not been sent. Error occured";
+            resp.setStatusCode(ResponseDTO.ERROR_SERVER);
+            resp.setMessage(rMsg);
+            platformUtil.addErrorStore(889, "Google GCM - message has not been sent. Error occured", "Cloud Message Services");
+        }
+        resp.setMessage(rMsg);
+        return resp;
+    }
     public  ResponseDTO sendInstructorToTraineeMessage(HelpResponseDTO req, PlatformUtil platformUtil) throws
             Exception, DataException {
 

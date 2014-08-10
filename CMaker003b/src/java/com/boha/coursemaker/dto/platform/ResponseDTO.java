@@ -133,6 +133,17 @@ public class ResponseDTO {
     private List<SkillDTO> skillList;
     private List<SkillLevelDTO> skillLevelList;
     private List<TraineeSkillDTO> traineeSkillList;
+    private String sessionID;
+
+    public String getSessionID() {
+        return sessionID;
+    }
+
+    public void setSessionID(String sessionID) {
+        this.sessionID = sessionID;
+    }
+    
+    
 
     public List<SkillDTO> getSkillList() {
         return skillList;

@@ -13,7 +13,7 @@ import java.io.Serializable;
  */
 public class InstructorClassDTO implements Serializable {
     private static final long serialVersionUID = 1L;
-    private int instructorClassID;
+    private int instructorClassID, numberOfTrainees;
     private long dateRegistered, startDate, endDate;
     private String trainingClassName;
     //private long calendarID;
@@ -32,6 +32,14 @@ public class InstructorClassDTO implements Serializable {
         if (a.getTrainingClass().getEndDate() != null) {
             endDate = a.getTrainingClass().getEndDate().getTime();
         }
+    }
+
+    public int getNumberOfTrainees() {
+        return numberOfTrainees;
+    }
+
+    public void setNumberOfTrainees(int numberOfTrainees) {
+        this.numberOfTrainees = numberOfTrainees;
     }
 
     public int getInstructorClassID() {

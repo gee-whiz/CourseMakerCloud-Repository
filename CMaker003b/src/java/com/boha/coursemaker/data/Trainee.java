@@ -34,7 +34,10 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "trainee")
 @NamedQueries({
-    @NamedQuery(name = "Trainee.findByClass", query = "select a from Trainee a "
+    @NamedQuery(name = "Trainee.CountByClass", query = "select count(a) from Trainee a "
+            + "where a.trainingClass.trainingClassID = :id "
+            + " and (a.activeFlag is null or a.activeFlag = 0)"),
+     @NamedQuery(name = "Trainee.findByClass", query = "select a from Trainee a "
             + "where a.trainingClass.trainingClassID = :id "
             + " and (a.activeFlag is null or a.activeFlag = 0)"),
     @NamedQuery(name = "Trainee.findByCompany", query = "select a from Trainee a where a.company.companyID = :id "
