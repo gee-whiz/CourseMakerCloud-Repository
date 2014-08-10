@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -48,6 +49,27 @@ public class AuthorWebSocket {
     CloudMsgUtil cloudMsgUtil;
     private static final Set<Session> peers
             = Collections.synchronizedSet(new HashSet<Session>());
+
+    public void sendData(ResponseDTO resp, String sessionID)
+            throws IOException, Exception {
+        for (Session session : peers) {
+            if (sessionID.equals(session.getId())) {
+                session.getBasicRemote().sendBinary(getZippedResponse(resp));
+            }
+        }
+    }
+
+    public void sendData(ResponseDTO resp, List<String> sessionIDs)
+            throws IOException, Exception {
+        for (Session session : peers) {
+            for (String id : sessionIDs) {
+                if (id.equals(session.getId())) {
+                    session.getBasicRemote().sendBinary(getZippedResponse(resp));
+                }
+            }
+
+        }
+    }
 
     private ByteBuffer getZippedResponse(ResponseDTO resp)
             throws Exception {
@@ -186,13 +208,14 @@ public class AuthorWebSocket {
     }
 
     @OnOpen
-    public void onOpen(Session session ) {
-        log.log(Level.WARNING, "onOpen...trying to send session id");
+    public void onOpen(Session session) {
+
         peers.add(session);
         try {
             ResponseDTO r = new ResponseDTO();
             r.setSessionID(session.getId());
             session.getBasicRemote().sendText(gson.toJson(r));
+            log.log(Level.WARNING, "onOpen...sent session id: {0}", session.getId());
         } catch (IOException ex) {
             log.log(Level.SEVERE, "Failed to open web socket session", ex);
         } catch (Exception ex) {
@@ -203,7 +226,7 @@ public class AuthorWebSocket {
     @OnClose
     public void onClose(Session session
     ) {
-        log.log(Level.WARNING, "onClose - remove webSocket session");
+        log.log(Level.WARNING, "onClose - remove session: {0}", session.getId());
         peers.remove(session);
     }
 
