@@ -17,8 +17,8 @@ public class TrainingClassCourseDTO {
     private int trainingClassCourseID;
     private long dateUpdated;
     private int trainingClassID, priorityFlag;
-    private int courseID, numberOfActivities;
-    private String courseName, description;
+    private int numberOfActivities;
+    private CourseDTO course;
     private List<ActivityDTO> activityList;
     private List<TrainingClassEventDTO> trainingClassEventList;
     private List<CourseTraineeActivityDTO> courseTraineeActivityList;
@@ -28,11 +28,9 @@ public class TrainingClassCourseDTO {
         dateUpdated = a.getDateUpdated().getTime();
         priorityFlag = a.getPriorityFlag();
         trainingClassID = a.getTrainingClass().getTrainingClassID();
-        courseID = a.getCourse().getCourseID();
-        courseName = a.getCourse().getCourseName();
-        description = a.getCourse().getDescription();
+        course = new CourseDTO(a.getCourse());
         numberOfActivities = a.getCourse().getActivityList().size();
-
+        
     }
 
     public List<CourseTraineeActivityDTO> getCourseTraineeActivityList() {
@@ -107,27 +105,12 @@ public class TrainingClassCourseDTO {
         this.numberOfActivities = numberOfLessons;
     }
 
-    public String getDescription() {
-        return description;
+    public CourseDTO getCourse() {
+        return course;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setCourse(CourseDTO course) {
+        this.course = course;
     }
 
-    public int getCourseID() {
-        return courseID;
-    }
-
-    public void setCourseID(int courseID) {
-        this.courseID = courseID;
-    }
-
-    public String getCourseName() {
-        return courseName;
-    }
-
-    public void setCourseName(String courseName) {
-        this.courseName = courseName;
-    }
 }

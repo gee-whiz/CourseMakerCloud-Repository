@@ -34,10 +34,12 @@ import javax.validation.constraints.Size;
 @Table(name = "category")
 @NamedQueries({
      @NamedQuery(name = "Category.findByNameInCompany", 
-             query = "select a from Category a where a.company.companyID = :id and a.categoryName = :name "),
-    @NamedQuery(name = "Category.findByCompanyID", query = "select a from Category a "
+             query = "select a from Category a where a.company.companyID = :id "
+                     + "and a.categoryName = :name "),
+    @NamedQuery(name = "Category.findByCompanyID", 
+            query = "select a from Category a "
                     + " where a.company.companyID = :id"
-                    + " order by a.categoryName")})
+                    + " order by a.priorityFlag")})
 public class Category implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -55,6 +57,8 @@ public class Category implements Serializable {
     @Column(name = "syncDate")
     @Temporal(TemporalType.TIMESTAMP)
     private Date syncDate;
+    @Column(name = "priorityFlag")
+    private int priorityFlag;
     @OneToMany(mappedBy = "category")
     private List<Course> courseList;
     @JoinColumn(name = "companyID", referencedColumnName = "companyID")
@@ -79,6 +83,14 @@ public class Category implements Serializable {
 
     public void setCategoryID(int categoryID) {
         this.categoryID = categoryID;
+    }
+
+    public int getPriorityFlag() {
+        return priorityFlag;
+    }
+
+    public void setPriorityFlag(int priorityFlag) {
+        this.priorityFlag = priorityFlag;
     }
 
     public String getCategoryName() {

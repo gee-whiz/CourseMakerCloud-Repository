@@ -633,4 +633,5 @@ public class PlatformUtil {
         return d;
     }
     private final Logger log = Logger.getLogger("ErrorStoreUtil");
+    
 }

@@ -1019,7 +1019,7 @@ public class InstructorUtil {
             for (CategoryDTO cat : dto) {
                 cat.setCourseList(new ArrayList<CourseDTO>());
                 for (CourseDTO c : corsList) {
-                    if (c.getCategoryID() == cat.getCategoryID()) {
+                    if (c.getCategory().getCategoryID() == cat.getCategoryID()) {
                         cat.getCourseList().add(c);
                     }
                 }

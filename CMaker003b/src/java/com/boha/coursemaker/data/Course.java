@@ -40,7 +40,7 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "Course.findByCategoryID",
             query = "select a from Course a "
             + "where a.category.categoryID = :id"
-            + " order by a.courseName"),
+            + " order by a.priorityFlag"),
     @NamedQuery(name = "Course.findByAuthorID",
             query = "select a from Course a, CourseAuthor b "
             + " where a.courseID = b.course.courseID and b.author.authorID = :authorID "
@@ -48,7 +48,7 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "Course.findByCompanyID",
             query = "select a from Course a"
             + " where a.company.companyID = :id "
-            + " order by a.dateUpdated desc")})
+            + " order by a.category.categoryID, a.priorityFlag")})
 public class Course implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -73,6 +73,8 @@ public class Course implements Serializable {
     private String description;
     @Column(name = "shareFlag")
     private int shareFlag;
+    @Column(name = "priorityFlag")
+    private int priorityFlag;
     @Column(name = "localID")
     private long localID;
     @Column(name = "syncDate")
@@ -122,6 +124,14 @@ public class Course implements Serializable {
 
     public void setCourseID(int courseID) {
         this.courseID = courseID;
+    }
+
+    public int getPriorityFlag() {
+        return priorityFlag;
+    }
+
+    public void setPriorityFlag(int priorityFlag) {
+        this.priorityFlag = priorityFlag;
     }
 
     public Date getDateUpdated() {

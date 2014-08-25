@@ -193,6 +193,10 @@ public class RequestDTO {
     public static final int ADD_TRAINEE_SKILLS = 1101;
     public static final int GET_TRAINEE_SKILLS = 1102;
     public static final int GET_TRAINING_CLASS_SKILLS = 1103;
+    
+    public static final int SHUFFLE_CATEGORIES = 1200;
+    public static final int SHUFFLE_COURSES = 1201;
+    public static final int SHUFFLE_ACTIVITIES = 1202;
 
     public static String getRequestString(int requestType) {
         switch (requestType) {
@@ -487,6 +491,8 @@ public class RequestDTO {
             instructorClassID, demoAnnouncementID,
             trainingClassCourseID, equipmentID, conditionFlag,
             administratorID, traineeID, traineeEquipmentID, trainingClassEventID;
+    private List<Integer> IDs;
+    private List<Integer> priorityFlags;
     private boolean returnEquipment;
     private RatingDTO rating;
     private HelpTypeDTO helpType;
@@ -522,6 +528,22 @@ public class RequestDTO {
     List<LessonResourceDTO> lessonResourceList;
     List<InstructorClassDTO> instructorClassList;
     List<CourseDTO> courseList;
+
+    public List<Integer> getIDs() {
+        return IDs;
+    }
+
+    public void setIDs(List<Integer> IDs) {
+        this.IDs = IDs;
+    }
+
+    public List<Integer> getPriorityFlags() {
+        return priorityFlags;
+    }
+
+    public void setPriorityFlags(List<Integer> priorityFlags) {
+        this.priorityFlags = priorityFlags;
+    }
 
   
     public TraineeShoutDTO getTraineeShout() {

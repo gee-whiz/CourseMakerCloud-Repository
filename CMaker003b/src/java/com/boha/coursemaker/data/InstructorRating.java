@@ -35,7 +35,7 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "InstructorRating.findByTrainee", 
         query = "select a from InstructorRating a "
                 + "where a.courseTraineeActivity.courseTrainee.trainee.traineeID"
-                + " = :id"),
+                + " = :id order by a.dateUpdated desc"),
     @NamedQuery(name = "InstructorRating.findByClass", 
         query = "select distinct a from InstructorRating a, CourseTraineeActivity b "
                 + " where a.courseTraineeActivity.courseTraineeActivityID = b.courseTraineeActivityID "

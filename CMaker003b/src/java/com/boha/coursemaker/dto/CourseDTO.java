@@ -17,8 +17,8 @@ public class CourseDTO {
     private int courseID, activeFlag, shareFlag;
     private long dateUpdated;
     private String courseName, description;
-    private int categoryID;
-    private String categoryName;
+    private int priorityFlag;
+    private CategoryDTO category;
     private int companyID;
     private long syncDate;
     private List<ActivityDTO> activityList;
@@ -28,12 +28,12 @@ public class CourseDTO {
     public CourseDTO(Course a) {
         courseID = a.getCourseID();
         dateUpdated = a.getDateUpdated().getTime();
+        priorityFlag = a.getPriorityFlag();
         activeFlag = a.getActiveFlag();
         courseName = a.getCourseName();
         description = a.getDescription();
         activeFlag = a.getActiveFlag();
-        categoryID = a.getCategory().getCategoryID();
-        categoryName = a.getCategory().getCategoryName();
+        category = new CategoryDTO(a.getCategory());
         companyID = a.getCompany().getCompanyID();
  
     }
@@ -41,8 +41,24 @@ public class CourseDTO {
     public CourseDTO() {
     }
 
+    public CategoryDTO getCategory() {
+        return category;
+    }
+
+    public void setCategory(CategoryDTO category) {
+        this.category = category;
+    }
+
     public long getDateUpdated() {
         return dateUpdated;
+    }
+
+    public int getPriorityFlag() {
+        return priorityFlag;
+    }
+
+    public void setPriorityFlag(int priorityFlag) {
+        this.priorityFlag = priorityFlag;
     }
 
  
@@ -78,21 +94,7 @@ public class CourseDTO {
         return shareFlag;
     }
 
-    public int getCategoryID() {
-        return categoryID;
-    }
-
-    public void setCategoryID(int categoryID) {
-        this.categoryID = categoryID;
-    }
-
-    public String getCategoryName() {
-        return categoryName;
-    }
-
-    public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
-    }
+   
 
     public void setShareFlag(int shareFlag) {
         this.shareFlag = shareFlag;

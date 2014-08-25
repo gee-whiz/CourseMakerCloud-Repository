@@ -43,9 +43,7 @@ public class AuthorServlet extends HttpServlet {
     AuthorUtil authorUtil;
     @EJB
     CloudMsgUtil cloudMsgUtil;
-    @EJB
-    CMWSEndpoint webSocketEndpoint;
-
+    
     /**
      * Processes requests for both HTTP
      * <code>GET</code> and
@@ -72,6 +70,9 @@ public class AuthorServlet extends HttpServlet {
             } else {
                 log.log(Level.INFO, "AuthorServlet starting ...reqType: {0}", dto.getRequestType());
                 switch (dto.getRequestType()) {
+                    case RequestDTO.SHUFFLE_CATEGORIES:
+                        
+                        break;        
                     case RequestDTO.REGISTER_AUTHOR:
                         resp = authorUtil.registerAuthor(dto.getAuthor(),
                                 dto.getCompanyID());
@@ -81,7 +82,7 @@ public class AuthorServlet extends HttpServlet {
                                 dto.getCompanyID());
                         break;
                     case RequestDTO.GET_CATEGORY_LIST_BY_COMPANY:
-                        resp = authorUtil.getCategoryList(dto.getCompanyID(), dto.getAuthorID());
+                        resp = authorUtil.getCategoryList(dto.getCompanyID());
                         break;
                     case RequestDTO.GET_COURSE_LIST_BY_CATEGORY:
                         resp = authorUtil.getCoursesByCategory(dto.getCategoryID());

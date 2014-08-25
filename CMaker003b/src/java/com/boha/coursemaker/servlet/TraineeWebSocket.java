@@ -7,20 +7,21 @@ package com.boha.coursemaker.servlet;
 
 import com.boha.coursemaker.dto.platform.RequestDTO;
 import com.boha.coursemaker.dto.platform.ResponseDTO;
-import com.boha.coursemaker.util.AuthorUtil;
 import com.boha.coursemaker.util.CloudMsgUtil;
 import com.boha.coursemaker.util.DataException;
+import com.boha.coursemaker.util.DataUtil;
 import com.boha.coursemaker.util.GZipUtility;
+import com.boha.coursemaker.util.InstructorUtil;
 import com.boha.coursemaker.util.PlatformUtil;
+import com.boha.coursemaker.util.TeamUtil;
+import com.boha.coursemaker.util.TraineeUtil;
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -37,16 +38,20 @@ import javax.websocket.server.ServerEndpoint;
  *
  * @author aubreyM
  */
-@ServerEndpoint("/wsauthor")
+@ServerEndpoint("/wstrainee")
 @Stateful
-public class AuthorWebSocket {
+public class TraineeWebSocket {
 
     @EJB
     PlatformUtil platformUtil;
     @EJB
-    AuthorUtil authorUtil;
+    TraineeUtil traineeUtil;
     @EJB
     CloudMsgUtil cloudMsgUtil;
+    @EJB
+    InstructorUtil instructorUtil;
+    @EJB
+    TeamUtil teamUtil;
 
     private static final Set<Session> peers
             = Collections.synchronizedSet(new HashSet<Session>());
@@ -80,119 +85,71 @@ public class AuthorWebSocket {
         try {
             RequestDTO dto = gson.fromJson(message, RequestDTO.class);
             switch (dto.getRequestType()) {
-                case RequestDTO.SHUFFLE_CATEGORIES:
-                    resp = authorUtil.shuffleCategories(dto.getIDs());
+                case RequestDTO.GET_COUNTRY_LIST:
+                    resp = DataUtil.getProvinceListByCountryCode(dto.getCountryCode(), traineeUtil.getEntityManager());
                     break;
-                case RequestDTO.SHUFFLE_COURSES:
-                    resp = authorUtil.shuffleCourses(dto.getIDs());
+                case RequestDTO.GCM_SEND_TRAINEE_TO_INSTRUCTOR_MSG:
+                    resp = cloudMsgUtil.sendTraineeToInstructorMessage(
+                            dto.getHelpRequest(), null, dto.getTrainingClassID(), platformUtil, instructorUtil);
                     break;
-                case RequestDTO.SHUFFLE_ACTIVITIES:
-                    resp = authorUtil.shuffleActivities(dto.getIDs());
-                    break;
-                case RequestDTO.REGISTER_AUTHOR:
-                    resp = authorUtil.registerAuthor(dto.getAuthor(),
-                            dto.getCompanyID());
-                    break;
-                case RequestDTO.GET_COMPANY_COURSE_LIST:
-                    resp = authorUtil.getCompanyCourseList(
-                            dto.getCompanyID());
-                    break;
-                case RequestDTO.GET_CATEGORY_LIST_BY_COMPANY:
-                    resp = authorUtil.getCategoryList(dto.getCompanyID());
-                    break;
-                case RequestDTO.GET_COURSE_LIST_BY_CATEGORY:
-                    resp = authorUtil.getCoursesByCategory(dto.getCategoryID());
+                case RequestDTO.SEND_TRAINEE_SHOUT:
+                    resp = cloudMsgUtil.sendTraineeToInstructorMessage(
+                            null, dto.getTraineeShout(), dto.getTrainingClassID(), platformUtil, instructorUtil);
                     break;
 
-                case RequestDTO.GET_OBJECTIVE_LIST_BY_COURSE:
-                    resp = authorUtil.getObjectivesByCourse(dto.getCourseID());
+                case RequestDTO.EVALUATE_TRAINEE_ACTIVITY:
+                    resp = traineeUtil.traineeActivityEvaluation(
+                            dto.getCourseTraineeActivity(), dto.getTraineeID());
                     break;
-                case RequestDTO.GET_ACTIVITY_LIST_BY_LESSON:
-                    resp = authorUtil.getActivitiesByLesson(dto.getLessonID());
-                    break;
-
-                case RequestDTO.ADD_CATEGORY:
-                    resp = authorUtil.addCategory(dto.getCategory(), cloudMsgUtil, platformUtil);
-                    break;
-                case RequestDTO.LOGIN_AUTHOR:
-                    resp = authorUtil.loginAuthor(dto.getEmail(), dto.getPassword(), dto.getGcmDevice(), platformUtil);
+                case RequestDTO.LOGIN_TRAINEE:
+                    resp = traineeUtil.loginTrainee(dto.getEmail(),
+                            dto.getPassword(), dto.getGcmDevice(), platformUtil);
                     if (resp.getStatusCode() == 0) {
                         StringBuilder sb = new StringBuilder();
-                        sb.append("Author logging in with new device").append("\n");
+                        sb.append("Trainee logging in with new device").append("\n");
                         sb.append(resp.getCompany().getCompanyName()).append("\n\n");
-                        sb.append(resp.getAuthor().getFirstName()).append(" ").append(resp.getAuthor().getLastName())
+                        sb.append(resp.getTrainee().getFirstName()).append(" ").append(resp.getTrainee().getLastName())
                                 .append("\n");
-                        platformUtil.addErrorStore(0, sb.toString(), "Author Services");
+                        platformUtil.addErrorStore(0, sb.toString(), "Trainee Services");
                     }
                     break;
-                case RequestDTO.REGISTER_COURSE:
-                    resp = authorUtil.addCourse(dto.getCourse(),
-                            dto.getCompanyID(), dto.getAuthorID(), cloudMsgUtil, platformUtil);
+                case RequestDTO.ADD_HELP_REQUEST:
+                    resp = traineeUtil.addHelpRequest(dto.getHelpRequest());
                     break;
-
-                case RequestDTO.ADD_OBJECTIVES:
-                    resp = authorUtil.addObjective(dto.getObjective(),
-                            dto.getCourseID());
+                case RequestDTO.UPDATE_TRAINEE:
+                    resp = traineeUtil.updateTraineeProfile(dto.getTrainee());
                     break;
-                case RequestDTO.ADD_ACTIVITIES:
-                    resp = authorUtil.addActivity(dto.getActivity(),
-                            dto.getCourseID());
+                case RequestDTO.GET_TRAINEE_DATA:
+                    resp = traineeUtil.getTraineeData(dto.getTrainingClassID(),
+                            dto.getTraineeID(), dto.getCompanyID());
                     break;
-                case RequestDTO.ADD_RESOURCES:
-                    resp = authorUtil.addLessonResource(dto.getLessonResource());
+                case RequestDTO.GET_RATING_LIST:
+                    resp = DataUtil.getRatingList(dto.getCompanyID(), traineeUtil.getEntityManager());
                     break;
-                //
-                case RequestDTO.UPDATE_ACTIVITIES:
-                    resp = authorUtil.updateActivities(dto.getActivityList());
+                case RequestDTO.GET_INSTRUCTOR_LIST_BY_CLASS:
+                    resp = traineeUtil.getInstructorsByClass(dto.getTrainingClassID());
                     break;
-                case RequestDTO.UPDATE_OBJECTIVES:
-                    resp = authorUtil.updateObjectives(dto.getObjectiveList());
+                case RequestDTO.GET_TEAMS_BY_CLASS:
+                    resp = teamUtil.getTeamsByClass(dto.getTrainingClassID());
                     break;
-                //deletes
-
-                case RequestDTO.DELETE_OBJECTIVES:
-                    resp = authorUtil.deleteObjectives(dto.getObjectiveList(),
-                            dto.getCourseID());
-                    break;
-                case RequestDTO.DELETE_ACTIVITIES:
-                    resp = authorUtil.deleteActivities(
-                            dto.getActivityList(), dto.getCourseID());
-                    break;
-                case RequestDTO.DELETE_LESSON_RESOURCES:
-                    resp = authorUtil.deleteLessonResources(
-                            dto.getLessonResourceList(), dto.getCourseID());
-                    break;
-
-                case RequestDTO.DELETE_COURSE:
-                    resp = authorUtil.deleteCourse(dto.getCourseID(), dto.getAuthorID());
-                    break;
-                case RequestDTO.UPDATE_COURSE:
-                    resp = authorUtil.updateCourse(dto.getCourse(), dto.getAuthorID());
-                    break;
-
-                case RequestDTO.UPDATE_CATEGORY:
-                    resp = authorUtil.updateCategory(dto.getCategory());
-                    break;
-                case RequestDTO.DELETE_CATEGORY:
-                    resp = authorUtil.deleteCategory(dto.getCategory());
+                case RequestDTO.GET_TEAMS_BY_COMPANY:
+                    resp = teamUtil.getTeamsByCompany(dto.getCompanyID());
                     break;
 
                 default:
                     resp.setStatusCode(ResponseDTO.ERROR_UNKNOWN_REQUEST);
                     resp.setMessage("Unknown request. Verboten!!");
                     platformUtil.addErrorStore(resp.getStatusCode(),
-                            "Unknown request detected. Ignored.", "Author Services");
+                            "Unknown request detected. Whazzup??", "Trainee Services");
                     break;
-
             }
-
         } catch (DataException ex) {
-            resp.setStatusCode(111);
+            resp.setStatusCode(ResponseDTO.ERROR_DATABASE);
             resp.setMessage("Data service failed to process your request");
             log.log(Level.SEVERE, null, ex);
             platformUtil.addErrorStore(ResponseDTO.ERROR_DATABASE, ex.getDescription(), SOURCE);
-        } catch (JsonSyntaxException ex) {
-            resp.setStatusCode(112);
+        } catch (Exception ex) {
+            resp.setStatusCode(ResponseDTO.ERROR_SERVER);
             resp.setMessage("Service failed to process your request");
             log.log(Level.SEVERE, null, ex);
             platformUtil.addErrorStore(ResponseDTO.ERROR_SERVER, ex.getMessage(), SOURCE);
@@ -232,12 +189,12 @@ public class AuthorWebSocket {
     }
 
     @OnError
-    public void onError(Throwable t) {
-        log.log(Level.SEVERE, "WebSocket Fail", t);
+    public void onError(Throwable t)  {
+        log.log(Level.SEVERE, "######### WebSocket Fail", t);
         platformUtil.addErrorStore(ResponseDTO.ERROR_WEBSOCKET, t.getMessage(), SOURCE);
-
+        
     }
     static final Gson gson = new Gson();
-    static final Logger log = Logger.getLogger(AuthorWebSocket.class.getName());
+    static final Logger log = Logger.getLogger(TraineeWebSocket.class.getName());
     public static final String SOURCE = "AuthorWebSocket";
 }

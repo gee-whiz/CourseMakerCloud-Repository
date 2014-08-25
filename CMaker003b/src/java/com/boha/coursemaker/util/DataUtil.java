@@ -186,7 +186,8 @@ public class DataUtil {
                 dto.add(new RatingDTO(ht));
             }
             d.setRatingList(dto);
-            d.setHelpTypeList(getHelpTypeList(companyID, em).getHelpTypeList());
+            log.log(Level.INFO, "found Ratings: {0}", d.getRatingList().size());
+            
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed ", e);
             throw new DataException(DataUtil.getErrorString(e));
@@ -207,6 +208,7 @@ public class DataUtil {
                 dto.add(new HelpTypeDTO(ht));
             }
             d.setHelpTypeList(dto);
+            log.log(Level.INFO, "found HelpTypes: {0}", d.getHelpTypeList().size());
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed ", e);
             throw new DataException(DataUtil.getErrorString(e));

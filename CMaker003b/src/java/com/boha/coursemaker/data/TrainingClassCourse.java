@@ -36,9 +36,9 @@ import javax.persistence.TemporalType;
                 + "where a.trainingClass.company.companyID = :id "
                 + "order by a.course.courseID"),
     @NamedQuery(name = "TrainingClassCourse.findByTrainingClassID", 
-        query = "select a from TrainingClassCourse a "
+        query = "select a from TrainingClassCourse a"
                     + " where a.trainingClass.trainingClassID = :id"
-                    + " order by a.priorityFlag "),
+                    + " order by a.course.category.priorityFlag, a.course.priorityFlag "),
     @NamedQuery(name = "TrainingClassCourse.findByInstructor", 
         query = "select distinct a from TrainingClassCourse a, InstructorClass b "
                 + " where a.trainingClass = b.trainingClass "

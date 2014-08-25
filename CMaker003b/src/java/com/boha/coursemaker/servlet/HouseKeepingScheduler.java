@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.boha.coursemaker.servlet;
 
 import com.boha.coursemaker.util.CourseMakerProperties;
@@ -24,30 +23,13 @@ import javax.ejb.Stateless;
  */
 @Stateless
 public class HouseKeepingScheduler {
-    
-    @Schedule(minute="*/30",hour = "*")
+
+    @Schedule(minute = "*/30", hour = "*")
     public void cleanUp() {
         startDiskCleanup();
     }
-    @Schedule(second="*/30",minute="*",hour = "*")
-    public void send() {
-        sendMessage();
-    }
-    private void sendMessage() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("\n\n\n### ##########################################################################\n");
-        sb.append("### CourseMaker Scheduled Message Send STARTED: ").append(new Date()).append("\n");
-        sb.append("### ##########################################################################\n\n");
-        log.log(Level.INFO, sb.toString());
 
-        try {
-            endpoint.sendTextMessage(sdf.format(new Date()) + " - Scheduled data message");
-            log.log(Level.INFO, "Scheduled message sent to all devices");
-        } catch (IOException ex) {
-            log.log(Level.SEVERE, null, ex);
-        }
-    }
- private void startDiskCleanup() {
+    private void startDiskCleanup() {
         StringBuilder sb = new StringBuilder();
         sb.append("\n\n\n### ##########################################################################\n");
         sb.append("### CourseMaker Disk Cleanup STARTED: ").append(new Date()).append("\n");
@@ -79,8 +61,7 @@ public class HouseKeepingScheduler {
     }
     @EJB
     PlatformUtil platformUtil;
-    @EJB
-    CMWSEndpoint endpoint;
+
     static final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
     private final static int FIVE_MINUTES = 1000 * 60 * 5;
     static final Logger log = Logger.getLogger(HouseKeepingScheduler.class.getName());

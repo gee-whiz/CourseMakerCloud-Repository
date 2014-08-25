@@ -62,6 +62,7 @@ public class ResponseDTO {
     public static final int ERROR_DATA_NOT_FOUND = 170;
     public static final int ERROR_FILE_DOWNLOAD = 180;
     public static final int ERROR_DELETE_NOT_POSSIBLE = 190;
+    public static final int ERROR_WEBSOCKET = 200;
     private int statusCode;
     private String message, GCMRegistrationID;
     private CategoryDTO category;

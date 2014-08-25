@@ -6,13 +6,7 @@
 package com.boha.coursemaker.dto;
 
 import com.boha.coursemaker.data.Category;
-import com.boha.coursemaker.data.Course;
-import com.boha.coursemaker.util.EMUtil;
-import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
 
 /**
  * Cate
@@ -21,18 +15,18 @@ import javax.persistence.Query;
  */
 public class CategoryDTO {
 
-    private Integer categoryID;
+    private int categoryID;
     private String categoryName;
     private List<CourseDTO> courseList;
-    private Integer companyID;
-    private BigInteger localID;
+    private int companyID;
+    private int priorityFlag;
     private long syncDate;
 
-    public Integer getCategoryID() {
+    public int getCategoryID() {
         return categoryID;
     }
 
-    public void setCategoryID(Integer categoryID) {
+    public void setCategoryID(int categoryID) {
         this.categoryID = categoryID;
     }
 
@@ -44,11 +38,19 @@ public class CategoryDTO {
         this.categoryName = categoryName;
     }
 
-    public Integer getCompanyID() {
+    public int getPriorityFlag() {
+        return priorityFlag;
+    }
+
+    public void setPriorityFlag(int priorityFlag) {
+        this.priorityFlag = priorityFlag;
+    }
+
+    public int getCompanyID() {
         return companyID;
     }
 
-    public void setCompanyID(Integer companyID) {
+    public void setCompanyID(int companyID) {
         this.companyID = companyID;
     }
 
@@ -56,6 +58,7 @@ public class CategoryDTO {
         categoryID = a.getCategoryID();
         categoryName = a.getCategoryName();
         companyID = a.getCompany().getCompanyID();
+        priorityFlag = a.getPriorityFlag();
         
 
     }
@@ -70,14 +73,7 @@ public class CategoryDTO {
         this.courseList = courseList;
     }
 
-    public BigInteger getLocalID() {
-        return localID;
-    }
-
-    public void setLocalID(BigInteger localID) {
-        this.localID = localID;
-    }
-
+    
     public long getSyncDate() {
         return syncDate;
     }

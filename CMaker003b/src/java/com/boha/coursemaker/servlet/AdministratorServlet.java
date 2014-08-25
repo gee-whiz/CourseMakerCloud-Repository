@@ -307,8 +307,7 @@ public class AdministratorServlet extends HttpServlet {
                         resp = administratorUtil.updateRating(dto.getRating());
                         break;
 
-                    case RequestDTO.ADD_HELPTYPE:
-                        
+                    case RequestDTO.ADD_HELPTYPE:                       
                         resp = administratorUtil.addHelpType(dto.getHelpType());
                         break;
                     case RequestDTO.DELETE_HELPTYPE:
