@@ -92,19 +92,7 @@ public class PlatformUtil {
                     }
                 }
             }
-            //count lessons
-            q = em.createNamedQuery("Company.countLessons");
-            List<Object[]> listd = q.getResultList();
-            for (Object[] objects : listd) {
-                Company c = (Company) objects[0];
-                int count = (int) ((Number) objects[1]);
-                for (CompanyStatsDTO cs : sList) {
-                    if (cs.getCompanyID() == c.getCompanyID()) {
-                        cs.setNumberOfLessons(count);
-                        break;
-                    }
-                }
-            }
+           
             //count activities
             q = em.createNamedQuery("Company.countActivities");
             List<Object[]> liste = q.getResultList();

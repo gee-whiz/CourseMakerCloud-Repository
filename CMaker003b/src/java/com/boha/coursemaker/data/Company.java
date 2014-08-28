@@ -207,6 +207,10 @@ import javax.validation.constraints.Size;
                     + " GROUP BY a.company")})
 
 public class Company implements Serializable {
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "company")
+    private List<SkillLevel> skillLevelList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "company")
+    private List<Skill> skillList;
     @OneToMany(mappedBy = "company")
     private List<ErrorStoreAndroid> errorStoreAndroidList;
     private static final long serialVersionUID = 1L;
@@ -399,6 +403,22 @@ public class Company implements Serializable {
 
     public void setErrorStoreAndroidList(List<ErrorStoreAndroid> errorStoreAndroidList) {
         this.errorStoreAndroidList = errorStoreAndroidList;
+    }
+
+    public List<Skill> getSkillList() {
+        return skillList;
+    }
+
+    public void setSkillList(List<Skill> skillList) {
+        this.skillList = skillList;
+    }
+
+    public List<SkillLevel> getSkillLevelList() {
+        return skillLevelList;
+    }
+
+    public void setSkillLevelList(List<SkillLevel> skillLevelList) {
+        this.skillLevelList = skillLevelList;
     }
     
 }

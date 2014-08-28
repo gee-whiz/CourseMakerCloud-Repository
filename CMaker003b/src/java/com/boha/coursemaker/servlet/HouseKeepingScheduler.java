@@ -8,7 +8,6 @@ package com.boha.coursemaker.servlet;
 import com.boha.coursemaker.util.CourseMakerProperties;
 import com.boha.coursemaker.util.PlatformUtil;
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
@@ -43,7 +42,7 @@ public class HouseKeepingScheduler {
             log.log(Level.INFO, "### startDiskCleanup - temporary files found: {0}", files.length);
             for (File file : files) {
                 long now = new Date().getTime();
-                long cutOff = now - FIVE_MINUTES;
+                long cutOff = now - MINUTE;
                 if (file.lastModified() < cutOff) {
                     boolean OK = file.delete();
                     if (OK) {
@@ -54,7 +53,10 @@ public class HouseKeepingScheduler {
         }
         log.log(Level.INFO, "### CourseMaker HouseKeeping cleaned up {0} temporary files", count);
         try {
-            platformUtil.addErrorStore(133, "CourseMaker temporary files cleaned up", "HouseKeeper");
+            if (count > 10) {
+                platformUtil.addErrorStore(133, 
+                    "CourseMaker temporary files cleaned up: " + count, "HouseKeeper");
+            }
         } catch (Exception e) {
 
         }
@@ -63,6 +65,6 @@ public class HouseKeepingScheduler {
     PlatformUtil platformUtil;
 
     static final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-    private final static int FIVE_MINUTES = 1000 * 60 * 5;
+    private final static int MINUTE = 1000 * 60;
     static final Logger log = Logger.getLogger(HouseKeepingScheduler.class.getName());
 }

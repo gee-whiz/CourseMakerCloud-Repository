@@ -28,7 +28,7 @@ import javax.validation.constraints.NotNull;
  * @author aubreyM
  */
 @Entity
-@Table(name = "traineeSkill")
+@Table(name = "traineeSkillHistory")
 @NamedQueries({
     @NamedQuery(name = "TraineeSkill.findByTrainee", 
             query = "SELECT t FROM TraineeSkill t "
@@ -40,13 +40,13 @@ import javax.validation.constraints.NotNull;
                     + "order by t.trainee.traineeID, t.skill.skillName, t.dateAssessed desc"),
     @NamedQuery(name = "TraineeSkill.findByDateAssessed", 
             query = "SELECT t FROM TraineeSkill t WHERE t.dateAssessed = :dateAssessed order by t.dateAssessed desc")})
-public class TraineeSkill implements Serializable {
+public class TraineeSkillHistory implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "traineeSkillID")
-    private int traineeSkillID;
+    @Column(name = "traineeSkillHistoryID")
+    private int traineeSkillHistoryID;
     @Basic(optional = false)
     @NotNull
     @Column(name = "dateAssessed")
@@ -65,24 +65,24 @@ public class TraineeSkill implements Serializable {
     @ManyToOne(optional = false)
     private Instructor instructor;
 
-    public TraineeSkill() {
+    public TraineeSkillHistory() {
     }
 
-    public TraineeSkill(int traineeSkillID) {
-        this.traineeSkillID = traineeSkillID;
+    public TraineeSkillHistory(int traineeSkillHistoryID) {
+        this.traineeSkillHistoryID = traineeSkillHistoryID;
     }
 
-    public TraineeSkill(int traineeSkillID, Date dateAssessed) {
-        this.traineeSkillID = traineeSkillID;
+    public TraineeSkillHistory(int traineeSkillHistoryID, Date dateAssessed) {
+        this.traineeSkillHistoryID = traineeSkillHistoryID;
         this.dateAssessed = dateAssessed;
     }
 
     public int getTraineeSkillID() {
-        return traineeSkillID;
+        return traineeSkillHistoryID;
     }
 
-    public void setTraineeSkillID(int traineeSkillID) {
-        this.traineeSkillID = traineeSkillID;
+    public void setTraineeSkillID(int traineeSkillHistoryID) {
+        this.traineeSkillHistoryID = traineeSkillHistoryID;
     }
 
     public Date getDateAssessed() {
@@ -129,7 +129,7 @@ public class TraineeSkill implements Serializable {
 
     @Override
     public String toString() {
-        return "com.boha.coursemaker.data.TraineeSkill[ traineeSkillID=" + traineeSkillID + " ]";
+        return "com.boha.coursemaker.data.TraineeSkill[ traineeSkillHistoryID=" + traineeSkillHistoryID + " ]";
     }
     
 }

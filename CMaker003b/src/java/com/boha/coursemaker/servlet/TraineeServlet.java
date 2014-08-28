@@ -107,7 +107,7 @@ public class TraineeServlet extends HttpServlet {
                         break;
                     case RequestDTO.GET_TRAINEE_DATA:
                         resp = traineeUtil.getTraineeData(dto.getTrainingClassID(),
-                                dto.getTraineeID(), dto.getCompanyID());
+                                dto.getTraineeID(), dto.getCompanyID(), dto.getCountryCode());
                         break;
                     case RequestDTO.GET_RATING_LIST:
                         resp = DataUtil.getRatingList(dto.getCompanyID(), traineeUtil.getEntityManager());

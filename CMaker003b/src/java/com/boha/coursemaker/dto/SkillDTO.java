@@ -13,11 +13,20 @@ import com.boha.coursemaker.data.Skill;
  * @author aubreyM
  */
 public class SkillDTO {
-    private int skillID;
+    private int skillID, companyID;
     private String skillName;
     public SkillDTO(Skill a) {
         skillID = a.getSkillID();
         skillName = a.getSkillName();
+        companyID = a.getCompany().getCompanyID();
+    }
+
+    public int getCompanyID() {
+        return companyID;
+    }
+
+    public void setCompanyID(int companyID) {
+        this.companyID = companyID;
     }
 
     public int getSkillID() {

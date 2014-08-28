@@ -7,9 +7,6 @@
 package com.boha.coursemaker.dto;
 
 import com.boha.coursemaker.data.Company;
-import com.boha.coursemaker.data.Course;
-import com.boha.coursemaker.data.HelpType;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,6 +25,8 @@ public class CompanyDTO {
     private CityDTO city;
     private List<CourseDTO> courseList;
     private List<HelpTypeDTO> helpTypeList;
+    private List<SkillDTO> skillList;
+    private List<SkillLevelDTO> skillLevelList;
     public CompanyDTO() {}
     public CompanyDTO(Company a) {
         companyID = a.getCompanyID();
@@ -37,19 +36,23 @@ public class CompanyDTO {
         if (a.getCity() != null) {
             city = new CityDTO(a.getCity());
         }
-        /*if (a.getCourseList() != null) {
-            courseList = new ArrayList<>();
-            for (Course tcc : a.getCourseList()) {
-               courseList.add(new CourseDTO(tcc));
-            }
-            
-        }
-        if (a.getHelpTypeList() != null) {
-            helpTypeList = new ArrayList<>();
-            for (HelpType   ht : a.getHelpTypeList()) {
-                helpTypeList.add(new HelpTypeDTO(ht));
-            }
-        }*/
+       
+    }
+
+    public List<SkillDTO> getSkillList() {
+        return skillList;
+    }
+
+    public void setSkillList(List<SkillDTO> skillList) {
+        this.skillList = skillList;
+    }
+
+    public List<SkillLevelDTO> getSkillLevelList() {
+        return skillLevelList;
+    }
+
+    public void setSkillLevelList(List<SkillLevelDTO> skillLevelList) {
+        this.skillLevelList = skillLevelList;
     }
 
     public Integer getCompanyID() {

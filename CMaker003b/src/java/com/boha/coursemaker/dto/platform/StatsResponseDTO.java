@@ -15,11 +15,20 @@ import java.util.List;
 public class StatsResponseDTO {
 
     private int statusCode;
-    private String message, logString;
+    private String message, logString, sessionID;
     private List<CompanyStatsDTO> statsList;
     private List<ErrorStoreDTO> errorStoreList;
     private List<ErrorStoreAndroidDTO> errorStoreAndroidList;
 
+    public String getSessionID() {
+        return sessionID;
+    }
+
+    public void setSessionID(String sessionID) {
+        this.sessionID = sessionID;
+    }
+
+    
     public int getStatusCode() {
         return statusCode;
     }

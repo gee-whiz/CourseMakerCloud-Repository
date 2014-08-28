@@ -1585,16 +1585,18 @@ public class AdministratorUtil {
                 d.setTrainingClassList(new ArrayList<TrainingClassDTO>());
                 for (TrainingClass tc : getTrainingClasses(companyID)) {
                     log.log(Level.OFF, "TrainingClass: {0} trainees: {1}", new Object[]{tc.getTrainingClassName(), tc.getTraineeList().size()});
+                    
                     TrainingClassDTO tcDTO = new TrainingClassDTO(tc);
                     tcDTO.setTraineeList(new ArrayList<TraineeDTO>());
                     tcDTO.setTrainingClassCourseList(new ArrayList<TrainingClassCourseDTO>());
+                    
                     for (Trainee trainee : trList) {
                         if (trainee.getTraineeID() > 150) {
-                            log.log(Level.OFF, "#### {0} trainingClassID: {1} compare to: {2}", new Object[]{trainee.getFirstName(), trainee.getTrainingClass().getTrainingClassID(), tc.getTrainingClassID()});
+                            //log.log(Level.OFF, "#### {0} trainingClassID: {1} compare to: {2}", new Object[]{trainee.getFirstName(), trainee.getTrainingClass().getTrainingClassID(), tc.getTrainingClassID()});
                         }
                         if (trainee.getTrainingClass().getTrainingClassID() == tc.getTrainingClassID()) {
                             tcDTO.getTraineeList().add(new TraineeDTO(trainee));
-                            log.log(Level.INFO, "Trainee added to list: {0} {1}", new Object[]{trainee.getFirstName(), trainee.getLastName()});
+                           // log.log(Level.INFO, "Trainee added to list: {0} {1}", new Object[]{trainee.getFirstName(), trainee.getLastName()});
                         }
                     }
                     for (TrainingClassCourse x : tcc) {
@@ -1605,6 +1607,7 @@ public class AdministratorUtil {
 
                     d.getTrainingClassList().add(tcDTO);
                 }
+                
                 ResponseDTO r = getInventoryList(companyID);
                 List<InventoryDTO> invList = r.getInventoryList();
                 d.setEquipmentList(new ArrayList<EquipmentDTO>());
@@ -1646,7 +1649,7 @@ public class AdministratorUtil {
                         new Object[]{co.getCompanyName(), end - start});
             } else {
                 d.setStatusCode(ResponseDTO.ERROR_DATABASE);
-                d.setMessage("Training Company not found.");
+                d.setMessage("Training Company has not found.");
                 log.log(Level.WARNING, "Training Company not found");
             }
 
@@ -1654,6 +1657,7 @@ public class AdministratorUtil {
             log.log(Level.SEVERE, "Failed getCompanyData", e);
             throw new DataException("Failed getCompanyData\n" + DataUtil.getErrorString(e));
         }
+        
         return d;
     }
 
@@ -1661,11 +1665,13 @@ public class AdministratorUtil {
         ResponseDTO d = new ResponseDTO();
         d.setCredential(DataUtil.getPassword(id, type, em));
         d.setMessage("Password updated");
+        
         return d;
     }
 
     public ResponseDTO loginAdministrator(
-            String email, String password, GcmDeviceDTO device, PlatformUtil platformUtil)
+            String email, String password, GcmDeviceDTO device, 
+            PlatformUtil platformUtil)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
 

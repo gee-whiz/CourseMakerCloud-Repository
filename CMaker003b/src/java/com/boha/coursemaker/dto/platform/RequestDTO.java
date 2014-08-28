@@ -25,11 +25,14 @@ import com.boha.coursemaker.dto.InventoryDTO;
 import com.boha.coursemaker.dto.LessonResourceDTO;
 import com.boha.coursemaker.dto.ObjectiveDTO;
 import com.boha.coursemaker.dto.RatingDTO;
+import com.boha.coursemaker.dto.SkillDTO;
+import com.boha.coursemaker.dto.SkillLevelDTO;
 import com.boha.coursemaker.dto.TeamDTO;
 import com.boha.coursemaker.dto.TeamMemberDTO;
 import com.boha.coursemaker.dto.TraineeDTO;
 import com.boha.coursemaker.dto.TraineeEquipmentDTO;
 import com.boha.coursemaker.dto.TraineeShoutDTO;
+import com.boha.coursemaker.dto.TraineeSkillDTO;
 import com.boha.coursemaker.dto.TrainingClassDTO;
 import com.boha.coursemaker.dto.TrainingClassEventDTO;
 import java.util.List;
@@ -197,6 +200,12 @@ public class RequestDTO {
     public static final int SHUFFLE_CATEGORIES = 1200;
     public static final int SHUFFLE_COURSES = 1201;
     public static final int SHUFFLE_ACTIVITIES = 1202;
+    
+    public static final int ADD_COMPANY_SKILL = 1300;
+    public static final int ADD_COMPANY_SKILL_LEVEL = 1301;
+    public static final int UPDATE_TRAINEE_SKILLS = 1303;
+    public static final int UPDATE_COMPANY_SKILL = 1304;
+    public static final int UPDATE_COMPANY_SKILL_LEVEL = 1305;
 
     public static String getRequestString(int requestType) {
         switch (requestType) {
@@ -522,6 +531,9 @@ public class RequestDTO {
     private TeamDTO team;
     private TeamMemberDTO teamMember;
     private DemoAnnouncementDTO demoAnnouncement;
+    private SkillDTO skill;
+    private SkillLevelDTO skillLevel;
+    private  List<TraineeSkillDTO> traineeSkillList;
     //
     List<ActivityDTO> activityList;
     List<ObjectiveDTO> objectiveList;
@@ -529,6 +541,34 @@ public class RequestDTO {
     List<InstructorClassDTO> instructorClassList;
     List<CourseDTO> courseList;
 
+    public SkillDTO getSkill() {
+        return skill;
+    }
+
+    public void setSkill(SkillDTO skill) {
+        this.skill = skill;
+    }
+
+    public SkillLevelDTO getSkillLevel() {
+        return skillLevel;
+    }
+
+    public void setSkillLevel(SkillLevelDTO skillLevel) {
+        this.skillLevel = skillLevel;
+    }
+
+   
+
+    public List<TraineeSkillDTO> getTraineeSkillList() {
+        return traineeSkillList;
+    }
+
+    public void setTraineeSkillList(List<TraineeSkillDTO> traineeSkillList) {
+        this.traineeSkillList = traineeSkillList;
+    }
+   
+
+    
     public List<Integer> getIDs() {
         return IDs;
     }

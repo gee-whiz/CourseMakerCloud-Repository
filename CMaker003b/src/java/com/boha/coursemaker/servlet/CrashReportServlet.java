@@ -8,7 +8,6 @@ package com.boha.coursemaker.servlet;
 import com.boha.coursemaker.data.Company;
 import com.boha.coursemaker.data.ErrorStoreAndroid;
 import com.boha.coursemaker.util.DataException;
-import com.boha.coursemaker.util.DataUtil;
 import com.boha.coursemaker.util.PlatformUtil;
 import java.io.IOException;
 import java.util.Date;
@@ -64,11 +63,13 @@ public class CrashReportServlet extends HttpServlet {
     PlatformUtil platformUtil;
 
     /**
-     * Extract error data from Android app crash. Error identified by company in custom data.
-     * This method receives the stack trace data sent by the ACRA implementation in the mobile app.
-     * Writes the data to the ErrorStoreAndroid table in the database
+     * Extract error data from Android app crash. Error identified by company in
+     * custom data. This method receives the stack trace data sent by the ACRA
+     * implementation in the mobile app. Writes the data to the
+     * ErrorStoreAndroid table in the database
+     *
      * @param request
-     * @throws DataException 
+     * @throws DataException
      */
     private void getErrorData(HttpServletRequest request) throws DataException {
         ErrorStoreAndroid e = new ErrorStoreAndroid();
@@ -83,7 +84,7 @@ public class CrashReportServlet extends HttpServlet {
         e.setStackTrace(request.getParameter("STACK_TRACE"));
 
         String custom = request.getParameter("CUSTOM_DATA");
-        
+
         try {
             if (custom != null || !custom.trim().isEmpty()) {
                 Pattern p = Pattern.compile("-?\\d+");
@@ -92,11 +93,14 @@ public class CrashReportServlet extends HttpServlet {
                 while (m.find()) {
                     id = Integer.parseInt(m.group());
                 }
-                
+
                 Company gg = platformUtil.getEntityManager().find(Company.class, id);
                 e.setCompany(gg);
                 platformUtil.addAndroidError(e);
                 log.log(Level.INFO, "ACRA crash reporting - {0}", custom);
+            } else {
+                platformUtil.addAndroidError(e);
+                log.log(Level.INFO, "ACRA crash reported");
             }
         } catch (Exception ex) {
             log.log(Level.SEVERE, "ACRA crash reporting. ", ex);

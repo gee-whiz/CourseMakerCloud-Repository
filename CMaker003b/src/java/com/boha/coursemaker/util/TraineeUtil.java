@@ -20,6 +20,7 @@ import com.boha.coursemaker.data.Instructor;
 import com.boha.coursemaker.data.InstructorClass;
 import com.boha.coursemaker.data.InstructorRating;
 import com.boha.coursemaker.data.Rating;
+import com.boha.coursemaker.data.TraineeSkill;
 import com.boha.coursemaker.data.TrainingClass;
 import com.boha.coursemaker.dto.AdministratorDTO;
 import com.boha.coursemaker.dto.CourseTraineeActivityDTO;
@@ -33,6 +34,7 @@ import com.boha.coursemaker.dto.InstructorClassDTO;
 import com.boha.coursemaker.dto.InstructorDTO;
 import com.boha.coursemaker.dto.InstructorRatingDTO;
 import com.boha.coursemaker.dto.TraineeRatingDTO;
+import com.boha.coursemaker.dto.TraineeSkillDTO;
 import com.boha.coursemaker.dto.TrainingClassCourseDTO;
 import com.boha.coursemaker.dto.TrainingClassDTO;
 import java.util.ArrayList;
@@ -64,6 +66,8 @@ public class TraineeUtil {
     public EntityManager getEntityManager() {
         return em;
     }
+    
+    
 
     public ResponseDTO updateTraineeProfile(TraineeDTO trainee)
             throws DataException {
@@ -220,15 +224,29 @@ public class TraineeUtil {
         Query q = em.createNamedQuery("Trainee.findByClass", Trainee.class);
         q.setParameter("id", trainingClassID);
         List<Trainee> list = q.getResultList();
-        List<TraineeDTO> dto = new ArrayList<>();
+        List<TraineeDTO> dtoList = new ArrayList<>();
         for (Trainee trainee : list) {
-            dto.add(new TraineeDTO(trainee));
+            TraineeDTO td = new TraineeDTO(trainee);
+            td.setTraineeSkillList(new ArrayList<TraineeSkillDTO>());
+            dtoList.add(td);
         }
-        return dto;
+         q = em.createNamedQuery("TraineeSkill.findByTrainingClass",TraineeSkill.class);
+         q.setParameter("id", trainingClassID);
+         List<TraineeSkill> tsList = q.getResultList();
+         for (TraineeSkill ts : tsList) {
+             for (TraineeDTO t : dtoList) {
+                 if (ts.getTrainee().getTraineeID() == t.getTraineeID()) {
+                     t.getTraineeSkillList().add(new TraineeSkillDTO(ts));
+                     //log.log(Level.OFF, "Trainee skill put in list: {0} traineeID: {1}", new Object[]{ts.getSkill().getSkillName(), t.getTraineeID()});
+                 }
+                 
+             }
+        }
+        return dtoList;
     }
 
     public ResponseDTO getTraineeData(int trainingClassID,
-            int traineeID, int companyID) throws DataException {
+            int traineeID, int companyID, String countryCode) throws DataException {
         log.log(Level.OFF, "getTraineeData trainingClassID: {0} traineeID: {1} companyID: {2}", new Object[]{trainingClassID, traineeID, companyID});
         ResponseDTO d = new ResponseDTO();
         try {
@@ -249,6 +267,7 @@ public class TraineeUtil {
                 list.add(z);
             }
             d.setTrainingClassCourseList(list);
+            d.setProvinceList(DataUtil.getProvinceListByCountryCode(countryCode, em).getProvinceList());
             d.setTraineeList(getClassmates(trainingClassID));
             d.setRatingList(DataUtil.getRatingList(companyID, em).getRatingList());
             d.setHelpTypeList(DataUtil.getHelpTypeList(companyID, em).getHelpTypeList());
@@ -549,10 +568,7 @@ public class TraineeUtil {
     /**
      * Trainee evaluates and updates own activity
      *
-     * @param courseTraineeActivityID
-     * @param ratingID
-     * @param comment
-     * @param completed
+     
      * @return
      * @throws DataException
      */
@@ -592,6 +608,7 @@ public class TraineeUtil {
                 d.setTraineeRating(new TraineeRatingDTO(tr));
                 List<TraineeRatingDTO> trList = getTraineeRatingsByActivity(cta.getCourseTraineeActivityID()).getTraineeRatingList();
                 d.getCourseTraineeActivity().setTraineeRatingList(trList);
+                
             } catch (Exception e) {
                 log.log(Level.WARNING, "TraineeRating insert FAILED", e);
             }

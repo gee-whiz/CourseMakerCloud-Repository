@@ -393,5 +393,5 @@ public class AdministratorWebSocket {
     }
     static final Gson gson = new Gson();
     static final Logger log = Logger.getLogger(AdministratorWebSocket.class.getName());
-    public static final String SOURCE = "AuthorWebSocket";
+    public static final String SOURCE = "AdministratorWebSocket";
 }

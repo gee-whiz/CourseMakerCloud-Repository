@@ -15,6 +15,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -29,11 +31,14 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "skillLevel")
 @NamedQueries({
-    @NamedQuery(name = "SkillLevel.findAll", query = "SELECT s FROM SkillLevel s"),
-    @NamedQuery(name = "SkillLevel.findBySkillLevelID", query = "SELECT s FROM SkillLevel s WHERE s.skillLevelID = :skillLevelID"),
-    @NamedQuery(name = "SkillLevel.findBySkillLevelName", query = "SELECT s FROM SkillLevel s WHERE s.skillLevelName = :skillLevelName"),
-    @NamedQuery(name = "SkillLevel.findByLevel", query = "SELECT s FROM SkillLevel s WHERE s.level = :level")})
+    @NamedQuery(name = "SkillLevel.findByCompany", 
+            query = "SELECT s FROM SkillLevel s "
+                    + "where s.company.companyID = :id order by s.level")
+    })
 public class SkillLevel implements Serializable {
+    @JoinColumn(name = "companyID", referencedColumnName = "companyID")
+    @ManyToOne(optional = false)
+    private Company company;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,7 +56,10 @@ public class SkillLevel implements Serializable {
     private int level;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "skillLevel")
     private List<TraineeSkill> traineeSkillList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "skillLevel")
+    private List<TraineeSkillHistory> traineeSkillHistoryList;
 
+    
     public SkillLevel() {
     }
 
@@ -63,6 +71,14 @@ public class SkillLevel implements Serializable {
         this.skillLevelID = skillLevelID;
         this.skillLevelName = skillLevelName;
         this.level = level;
+    }
+
+    public List<TraineeSkillHistory> getTraineeSkillHistoryList() {
+        return traineeSkillHistoryList;
+    }
+
+    public void setTraineeSkillHistoryList(List<TraineeSkillHistory> traineeSkillHistoryList) {
+        this.traineeSkillHistoryList = traineeSkillHistoryList;
     }
 
     public Integer getSkillLevelID() {
@@ -121,5 +137,13 @@ public class SkillLevel implements Serializable {
     public String toString() {
         return "com.boha.coursemaker.data.SkillLevel[ skillLevelID=" + skillLevelID + " ]";
     }
-    
+
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
+    }
+
 }

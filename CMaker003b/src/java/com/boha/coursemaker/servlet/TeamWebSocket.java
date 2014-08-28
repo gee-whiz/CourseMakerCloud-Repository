@@ -38,9 +38,9 @@ import javax.websocket.server.ServerEndpoint;
  *
  * @author aubreyM
  */
-@ServerEndpoint("/wstrainee")
+@ServerEndpoint("/wsteam")
 @Stateful
-public class TraineeWebSocket {
+public class TeamWebSocket {
 
     @EJB
     PlatformUtil platformUtil;
@@ -86,77 +86,50 @@ public class TraineeWebSocket {
         try {
             RequestDTO dto = gson.fromJson(message, RequestDTO.class);
             switch (dto.getRequestType()) {
-                
-                case RequestDTO.GET_COUNTRY_LIST:
-                    resp = DataUtil.getProvinceListByCountryCode(dto.getCountryCode(), traineeUtil.getEntityManager());
-                    break;
-                case RequestDTO.GCM_SEND_TRAINEE_TO_INSTRUCTOR_MSG:
-                    resp = cloudMsgUtil.sendTraineeToInstructorMessage(
-                            dto.getHelpRequest(), null, dto.getTrainingClassID(), platformUtil, instructorUtil);
-                    break;
-                case RequestDTO.SEND_TRAINEE_SHOUT:
-                    resp = cloudMsgUtil.sendTraineeToInstructorMessage(
-                            null, dto.getTraineeShout(), dto.getTrainingClassID(), platformUtil, instructorUtil);
-                    break;
+                    case RequestDTO.ADD_TEAM:
+                        resp = teamUtil.addTeam(dto.getTeam());
+                        break;
+                    case RequestDTO.ADD_TEAM_MEMBER:
+                        resp = teamUtil.addTeamMember(dto.getTeamMember());
+                        break;
+                    case RequestDTO.ADD_DEMO_ANNOUNCEMENT:
+                        resp = teamUtil.addDemoAnnouncement(dto.getDemoAnnouncement());
+                        break;
 
-                case RequestDTO.EVALUATE_TRAINEE_ACTIVITY:
-                    resp = traineeUtil.traineeActivityEvaluation(
-                            dto.getCourseTraineeActivity(), dto.getTraineeID());
-                    break;
-                case RequestDTO.LOGIN_TRAINEE:
-                    resp = traineeUtil.loginTrainee(dto.getEmail(),
-                            dto.getPassword(), dto.getGcmDevice(), platformUtil);
-                    if (resp.getStatusCode() == 0) {
-                        StringBuilder sb = new StringBuilder();
-                        sb.append("Trainee logging in with new device").append("\n");
-                        sb.append(resp.getCompany().getCompanyName()).append("\n\n");
-                        sb.append(resp.getTrainee().getFirstName()).append(" ").append(resp.getTrainee().getLastName())
-                                .append("\n");
-                        platformUtil.addErrorStore(0, sb.toString(), "Trainee Services");
-                    }
-                    break;
-                    
-                case RequestDTO.ADD_HELP_REQUEST:
-                    resp = traineeUtil.addHelpRequest(dto.getHelpRequest());
-                    break;
-                case RequestDTO.UPDATE_TRAINEE:
-                    resp = traineeUtil.updateTraineeProfile(dto.getTrainee());
-                    break;
-                case RequestDTO.GET_TRAINEE_DATA:
-                    resp = traineeUtil.getTraineeData(dto.getTrainingClassID(),
-                            dto.getTraineeID(), dto.getCompanyID(), 
-                            dto.getCountryCode());
-                    resp.setTeamList(teamUtil.getTeamsByClass(dto.getTrainingClassID()).getTeamList());        
-                    break;
-                case RequestDTO.GET_RATING_LIST:
-                    resp = DataUtil.getRatingList(dto.getCompanyID(), traineeUtil.getEntityManager());
-                    break;
-                case RequestDTO.GET_INSTRUCTOR_LIST_BY_CLASS:
-                    resp = traineeUtil.getInstructorsByClass(dto.getTrainingClassID());
-                    break;
-                case RequestDTO.GET_TEAMS_BY_CLASS:
-                    resp = teamUtil.getTeamsByClass(dto.getTrainingClassID());
-                    break;
-                case RequestDTO.GET_TEAMS_BY_COMPANY:
-                    resp = teamUtil.getTeamsByCompany(dto.getCompanyID());
-                    break;
+                    case RequestDTO.CANCEL_DEMO_ANNOUNCEMENT:
+                        resp = teamUtil.cancelDemoAnnouncement(dto.getDemoAnnouncementID());
+                        break;
 
-                default:
-                    resp.setStatusCode(ResponseDTO.ERROR_UNKNOWN_REQUEST);
-                    resp.setMessage("Unknown request. Verboten!!");
-                    platformUtil.addErrorStore(resp.getStatusCode(),
-                            "Unknown request detected. Whazzup??", "Trainee Services");
-                    break;
+                    case RequestDTO.GET_TEAMS_BY_CLASS:
+                        resp = teamUtil.getTeamsByClass(dto.getTrainingClassID());
+                        break;
+                    case RequestDTO.GET_TEAMS_BY_COMPANY:
+                        resp = teamUtil.getTeamsByCompany(dto.getCompanyID());
+                        break;
+                    case RequestDTO.GET_DEMO_ANNOUNCEMENTS_BY_CLASS:
+                        resp = teamUtil.getDemoAnnouncementsByClass(dto.getTrainingClassID());
+                        break;
+                    case RequestDTO.GET_DEMO_ANNOUNCEMENTS_BY_COMPANY:
+                        resp = teamUtil.getDemoAnnouncementsByCompany(dto.getCompanyID());
+                        break;
+                    default:
+                        resp.setStatusCode(ResponseDTO.ERROR_UNKNOWN_REQUEST);
+                        resp.setMessage("Unknown request. Verboten!!");
+                        platformUtil.addErrorStore(resp.getStatusCode(),
+                                "Unknown request detected. Whaaaazzup??", SOURCE);
+                        break;
             }
         } catch (DataException ex) {
+            
             resp.setStatusCode(ResponseDTO.ERROR_DATABASE);
             resp.setMessage("Data service failed to process your request");
             log.log(Level.SEVERE, null, ex);
-            platformUtil.addErrorStore(ResponseDTO.ERROR_DATABASE, ex.getDescription(), SOURCE);
+            platformUtil.addErrorStore(ResponseDTO.ERROR_DATABASE, 
+                    ex.getDescription(), SOURCE);
         } catch (Exception ex) {
             resp.setStatusCode(ResponseDTO.ERROR_SERVER);
             resp.setMessage("Service failed to process your request");
-            log.log(Level.SEVERE, null, ex);
+            log.log(Level.SEVERE, "FAIL", ex);
             platformUtil.addErrorStore(ResponseDTO.ERROR_SERVER, ex.getMessage(), SOURCE);
         }
         ByteBuffer bb = null;
@@ -204,6 +177,6 @@ public class TraineeWebSocket {
     }
     
     static final Gson gson = new Gson();
-    static final Logger log = Logger.getLogger(TraineeWebSocket.class.getName());
-    public static final String SOURCE = "TraineeWebSocket";
+    static final Logger log = Logger.getLogger(TeamWebSocket.class.getName());
+    public static final String SOURCE = "TeamWebSocket";
 }

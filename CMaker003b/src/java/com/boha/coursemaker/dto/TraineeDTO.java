@@ -34,6 +34,7 @@ public class TraineeDTO {
     private int totalTasks, totalCompleted;
     private double percComplete, averageInstructorRating, averageTraineeRating;
     private long lastDate;
+    private List<TraineeSkillDTO> traineeSkillList;
 
     public TraineeDTO() {
     }
@@ -93,6 +94,15 @@ public class TraineeDTO {
         }
     }
 
+    public List<TraineeSkillDTO> getTraineeSkillList() {
+        return traineeSkillList;
+    }
+
+    public void setTraineeSkillList(List<TraineeSkillDTO> traineeSkillList) {
+        this.traineeSkillList = traineeSkillList;
+    }
+
+    
     public String getProvinceName() {
         return provinceName;
     }

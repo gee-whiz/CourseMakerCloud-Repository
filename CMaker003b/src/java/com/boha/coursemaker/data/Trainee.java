@@ -58,6 +58,9 @@ public class Trainee implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "trainee")
     private List<TraineeSkill> traineeSkillList;
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "trainee")
+    private List<TraineeSkillHistory> traineeSkillHistoryList;
+    
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -165,6 +168,31 @@ public class Trainee implements Serializable {
     public int getTraineeID() {
         return traineeID;
     }
+
+    public List<TraineeSkillHistory> getTraineeSkillHistoryList() {
+        return traineeSkillHistoryList;
+    }
+
+    public void setTraineeSkillHistoryList(List<TraineeSkillHistory> traineeSkillHistoryList) {
+        this.traineeSkillHistoryList = traineeSkillHistoryList;
+    }
+
+    public String getiDNumber() {
+        return iDNumber;
+    }
+
+    public void setiDNumber(String iDNumber) {
+        this.iDNumber = iDNumber;
+    }
+
+    public String getgCMRegistrationID() {
+        return gCMRegistrationID;
+    }
+
+    public void setgCMRegistrationID(String gCMRegistrationID) {
+        this.gCMRegistrationID = gCMRegistrationID;
+    }
+    
 
     public void setTraineeID(int traineeID) {
         this.traineeID = traineeID;

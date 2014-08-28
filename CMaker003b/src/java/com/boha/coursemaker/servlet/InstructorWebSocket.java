@@ -86,14 +86,16 @@ public class InstructorWebSocket {
 
     @OnMessage
     public ByteBuffer onMessage(String message) {
-        log.log(Level.WARNING, "onMessage, incoming: {0}", message);
+        log.log(Level.WARNING, "onMessage, missile incoming: {0}", message);
+        //
         ResponseDTO resp = new ResponseDTO();
         try {
             RequestDTO dto = gson.fromJson(message, RequestDTO.class);
             switch (dto.getRequestType()) {
                 case RequestDTO.GET_TRAINEE_DATA:
                     resp = traineeUtil.getTraineeData(dto.getTrainingClassID(),
-                            dto.getTraineeID(), dto.getCompanyID());
+                            dto.getTraineeID(), dto.getCompanyID(),
+                            dto.getCountryCode());
                     break;
                 case RequestDTO.DELETE_EVENT:
                     resp = instructorUtil.deleteTrainingClassEvent(dto.getTrainingClassEventID());
@@ -101,8 +103,22 @@ public class InstructorWebSocket {
                 case RequestDTO.UPDATE_EVENT:
                     resp = instructorUtil.updateTrainingClassEvent(dto.getTrainingClassEvent());
                     break;
+                case RequestDTO.ADD_TRAINEE_SKILLS:
+                    resp = instructorUtil.addTraineeSkills(dto.getTraineeSkillList());
+                    break;
+                case RequestDTO.ADD_COMPANY_SKILL:
+                    resp = instructorUtil.addSkill(dto.getSkill());
+                    break;
+                case RequestDTO.UPDATE_COMPANY_SKILL:
+                    resp = instructorUtil.updateSkill(dto.getSkill());
+                    break;
+                case RequestDTO.ADD_COMPANY_SKILL_LEVEL:
+                    resp = instructorUtil.addSkillLevel(dto.getSkillLevel());
+                    break;
+                case RequestDTO.UPDATE_COMPANY_SKILL_LEVEL:
+                    resp = instructorUtil.updateSkillLevel(dto.getSkillLevel());
+                    break;
                 case RequestDTO.ADD_EVENTS:
-
                     resp = instructorUtil.addTrainingClassEvent(dto.getTrainingClassEvent());
                     break;
                 case RequestDTO.GET_EVENTS_BY_CLASS:
@@ -164,7 +180,8 @@ public class InstructorWebSocket {
                     resp = instructorUtil.getTraineeActivityByCompany(dto.getCompanyID());
                     break;
                 case RequestDTO.GET_TRAINEE_ACTIVITY_TOTALS_BY_INSTRUCTOR:
-                    resp = instructorUtil.getTraineeActivityByInstructor(dto.getInstructorID());
+                    resp = instructorUtil.getTraineeActivityByInstructor(
+                            dto.getInstructorID());
                     break;
 
                 case RequestDTO.GET_CLASS_TRAINEE_LIST:
@@ -232,8 +249,7 @@ public class InstructorWebSocket {
     }
 
     @OnClose
-    public void onClose(Session session
-    ) {
+    public void onClose(Session session) {
         log.log(Level.WARNING, "onClose - remove session: {0}", session.getId());
         peers.remove(session);
     }
@@ -246,5 +262,5 @@ public class InstructorWebSocket {
     }
     static final Gson gson = new Gson();
     static final Logger log = Logger.getLogger(InstructorWebSocket.class.getName());
-    public static final String SOURCE = "AuthorWebSocket";
+    public static final String SOURCE = "InstructorWebSocket";
 }

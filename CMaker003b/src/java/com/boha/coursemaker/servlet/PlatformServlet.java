@@ -10,6 +10,7 @@ import com.boha.coursemaker.dto.platform.StatsResponseDTO;
 import com.boha.coursemaker.util.DataException;
 import com.boha.coursemaker.util.PlatformUtil;
 import com.boha.coursemaker.util.GZipUtility;
+import com.boha.coursemaker.util.LogfileUtil;
 import com.google.gson.Gson;
 import com.oreilly.servlet.ServletUtils;
 import java.io.File;
@@ -59,8 +60,11 @@ public class PlatformServlet extends HttpServlet {
             } else {
                 switch (dto.getRequestType()) {
                     case RequestDTO.GET_ERROR_LIST:
-                        resp = platformUtil.getErrorStoreList(dto.getDateFrom(), dto.getDateTo());
+                        resp = platformUtil.getErrorStoreList(
+                                dto.getDateFrom(), dto.getDateTo());
+                        resp.setLogString(LogfileUtil.getFileString());
                         break;
+                    
                     case RequestDTO.GET_COMPANY_STATS:
                         resp = platformUtil.getCompanyStats(dto.getCompanyID());
                         break;

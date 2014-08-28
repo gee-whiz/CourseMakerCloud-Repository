@@ -18,6 +18,7 @@ import com.boha.coursemaker.data.SkillLevel;
 import com.boha.coursemaker.data.Trainee;
 import com.boha.coursemaker.data.TraineeRating;
 import com.boha.coursemaker.data.TraineeSkill;
+import com.boha.coursemaker.data.TraineeSkillHistory;
 import com.boha.coursemaker.data.TrainingClass;
 import com.boha.coursemaker.data.TrainingClassCourse;
 import com.boha.coursemaker.data.TrainingClassEvent;
@@ -75,21 +76,135 @@ public class InstructorUtil {
     @PersistenceContext
     EntityManager em;
 
-    public ResponseDTO getSkillLookups() throws DataException {
+    public ResponseDTO addSkill(SkillDTO skill)
+            throws DataException {
+        log.log(Level.INFO, "adding skill: {0} companyID: {1}",
+                new Object[]{skill.getSkillName(), skill.getCompanyID()});
+        ResponseDTO d = new ResponseDTO();
+
+        try {
+            Company t = em.find(Company.class, skill.getCompanyID());
+            Skill s = new Skill();
+            s.setCompany(t);
+            s.setSkillName(skill.getSkillName());
+            em.persist(s);
+            Query q = em.createNamedQuery("Skill.findByCompany", Skill.class);
+            q.setParameter("id", skill.getCompanyID());
+            List<Skill> skills = q.getResultList();
+            d.setSkillList(new ArrayList<SkillDTO>());
+            for (Skill x : skills) {
+                d.getSkillList().add(new SkillDTO(x));
+            }
+
+            log.log(Level.INFO, "Skill added:{0} total skills: {1}", new Object[]{skill.getSkillName(), d.getSkillList().size()});
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to add skill", e);
+            throw new DataException("Failed to add skill\n" + DataUtil.getErrorString(e));
+        }
+
+        return d;
+    }
+
+    public ResponseDTO updateSkillLevel(SkillLevelDTO skill)
+            throws DataException {
+        ResponseDTO d = new ResponseDTO();
+
+        try {
+            SkillLevel s = em.find(SkillLevel.class, skill.getSkillLevelID());
+            s.setSkillLevelName(skill.getSkillLevelName());
+            s.setLevel(skill.getLevel());
+            em.merge(s);
+            Query q = em.createNamedQuery("Skill.findByCompany", Skill.class);
+            q.setParameter("id", skill.getCompanyID());
+            List<Skill> skills = q.getResultList();
+            d.setSkillList(new ArrayList<SkillDTO>());
+            for (Skill x : skills) {
+                d.getSkillList().add(new SkillDTO(x));
+            }
+
+            log.log(Level.INFO, "SkillLevel updated {0}", skill.getSkillLevelName());
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to update skillLevel", e);
+            throw new DataException("Failed to update skillLevel\n" + DataUtil.getErrorString(e));
+        }
+
+        return d;
+    }
+
+    public ResponseDTO updateSkill(SkillDTO skill)
+            throws DataException {
+        ResponseDTO d = new ResponseDTO();
+
+        try {
+            Skill s = em.find(Skill.class, skill.getSkillID());
+            s.setSkillName(skill.getSkillName());
+            em.merge(s);
+            Query q = em.createNamedQuery("Skill.findByCompany", Skill.class);
+            q.setParameter("id", skill.getCompanyID());
+            List<Skill> skills = q.getResultList();
+            d.setSkillList(new ArrayList<SkillDTO>());
+            for (Skill x : skills) {
+                d.getSkillList().add(new SkillDTO(x));
+            }
+
+            log.log(Level.INFO, "Skill updated {0}", skill.getSkillName());
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to update skill", e);
+            throw new DataException("Failed to update skill\n" + DataUtil.getErrorString(e));
+        }
+
+        return d;
+    }
+
+    public ResponseDTO addSkillLevel(SkillLevelDTO skillLevel)
+            throws DataException {
+        ResponseDTO d = new ResponseDTO();
+
+        try {
+            Company t = em.find(Company.class, skillLevel.getCompanyID());
+            SkillLevel s = new SkillLevel();
+            s.setCompany(t);
+            s.setLevel(skillLevel.getLevel());
+            s.setSkillLevelName(skillLevel.getSkillLevelName());
+            em.persist(s);
+            Query q = em.createNamedQuery("SkillLevel.findByCompany", SkillLevel.class);
+            q.setParameter("id", skillLevel.getCompanyID());
+            List<SkillLevel> skills = q.getResultList();
+            d.setSkillLevelList(new ArrayList<SkillLevelDTO>());
+            for (SkillLevel x : skills) {
+                d.getSkillLevelList().add(new SkillLevelDTO(x));
+            }
+
+            log.log(Level.INFO, "SkillLevel added {0}", skillLevel.getSkillLevelName());
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to add skillLevel", e);
+            throw new DataException("Failed to add skillLevel\n" + DataUtil.getErrorString(e));
+        }
+
+        return d;
+    }
+
+    public ResponseDTO getSkillLookups(int companyID) throws DataException {
+        log.log(Level.OFF, "getting skill lookups");
         ResponseDTO d = new ResponseDTO();
         try {
-            Query q = em.createNamedQuery("Skill.findAll", Skill.class);
+            Query q = em.createNamedQuery("Skill.findByCompany", Skill.class);
+            q.setParameter("id", companyID);
             List<Skill> list = q.getResultList();
             d.setSkillList(new ArrayList<SkillDTO>());
             for (Skill ts : list) {
                 d.getSkillList().add(new SkillDTO(ts));
             }
-             q = em.createNamedQuery("SkillLevel.findAll", SkillLevel.class);
+            //
+            q = em.createNamedQuery("SkillLevel.findByCompany", SkillLevel.class);
+            q.setParameter("id", companyID);
             List<SkillLevel> blist = q.getResultList();
             d.setSkillLevelList(new ArrayList<SkillLevelDTO>());
             for (SkillLevel ts : blist) {
                 d.getSkillLevelList().add(new SkillLevelDTO(ts));
             }
+            log.log(Level.INFO, "Skills found: {0} levels: {1}",
+                    new Object[]{d.getSkillList().size(), d.getSkillLevelList().size()});
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to get skill lookups", e);
             throw new DataException("Failed to get skill lookups\n" + DataUtil.getErrorString(e));
@@ -97,6 +212,7 @@ public class InstructorUtil {
 
         return d;
     }
+
     public ResponseDTO getTraineeSkills(int traineeID) throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
@@ -115,22 +231,75 @@ public class InstructorUtil {
         return d;
     }
 
+    public ResponseDTO updateTraineeSkills(List<TraineeSkillDTO> list) throws DataException {
+        ResponseDTO d = new ResponseDTO();
+        try {
+            Instructor i = em.find(Instructor.class, list.get(0).getInstructorID());
+            SkillLevel sl = em.find(SkillLevel.class, list.get(0).getSkillLevelID());
+            for (TraineeSkillDTO x : list) {
+                TraineeSkill z = em.find(TraineeSkill.class, list.get(0).getTraineeSkillID());
+                z.setDateAssessed(new Date());
+                z.setInstructor(i);
+                z.setSkillLevel(sl);
+                em.persist(z);
+            }
+
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to update trainee skills", e);
+            throw new DataException("Failed to update trainee skills\n" + DataUtil.getErrorString(e));
+        }
+
+        return d;
+    }
+
+    private TraineeSkill getExistingTraineeSkill(List<TraineeSkill> list, int skillID) {
+        Skill s = em.find(Skill.class, skillID);
+        for (TraineeSkill ts : list) {
+            if (ts.getSkill().getSkillID() == s.getSkillID()) {
+                return ts;
+            }
+        }
+
+        return null;
+    }
+
     public ResponseDTO addTraineeSkills(List<TraineeSkillDTO> list) throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
             Trainee t = em.find(Trainee.class, list.get(0).getTraineeID());
             Instructor i = em.find(Instructor.class, list.get(0).getInstructorID());
-            Skill s = em.find(Skill.class, list.get(0).getSkillID());
-            SkillLevel sl = em.find(SkillLevel.class, list.get(0).getSkillLevelID());
+            Query a = em.createNamedQuery("TraineeSkill.findByTrainee", TraineeSkill.class);
+            a.setParameter("id", list.get(0).getTraineeID());
+            List<TraineeSkill> tsList = a.getResultList();
+
             for (TraineeSkillDTO x : list) {
-                TraineeSkill z = new TraineeSkill();
-                z.setDateAssessed(new Date());
-                z.setInstructor(i);
-                z.setSkill(s);
-                z.setSkillLevel(sl);
-                z.setTrainee(t);
-                em.persist(z);
+                TraineeSkill z = getExistingTraineeSkill(tsList, x.getSkillID());
+                if (z != null) {
+                    z.setSkillLevel(em.find(SkillLevel.class, x.getSkillLevelID()));
+                    em.merge(z);
+                    writeTraineeSkillHistory(z);
+
+                } else {
+                    z = new TraineeSkill();
+                    z.setDateAssessed(new Date());
+                    z.setInstructor(i);
+                    z.setSkill(em.find(Skill.class, x.getSkillID()));
+                    z.setSkillLevel(em.find(SkillLevel.class, x.getSkillLevelID()));
+                    z.setTrainee(t);
+                    em.persist(z);
+                    writeTraineeSkillHistory(z);
+
+                }
+
             }
+            Query q = em.createNamedQuery("TraineeSkill.findByTrainee", TraineeSkill.class);
+            q.setParameter("id", list.get(0).getTraineeID());
+            List<TraineeSkill> tlist = q.getResultList();
+            d.setTraineeSkillList(new ArrayList<TraineeSkillDTO>());
+            for (TraineeSkill ts : tlist) {
+                d.getTraineeSkillList().add(new TraineeSkillDTO(ts));
+            }
+            log.log(Level.OFF, "Trainee skill added/updated");
 
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to add trainee skills", e);
@@ -138,6 +307,19 @@ public class InstructorUtil {
         }
 
         return d;
+    }
+
+    private void writeTraineeSkillHistory(TraineeSkill z) {
+        //write history record
+        TraineeSkillHistory tsh = new TraineeSkillHistory();
+        tsh.setDateAssessed(z.getDateAssessed());
+        tsh.setInstructor(z.getInstructor());
+        tsh.setSkill(z.getSkill());
+        tsh.setSkillLevel(z.getSkillLevel());
+        tsh.setTrainee(z.getTrainee());
+        em.persist(tsh);
+        log.log(Level.OFF, "Trainee skill History added");
+        
     }
 
     public ResponseDTO deleteTrainingClassEvent(int id) throws DataException {
@@ -631,15 +813,14 @@ public class InstructorUtil {
     public ResponseDTO getTraineeActivityByInstructor(int instructorID) throws DataException {
         ResponseDTO response = new ResponseDTO();
         response.setTotals(new ArrayList<TotalsDTO>());
-        // response.setTrainingClassCourseList(
-        //       getTrainingClassCoursesByInstructor(instructorID)
-        //     .getTrainingClassCourseList());
 
         try {
             Instructor instructor = DataUtil.getInstructorByID(instructorID, em);
             response.setRatingList(DataUtil.getRatingList(instructor.getCompany().getCompanyID(), em).getRatingList());
             response.setHelpTypeList(DataUtil.getHelpTypeList(instructor.getCompany().getCompanyID(), em).getHelpTypeList());
-
+            ResponseDTO xx = getSkillLookups(instructor.getCompany().getCompanyID());
+            response.setSkillLevelList(xx.getSkillLevelList());
+            response.setSkillList(xx.getSkillList());
             for (InstructorClass tc : getInstructorClasses(instructor, em)) {
                 log.log(Level.WARNING, "Processing instructor class: {0} for {1} {2}", new Object[]{tc.getTrainingClass().getTrainingClassName(), tc.getInstructor().getFirstName(), tc.getInstructor().getLastName()});
                 if (tc.getTrainingClass().getIsOpen() > 0) {
@@ -710,12 +891,11 @@ public class InstructorUtil {
         List<InstructorClass> list = q.getResultList();
         List<InstructorClassDTO> dto = new ArrayList<>();
         q = em.createNamedQuery("Trainee.CountByClass", Trainee.class);
-        
-        
+
         for (InstructorClass ic : list) {
             InstructorClassDTO d = new InstructorClassDTO(ic);
             q.setParameter("id", ic.getTrainingClass().getTrainingClassID());
-            Number cResults=(Number) q.getSingleResult();
+            Number cResults = (Number) q.getSingleResult();
             d.setNumberOfTrainees(cResults.intValue());
             log.log(Level.OFF, "Number of trainees " + cResults.intValue());
             dto.add(d);
@@ -798,7 +978,9 @@ public class InstructorUtil {
 
             List<CourseTraineeActivity> ctaList = getCourseTraineeActivitiesByClass(trainingClassID, em);
             for (TraineeDTO t : traineeList) {
+                t.setTraineeSkillList(new ArrayList<TraineeSkillDTO>());
                 List<Dates> dates = new ArrayList<>();
+
                 for (CourseTraineeActivity cta : ctaList) {
                     if (cta.getCourseTrainee().getTrainee()
                             .getTraineeID() == t.getTraineeID()) {
