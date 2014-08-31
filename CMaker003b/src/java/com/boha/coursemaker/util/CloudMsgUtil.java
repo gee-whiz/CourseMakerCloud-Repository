@@ -91,27 +91,27 @@ public class CloudMsgUtil {
         resp.setMessage(rMsg);
         return resp;
     }
-    public  ResponseDTO sendInstructorToTraineeMessage(HelpResponseDTO req, PlatformUtil platformUtil) throws
+    public  ResponseDTO sendInstructorToTraineeMessage(HelpResponseDTO req, PlatformUtil platformUtil, DataUtil dataUtil) throws
             Exception, DataException {
 
         ResponseDTO resp = new ResponseDTO();
         //write record to table
 
-        HelpRequest hr = DataUtil.getHelpRequestByID(req.getHelpRequest().getHelpRequestID(), platformUtil.getEntityManager());
+        HelpRequest hr = dataUtil.getHelpRequestByID(req.getHelpRequest().getHelpRequestID());
         HelpResponse h = new HelpResponse();
         h.setDateResponse(new Date());
-        h.setHelpRequest(DataUtil.getHelpRequestByID(req.getHelpRequest().getHelpRequestID(), platformUtil.getEntityManager()));
+        h.setHelpRequest(dataUtil.getHelpRequestByID(req.getHelpRequest().getHelpRequestID()));
         h.setMessage(req.getMessage());
         h.setProblemSorted(req.getProblemSorted());
         h.setScheduleMeeting(req.getScheduleMeeting());
-        h.setInstructor(DataUtil.getInstructorByID(req.getInstructorID(), platformUtil.getEntityManager()));
+        h.setInstructor(dataUtil.getInstructorByID(req.getInstructorID()));
 
         try {
             em.persist(h);
             LOG.log(Level.INFO, "HelpResponse added to db");
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "HelpResponse add failed", e);
-            throw new DataException("HelpResponse add failed\n" + DataUtil.getErrorString(e));
+            throw new DataException("HelpResponse add failed\n" + dataUtil.getErrorString(e));
         }
 
         resp.setHelpResponse(new HelpResponseDTO(h));
@@ -167,7 +167,8 @@ public class CloudMsgUtil {
 
     public  ResponseDTO sendTraineeToInstructorMessage(
             HelpRequestDTO req, TraineeShoutDTO traineeShout,
-            int trainingClassID, PlatformUtil platformUtil, InstructorUtil instructorUtil) throws
+            int trainingClassID, PlatformUtil platformUtil, InstructorUtil instructorUtil
+    , DataUtil dataUtil) throws
             Exception, DataException {
 
          LOG.log(Level.OFF, "helptype id: {0}", req.getHelpType().getHelpTypeID());
@@ -179,18 +180,18 @@ public class CloudMsgUtil {
             HelpRequest h = new HelpRequest();
             h.setComment(req.getComment());
             if (req.getCourseTraineeActivity() != null) {
-                h.setCourseTraineeActivity(DataUtil.getCourseTraineeActivityByID(
-                        req.getCourseTraineeActivity().getCourseTraineeActivityID(), em));
+                h.setCourseTraineeActivity(dataUtil.getCourseTraineeActivityByID(
+                        req.getCourseTraineeActivity().getCourseTraineeActivityID()));
             }
             h.setDateRequested(new Date());
-            h.setHelpType(DataUtil.getHelpTypeByID(req.getHelpType().getHelpTypeID(), platformUtil.getEntityManager()));
-            h.setTrainingClass(DataUtil.getTrainingClassByID(trainingClassID, em));
+            h.setHelpType(dataUtil.getHelpTypeByID(req.getHelpType().getHelpTypeID()));
+            h.setTrainingClass(dataUtil.getTrainingClassByID(trainingClassID));
             try {
                 em.persist(h);
                 LOG.log(Level.INFO, "HelpRequest added to db, type: {0}", h.getHelpType().getHelpTypeName());
             } catch (Exception e) {
                 LOG.log(Level.SEVERE, "HelpRequest add failed", e);
-                throw new DataException("HelpRequest add failed\n" + DataUtil.getErrorString(e));
+                throw new DataException("HelpRequest add failed\n" + dataUtil.getErrorString(e));
             }
             txJSON = g.toJson(new HelpRequestDTO(h));
             resp.setHelpRequest(new HelpRequestDTO(h));
@@ -199,21 +200,21 @@ public class CloudMsgUtil {
             TraineeShout ts = new TraineeShout();
             ts.setRemarks(traineeShout.getRemarks());
             ts.setDateRegistered(new Date());
-            ts.setHelpType(DataUtil.getHelpTypeByID(req.getHelpType().getHelpTypeID(), platformUtil.getEntityManager()));
-            ts.setTrainee(DataUtil.getTraineeByID(traineeShout.getTraineeID(), platformUtil.getEntityManager()));
+            ts.setHelpType(dataUtil.getHelpTypeByID(req.getHelpType().getHelpTypeID()));
+            ts.setTrainee(dataUtil.getTraineeByID(traineeShout.getTraineeID()));
             try {
                 em.persist(ts);
                 LOG.log(Level.INFO, "TraineeShout added to db, type: {0}", ts.getHelpType().getHelpTypeName());
             } catch (Exception e) {
                 LOG.log(Level.SEVERE, "TraineeShout add failed", e);
-                throw new DataException("TraineeShout add failed\n" + DataUtil.getErrorString(e));
+                throw new DataException("TraineeShout add failed\n" + dataUtil.getErrorString(e));
             }
             txJSON = g.toJson(new TraineeShoutDTO(ts));
             resp.setTraineeShout(new TraineeShoutDTO(ts));
         }
         //send message to Google servers        
         //get list of class instructors
-        TrainingClass tc = DataUtil.getTrainingClassByID(trainingClassID, platformUtil.getEntityManager());
+        TrainingClass tc = dataUtil.getTrainingClassByID(trainingClassID);
         List<Instructor> iList = instructorUtil.getInstructorsByClass(tc.getTrainingClassID());
         List<String> registrationIDs = new ArrayList<>();
         List<GcmDevice> gcmList = getDevices(tc.getCompany().getCompanyID());

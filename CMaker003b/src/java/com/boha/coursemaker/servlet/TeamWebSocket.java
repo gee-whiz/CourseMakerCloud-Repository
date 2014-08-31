@@ -52,6 +52,8 @@ public class TeamWebSocket {
     InstructorUtil instructorUtil;
     @EJB
     TeamUtil teamUtil;
+    @EJB 
+     DataUtil dataUtil;
     
 
     private static final Set<Session> peers
@@ -87,30 +89,30 @@ public class TeamWebSocket {
             RequestDTO dto = gson.fromJson(message, RequestDTO.class);
             switch (dto.getRequestType()) {
                     case RequestDTO.ADD_TEAM:
-                        resp = teamUtil.addTeam(dto.getTeam());
+                        resp = teamUtil.addTeam(dto.getTeam(),dataUtil);
                         break;
                     case RequestDTO.ADD_TEAM_MEMBER:
-                        resp = teamUtil.addTeamMember(dto.getTeamMember());
+                        resp = teamUtil.addTeamMember(dto.getTeamMember(),dataUtil);
                         break;
                     case RequestDTO.ADD_DEMO_ANNOUNCEMENT:
-                        resp = teamUtil.addDemoAnnouncement(dto.getDemoAnnouncement());
+                        resp = teamUtil.addDemoAnnouncement(dto.getDemoAnnouncement(),dataUtil);
                         break;
 
                     case RequestDTO.CANCEL_DEMO_ANNOUNCEMENT:
-                        resp = teamUtil.cancelDemoAnnouncement(dto.getDemoAnnouncementID());
+                        resp = teamUtil.cancelDemoAnnouncement(dto.getDemoAnnouncementID(),dataUtil);
                         break;
 
                     case RequestDTO.GET_TEAMS_BY_CLASS:
-                        resp = teamUtil.getTeamsByClass(dto.getTrainingClassID());
+                        resp = teamUtil.getTeamsByClass(dto.getTrainingClassID(),dataUtil);
                         break;
                     case RequestDTO.GET_TEAMS_BY_COMPANY:
-                        resp = teamUtil.getTeamsByCompany(dto.getCompanyID());
+                        resp = teamUtil.getTeamsByCompany(dto.getCompanyID(),dataUtil);
                         break;
                     case RequestDTO.GET_DEMO_ANNOUNCEMENTS_BY_CLASS:
-                        resp = teamUtil.getDemoAnnouncementsByClass(dto.getTrainingClassID());
+                        resp = teamUtil.getDemoAnnouncementsByClass(dto.getTrainingClassID(),dataUtil);
                         break;
                     case RequestDTO.GET_DEMO_ANNOUNCEMENTS_BY_COMPANY:
-                        resp = teamUtil.getDemoAnnouncementsByCompany(dto.getCompanyID());
+                        resp = teamUtil.getDemoAnnouncementsByCompany(dto.getCompanyID(),dataUtil);
                         break;
                     default:
                         resp.setStatusCode(ResponseDTO.ERROR_UNKNOWN_REQUEST);

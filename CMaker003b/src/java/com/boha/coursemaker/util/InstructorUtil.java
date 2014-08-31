@@ -61,7 +61,7 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import javax.persistence.RollbackException;
+import javax.persistence.PersistenceException;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
@@ -76,7 +76,7 @@ public class InstructorUtil {
     @PersistenceContext
     EntityManager em;
 
-    public ResponseDTO addSkill(SkillDTO skill)
+    public ResponseDTO addSkill(SkillDTO skill, DataUtil dataUtil)
             throws DataException {
         log.log(Level.INFO, "adding skill: {0} companyID: {1}",
                 new Object[]{skill.getSkillName(), skill.getCompanyID()});
@@ -99,13 +99,13 @@ public class InstructorUtil {
             log.log(Level.INFO, "Skill added:{0} total skills: {1}", new Object[]{skill.getSkillName(), d.getSkillList().size()});
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to add skill", e);
-            throw new DataException("Failed to add skill\n" + DataUtil.getErrorString(e));
+            throw new DataException("Failed to add skill\n" + dataUtil.getErrorString(e));
         }
 
         return d;
     }
 
-    public ResponseDTO updateSkillLevel(SkillLevelDTO skill)
+    public ResponseDTO updateSkillLevel(SkillLevelDTO skill, DataUtil dataUtil)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
 
@@ -114,24 +114,24 @@ public class InstructorUtil {
             s.setSkillLevelName(skill.getSkillLevelName());
             s.setLevel(skill.getLevel());
             em.merge(s);
-            Query q = em.createNamedQuery("Skill.findByCompany", Skill.class);
+            Query q = em.createNamedQuery("SkillLevel.findByCompany", SkillLevel.class);
             q.setParameter("id", skill.getCompanyID());
-            List<Skill> skills = q.getResultList();
-            d.setSkillList(new ArrayList<SkillDTO>());
-            for (Skill x : skills) {
-                d.getSkillList().add(new SkillDTO(x));
+            List<SkillLevel> skills = q.getResultList();
+            d.setSkillLevelList(new ArrayList<SkillLevelDTO>());
+            for (SkillLevel x : skills) {
+                d.getSkillLevelList().add(new SkillLevelDTO(x));
             }
 
             log.log(Level.INFO, "SkillLevel updated {0}", skill.getSkillLevelName());
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to update skillLevel", e);
-            throw new DataException("Failed to update skillLevel\n" + DataUtil.getErrorString(e));
+            throw new DataException("Failed to update skillLevel\n" + dataUtil.getErrorString(e));
         }
 
         return d;
     }
 
-    public ResponseDTO updateSkill(SkillDTO skill)
+    public ResponseDTO updateSkill(SkillDTO skill, DataUtil dataUtil)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
 
@@ -150,13 +150,13 @@ public class InstructorUtil {
             log.log(Level.INFO, "Skill updated {0}", skill.getSkillName());
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to update skill", e);
-            throw new DataException("Failed to update skill\n" + DataUtil.getErrorString(e));
+            throw new DataException("Failed to update skill\n" + dataUtil.getErrorString(e));
         }
 
         return d;
     }
 
-    public ResponseDTO addSkillLevel(SkillLevelDTO skillLevel)
+    public ResponseDTO addSkillLevel(SkillLevelDTO skillLevel, DataUtil dataUtil)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
 
@@ -178,13 +178,13 @@ public class InstructorUtil {
             log.log(Level.INFO, "SkillLevel added {0}", skillLevel.getSkillLevelName());
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to add skillLevel", e);
-            throw new DataException("Failed to add skillLevel\n" + DataUtil.getErrorString(e));
+            throw new DataException("Failed to add skillLevel\n" + dataUtil.getErrorString(e));
         }
 
         return d;
     }
 
-    public ResponseDTO getSkillLookups(int companyID) throws DataException {
+    public ResponseDTO getSkillLookups(int companyID, DataUtil dataUtil) throws DataException {
         log.log(Level.OFF, "getting skill lookups");
         ResponseDTO d = new ResponseDTO();
         try {
@@ -207,13 +207,13 @@ public class InstructorUtil {
                     new Object[]{d.getSkillList().size(), d.getSkillLevelList().size()});
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to get skill lookups", e);
-            throw new DataException("Failed to get skill lookups\n" + DataUtil.getErrorString(e));
+            throw new DataException("Failed to get skill lookups\n" + dataUtil.getErrorString(e));
         }
 
         return d;
     }
 
-    public ResponseDTO getTraineeSkills(int traineeID) throws DataException {
+    public ResponseDTO getTraineeSkills(int traineeID, DataUtil dataUtil) throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
             Query q = em.createNamedQuery("TraineeSkill.findByTrainee", TraineeSkill.class);
@@ -225,13 +225,13 @@ public class InstructorUtil {
             }
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to add trainee skills", e);
-            throw new DataException("Failed to add trainee skills\n" + DataUtil.getErrorString(e));
+            throw new DataException("Failed to add trainee skills\n" + dataUtil.getErrorString(e));
         }
 
         return d;
     }
 
-    public ResponseDTO updateTraineeSkills(List<TraineeSkillDTO> list) throws DataException {
+    public ResponseDTO updateTraineeSkills(List<TraineeSkillDTO> list, DataUtil dataUtil) throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
             Instructor i = em.find(Instructor.class, list.get(0).getInstructorID());
@@ -246,7 +246,7 @@ public class InstructorUtil {
 
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to update trainee skills", e);
-            throw new DataException("Failed to update trainee skills\n" + DataUtil.getErrorString(e));
+            throw new DataException("Failed to update trainee skills\n" + dataUtil.getErrorString(e));
         }
 
         return d;
@@ -263,7 +263,7 @@ public class InstructorUtil {
         return null;
     }
 
-    public ResponseDTO addTraineeSkills(List<TraineeSkillDTO> list) throws DataException {
+    public ResponseDTO addTraineeSkills(List<TraineeSkillDTO> list, DataUtil dataUtil) throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
             Trainee t = em.find(Trainee.class, list.get(0).getTraineeID());
@@ -303,7 +303,7 @@ public class InstructorUtil {
 
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to add trainee skills", e);
-            throw new DataException("Failed to add trainee skills\n" + DataUtil.getErrorString(e));
+            throw new DataException("Failed to add trainee skills\n" + dataUtil.getErrorString(e));
         }
 
         return d;
@@ -322,7 +322,7 @@ public class InstructorUtil {
         
     }
 
-    public ResponseDTO deleteTrainingClassEvent(int id) throws DataException {
+    public ResponseDTO deleteTrainingClassEvent(int id, DataUtil dataUtil) throws DataException {
 
         ResponseDTO d = new ResponseDTO();
         try {
@@ -330,19 +330,19 @@ public class InstructorUtil {
             em.remove(tce);
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to delete TrainingClassEvent", e);
-            throw new DataException("Failed to delete TrainingClassEvent\n" + DataUtil.getErrorString(e));
+            throw new DataException("Failed to delete TrainingClassEvent\n" + dataUtil.getErrorString(e));
         }
 
         return d;
     }
 
-    public ResponseDTO updateTrainingClassEvent(TrainingClassEventDTO event) throws DataException {
+    public ResponseDTO updateTrainingClassEvent(TrainingClassEventDTO event, DataUtil dataUtil) throws DataException {
 
         ResponseDTO d = new ResponseDTO();
 
         try {
             TrainingClassEvent tce = em.find(TrainingClassEvent.class, event.getTrainingClassEventID());
-            // tce.setTrainingClass(DataUtil.getTrainingClassByID(event.getTrainingClassID()));
+            // tce.setTrainingClass(dataUtil.getTrainingClassByID(event.getTrainingClassID()));
             tce.setDescription(event.getDescription());
             tce.setEventName(event.getEventName());
             tce.setLocation(event.getLocation());
@@ -354,22 +354,22 @@ public class InstructorUtil {
 
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to update TrainingClassEvent", e);
-            throw new DataException("Failed to update TrainingClassEvent\n" + DataUtil.getErrorString(e));
+            throw new DataException("Failed to update TrainingClassEvent\n" + dataUtil.getErrorString(e));
         }
 
         return d;
     }
 
-    public ResponseDTO addTrainingClassEvent(TrainingClassEventDTO event) throws DataException {
+    public ResponseDTO addTrainingClassEvent(TrainingClassEventDTO event, DataUtil dataUtil) throws DataException {
 
         ResponseDTO d = new ResponseDTO();
         TrainingClassCourse tcc = null;
 
         try {
-            TrainingClass tc = DataUtil.getTrainingClassByID(event.getTrainingClassID(), em);
+            TrainingClass tc = dataUtil.getTrainingClassByID(event.getTrainingClassID());
             TrainingClassEvent tce = new TrainingClassEvent();
             if (event.getTrainingClassCourseID() > 0) {
-                tcc = DataUtil.getTrainingClassCourseByID(event.getTrainingClassCourseID(), em);
+                tcc = dataUtil.getTrainingClassCourseByID(event.getTrainingClassCourseID());
                 tce.setTrainingClassCourse(tcc);
             }
 
@@ -400,17 +400,17 @@ public class InstructorUtil {
             for (Iterator<ConstraintViolation<?>> it = set.iterator(); it.hasNext();) {
                 ConstraintViolation<? extends Object> constraintViolation = it.next();
                 log.log(Level.SEVERE, constraintViolation.getMessage());
-                throw new DataException("Failed to add TrainingClassEvent\n" + DataUtil.getErrorString(e));
+                throw new DataException("Failed to add TrainingClassEvent\n" + dataUtil.getErrorString(e));
             }
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to add TrainingClassEvent", e);
-            throw new DataException("Failed to add TrainingClassEvent\n" + DataUtil.getErrorString(e));
+            throw new DataException("Failed to add TrainingClassEvent\n" + dataUtil.getErrorString(e));
         }
 
         return d;
     }
 
-    public ResponseDTO getTrainingClassesByInstructor(int instructorID) throws DataException {
+    public ResponseDTO getTrainingClassesByInstructor(int instructorID, DataUtil dataUtil) throws DataException {
         long s = System.currentTimeMillis();
         ResponseDTO r = new ResponseDTO();
 
@@ -456,7 +456,7 @@ public class InstructorUtil {
             log.log(Level.INFO, "Retrieved instructor classes, elapsed: {0} seconds", AdministratorServlet.getElapsed(s, e));
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(dataUtil.getErrorString(e));
         }
         return r;
     }
@@ -516,8 +516,8 @@ public class InstructorUtil {
         return list;
     }
 
-    public ResponseDTO deleteInstructorClass(int classID) throws DataException {
-        InstructorClass ic = DataUtil.getInstructorClassByID(classID, em);
+    public ResponseDTO deleteInstructorClass(int classID, DataUtil dataUtil) throws DataException {
+        InstructorClass ic = dataUtil.getInstructorClassByID(classID);
         if (ic == null) {
             throw new DataException("InstructorClass is NULL, cannot delete the record");
         }
@@ -543,25 +543,25 @@ public class InstructorUtil {
         } catch (Exception e) {
             log.log(Level.INFO, "Failed to remove instructorClass", e);
             throw new DataException("Failed to remove instructorClass\n"
-                    + DataUtil.getErrorString(e));
+                    + dataUtil.getErrorString(e));
         }
         return resp;
     }
 
     public ResponseDTO rateTrainee(CourseTraineeActivityDTO dto,
-            int instructorID) throws DataException {
+            int instructorID, DataUtil dataUtil) throws DataException {
         ResponseDTO resp = new ResponseDTO();
 
         try {
-            Instructor i = DataUtil.getInstructorByID(instructorID, em);
+            Instructor i = dataUtil.getInstructorByID(instructorID);
             InstructorRating ir = new InstructorRating();
-            CourseTraineeActivity cta = DataUtil.getCourseTraineeActivityByID(dto.getCourseTraineeActivityID(), em);
+            CourseTraineeActivity cta = dataUtil.getCourseTraineeActivityByID(dto.getCourseTraineeActivityID());
             log.log(Level.INFO, "rateTrainee instructor ratings: {0}", cta.getTraineeRatingList().size());
             ir.setInstructor(i);
             ir.setCompletedFlag(dto.getCompletedFlag());
             ir.setCourseTraineeActivity(cta);
             ir.setDateUpdated(new Date());
-            ir.setRating(DataUtil.getRatingByID(dto.getRating().getRatingID(), em));
+            ir.setRating(dataUtil.getRatingByID(dto.getRating().getRatingID()));
 
             em.persist(ir);
 
@@ -582,7 +582,7 @@ public class InstructorUtil {
             resp.setMessage("Trainee evaluated by instructor");
         } catch (Exception e) {
             log.log(Level.INFO, "Failed to rate trainee activity", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(dataUtil.getErrorString(e));
         }
 
         return resp;
@@ -628,12 +628,12 @@ public class InstructorUtil {
 
     }
 
-    public ResponseDTO getTraineeActivityByCompany(int companyID) throws DataException {
+    public ResponseDTO getTraineeActivityByCompany(int companyID, DataUtil dataUtil) throws DataException {
         ResponseDTO response = new ResponseDTO();
         response.setTotals(new ArrayList<TotalsDTO>());
 
         try {
-            Company company = DataUtil.getCompanyByID(companyID, em);
+            Company company = dataUtil.getCompanyByID(companyID);
             for (TrainingClass tc : company.getTrainingClassList()) {
                 if (tc.getIsOpen() > 0) {
                     for (Trainee trainee : tc.getTraineeList()) {
@@ -687,7 +687,7 @@ public class InstructorUtil {
 
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(dataUtil.getErrorString(e));
         }
         return response;
     }
@@ -702,7 +702,7 @@ public class InstructorUtil {
 
     }
 
-    public ResponseDTO getClassCoursesByInstructor(int instructorID) throws DataException {
+    public ResponseDTO getClassCoursesByInstructor(int instructorID, DataUtil dataUtil) throws DataException {
         ResponseDTO response = new ResponseDTO();
 
         try {
@@ -717,7 +717,7 @@ public class InstructorUtil {
             response.setMessage("TrainingClassCourses for instructor found: " + list.size());
         } catch (Exception e) {
             log.log(Level.SEVERE, "failed", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(dataUtil.getErrorString(e));
         }
 
         return response;
@@ -810,15 +810,15 @@ public class InstructorUtil {
         return list;
     }
 
-    public ResponseDTO getTraineeActivityByInstructor(int instructorID) throws DataException {
+    public ResponseDTO getTraineeActivityByInstructor(int instructorID, DataUtil dataUtil) throws DataException {
         ResponseDTO response = new ResponseDTO();
         response.setTotals(new ArrayList<TotalsDTO>());
 
         try {
-            Instructor instructor = DataUtil.getInstructorByID(instructorID, em);
-            response.setRatingList(DataUtil.getRatingList(instructor.getCompany().getCompanyID(), em).getRatingList());
-            response.setHelpTypeList(DataUtil.getHelpTypeList(instructor.getCompany().getCompanyID(), em).getHelpTypeList());
-            ResponseDTO xx = getSkillLookups(instructor.getCompany().getCompanyID());
+            Instructor instructor = dataUtil.getInstructorByID(instructorID);
+            response.setRatingList(dataUtil.getRatingAndHelpList(instructor.getCompany().getCompanyID()).getRatingList());
+            response.setHelpTypeList(dataUtil.getHelpTypeList(instructor.getCompany().getCompanyID()).getHelpTypeList());
+            ResponseDTO xx = getSkillLookups(instructor.getCompany().getCompanyID(), dataUtil);
             response.setSkillLevelList(xx.getSkillLevelList());
             response.setSkillList(xx.getSkillList());
             for (InstructorClass tc : getInstructorClasses(instructor, em)) {
@@ -879,7 +879,7 @@ public class InstructorUtil {
             log.log(Level.INFO, "Instructor's Trainee Activity totals calculated, rows: {0}", response.getTotals().size());
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(dataUtil.getErrorString(e));
         }
         return response;
     }
@@ -903,12 +903,12 @@ public class InstructorUtil {
         return dto;
     }
 
-    public ResponseDTO getTraineeActivityTotalsByClass(int trainingClassID) throws DataException {
+    public ResponseDTO getTraineeActivityTotalsByClass(int trainingClassID, DataUtil dataUtil) throws DataException {
         ResponseDTO response = new ResponseDTO();
         response.setTotals(new ArrayList<TotalsDTO>());
 
         try {
-            TrainingClass tc = DataUtil.getTrainingClassByID(trainingClassID, em);
+            TrainingClass tc = dataUtil.getTrainingClassByID(trainingClassID);
             tc.getTraineeList().get(0).getCourseTraineeList().get(0).getCourseTraineeActivityList();
             for (Trainee trainee : tc.getTraineeList()) {
                 for (CourseTrainee ct : trainee.getCourseTraineeList()) {
@@ -951,7 +951,7 @@ public class InstructorUtil {
 
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(dataUtil.getErrorString(e));
         }
         return response;
     }
@@ -966,11 +966,11 @@ public class InstructorUtil {
         return list;
     }
 
-    public ResponseDTO getClassTrainees(int trainingClassID) throws DataException {
+    public ResponseDTO getClassTrainees(int trainingClassID, DataUtil dataUtil) throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
 
-            TrainingClass tc = DataUtil.getTrainingClassByID(trainingClassID, em);
+            TrainingClass tc = dataUtil.getTrainingClassByID(trainingClassID);
             List<TraineeDTO> traineeList = new ArrayList<>();
             for (Trainee t : getTrainees(tc, em)) {
                 traineeList.add(new TraineeDTO(t));
@@ -996,7 +996,7 @@ public class InstructorUtil {
                 if (dates.size() > 0) {
                     Collections.sort(dates);
                     t.setLastDate(dates.get(0).date);
-                    t.setPercComplete(DataUtil.getPercentage(
+                    t.setPercComplete(dataUtil.getPercentage(
                             t.getTotalTasks(), t.getTotalCompleted()));
                 }
                 List<InstructorRating> irList = getInstructorRatingsByClass(
@@ -1033,7 +1033,7 @@ public class InstructorUtil {
 
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(dataUtil.getErrorString(e));
         }
         return d;
     }
@@ -1058,7 +1058,7 @@ public class InstructorUtil {
         }
     }
 
-    private TraineeDTO getTraineeDTO(Trainee a, boolean getActivity, EntityManager em) {
+    private TraineeDTO getTraineeDTO(Trainee a, boolean getActivity, DataUtil dataUtil) {
         TraineeDTO t = new TraineeDTO();
         t.setTraineeID(a.getTraineeID());
         t.setCompanyID(a.getCompany().getCompanyID());
@@ -1122,13 +1122,13 @@ public class InstructorUtil {
             if (dates.size() > 0) {
                 Collections.sort(dates);
                 t.setLastDate(dates.get(0).date);
-                t.setPercComplete(DataUtil.getPercentage(totTasks, totCompleted));
+                t.setPercComplete(dataUtil.getPercentage(totTasks, totCompleted));
             }
         }
         return t;
     }
 
-    public ResponseDTO getInstructorClasses(int instructorID)
+    public ResponseDTO getInstructorClasses(int instructorID, DataUtil dataUtil)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
@@ -1145,12 +1145,12 @@ public class InstructorUtil {
             d.setInstructorClassList(dto);
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(dataUtil.getErrorString(e));
         }
         return d;
     }
 
-    public ResponseDTO getCourseByClass(int trainingClassID)
+    public ResponseDTO getCourseByClass(int trainingClassID, DataUtil dataUtil)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
@@ -1167,7 +1167,7 @@ public class InstructorUtil {
             d.setTrainingClassCourseList(dto);
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(dataUtil.getErrorString(e));
         }
         return d;
     }
@@ -1183,7 +1183,7 @@ public class InstructorUtil {
         return dto;
     }
 
-    public ResponseDTO getCategoriesByCompany(int companyID)
+    public ResponseDTO getCategoriesByCompany(int companyID, DataUtil dataUtil)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
@@ -1210,7 +1210,7 @@ public class InstructorUtil {
             d.setCategoryList(dto);
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(dataUtil.getErrorString(e));
         }
         return d;
     }
@@ -1248,7 +1248,7 @@ public class InstructorUtil {
         return dto;
     }
 
-    public ResponseDTO getClassActivities(int trainingClassID)
+    public ResponseDTO getClassActivities(int trainingClassID, DataUtil dataUtil)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
@@ -1263,28 +1263,28 @@ public class InstructorUtil {
             d.setCourseTraineeActivityList(dto);
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(dataUtil.getErrorString(e));
         }
         return d;
     }
 
     public ResponseDTO rateTraineeActivities(List<CourseTraineeActivityDTO> list,
-            int instructorID)
+            int instructorID, DataUtil dataUtil)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
 
-            Instructor tc = DataUtil.getInstructorByID(instructorID, em);
+            Instructor tc = dataUtil.getInstructorByID(instructorID);
 
             for (CourseTraineeActivityDTO cta : list) {
                 InstructorRating r = new InstructorRating();
                 r.setComment(cta.getComment());
                 r.setCompletedFlag(cta.getCompletedFlag());
                 r.setDateUpdated(new Date());
-                r.setCourseTraineeActivity(DataUtil.getCourseTraineeActivityByID(
-                        cta.getCourseTraineeActivityID(), em));
+                r.setCourseTraineeActivity(dataUtil.getCourseTraineeActivityByID(
+                        cta.getCourseTraineeActivityID()));
                 r.setInstructor(tc);
-                r.setRating(DataUtil.getRatingByID(cta.getRating().getRatingID(), em));
+                r.setRating(dataUtil.getRatingByID(cta.getRating().getRatingID()));
                 em.persist(r);
 
             }
@@ -1293,12 +1293,12 @@ public class InstructorUtil {
             //log.log(Level.INFO, "Class activities rated by instructor");
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to rate activities by instructor", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(dataUtil.getErrorString(e));
         }
         return d;
     }
 
-    public ResponseDTO loginInstructor(String email, String password, GcmDeviceDTO device, PlatformUtil platformUtil) throws DataException {
+    public ResponseDTO loginInstructor(String email, String password, DataUtil dataUtil) throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
 
@@ -1312,31 +1312,12 @@ public class InstructorUtil {
                 d.setInstructor(new InstructorDTO(inst));
                 d.setCompany(new CompanyDTO(inst.getCompany()));
                 //get classes, courses, rating, helptype
-                d.setRatingList(DataUtil.getRatingList(inst.getCompany().getCompanyID(), em).getRatingList());
-                d.setHelpTypeList(DataUtil.getHelpTypeList(inst.getCompany().getCompanyID(), em).getHelpTypeList());
-                d.setEquipmentList(DataUtil.getEquipmentList(inst.getCompany().getCompanyID(), em).getEquipmentList());
-                d.setTrainingClassList(DataUtil.getTrainingClassList(
-                        inst.getCompany().getCompanyID(), em).getTrainingClassList());
-                try {
-                    if (device != null) {
-                        GcmDevice gcm = new GcmDevice();
-                        gcm.setManufacturer(device.getManufacturer());
-                        gcm.setModel(device.getModel());
-                        gcm.setProduct(device.getProduct());
-                        gcm.setSerialNumber(device.getSerialNumber());
-                        gcm.setRegistrationID(device.getRegistrationID());
-                        gcm.setDateRegistered(new Date());
-                        gcm.setInstructor(inst);
-                        em.persist(gcm);
-
-                        CloudMessagingRegistrar.sendRegistration(gcm.getRegistrationID(), platformUtil);
-                    }
-                } catch (Exception e) {
-                    log.log(Level.WARNING, "Device registration failed", e);
-                    platformUtil.addErrorStore(ResponseDTO.ERROR_DATABASE,
-                            "Device registration failed\n"
-                            + DataUtil.getErrorString(e), "Instructor Services");
-                }
+                d.setRatingList(dataUtil.getRatingAndHelpList(inst.getCompany().getCompanyID()).getRatingList());
+                d.setHelpTypeList(dataUtil.getHelpTypeList(inst.getCompany().getCompanyID()).getHelpTypeList());
+                d.setEquipmentList(dataUtil.getEquipmentList(inst.getCompany().getCompanyID()).getEquipmentList());
+                d.setTrainingClassList(dataUtil.getTrainingClassList(
+                        inst.getCompany().getCompanyID()).getTrainingClassList());
+               
 
                 log.log(Level.INFO, "Instructor signed in: {1} {2}",
                         new Object[]{inst.getEmail(), inst.getFirstName(), inst.getLastName()});
@@ -1351,17 +1332,17 @@ public class InstructorUtil {
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to sign Instructor in", e);
             throw new DataException("Failed to sign Instructor in\n"
-                    + DataUtil.getErrorString(e));
+                    + dataUtil.getErrorString(e));
         }
         return d;
     }
 
-    public ResponseDTO registerInstructor(InstructorDTO instructor)
+    public ResponseDTO registerInstructor(InstructorDTO instructor, DataUtil dataUtil)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
-            Company tc = DataUtil.getCompanyByID(instructor.getCompanyID(), em);
-            City city = DataUtil.getCityByID(instructor.getCityID(), em);
+            Company tc = dataUtil.getCompanyByID(instructor.getCompanyID());
+            City city = dataUtil.getCityByID(instructor.getCityID());
 
             Instructor a = new Instructor();
             a.setFirstName(instructor.getFirstName());
@@ -1370,7 +1351,7 @@ public class InstructorUtil {
             a.setCellphone(instructor.getCellphone());
             a.setCity(city);
             a.setCompany(tc);
-            a.setPassword(DataUtil.createPassword());
+            a.setPassword(dataUtil.createPassword());
             a.setDateRegistered(new Date());
             em.persist(a);
 
@@ -1385,14 +1366,14 @@ public class InstructorUtil {
             d.setCompany(new CompanyDTO(tc));
             d.setMessage("Instructor registered OK");
 
-        } catch (RollbackException e) {
+        } catch (PersistenceException e) {
             log.log(Level.WARNING, "Just a warning, might be duplicate");
             d.setStatusCode(ResponseDTO.ERROR_DUPLICATE);
             d.setMessage("Instructor with this email already exists. Please Sign In");
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to register instructor", e);
             throw new DataException("Failed to register instructor\n"
-                    + DataUtil.getErrorString(e));
+                    + dataUtil.getErrorString(e));
         }
         return d;
     }

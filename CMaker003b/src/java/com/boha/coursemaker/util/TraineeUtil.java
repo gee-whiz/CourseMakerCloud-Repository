@@ -48,8 +48,9 @@ import javax.ejb.TransactionManagementType;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
-import javax.persistence.RollbackException;
+import javax.persistence.PersistenceException;
 
 /**
  *
@@ -69,12 +70,12 @@ public class TraineeUtil {
     
     
 
-    public ResponseDTO updateTraineeProfile(TraineeDTO trainee)
+    public ResponseDTO updateTraineeProfile(TraineeDTO trainee, DataUtil dataUtil)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
 
         try {
-            Trainee t = DataUtil.getTraineeByID(trainee.getTraineeID(), em);
+            Trainee t = dataUtil.getTraineeByID(trainee.getTraineeID());
 
             t.setFirstName(trainee.getFirstName());
             t.setLastName(trainee.getLastName());
@@ -85,7 +86,7 @@ public class TraineeUtil {
                 t.setPassword(trainee.getPassword());
             }
             t.setGender(trainee.getGender());
-            t.setCity(DataUtil.getCityByID(trainee.getCityID(), em));
+            t.setCity(dataUtil.getCityByID(trainee.getCityID()));
             t.setDateUpdated(new Date());
             em.merge(t);
 
@@ -94,14 +95,14 @@ public class TraineeUtil {
             log.log(Level.INFO, "Trainee profile updated");
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to update trainee", e);
-            throw new DataException("Failed to update trainee\n" + DataUtil.getErrorString(e));
+            throw new DataException("Failed to update trainee\n" + dataUtil.getErrorString(e));
         }
 
         return d;
     }
 
     public ResponseDTO getTraineeRatingsByActivity(
-            int courseTraineeActivityID)
+            int courseTraineeActivityID, DataUtil dataUtil)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
@@ -116,13 +117,13 @@ public class TraineeUtil {
             d.setTraineeRatingList(dto);
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(dataUtil.getErrorString(e));
         }
         return d;
     }
 
     public ResponseDTO getTraineeRatings(
-            int traineeID)
+            int traineeID, DataUtil dataUtil)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
@@ -137,16 +138,16 @@ public class TraineeUtil {
             d.setTraineeRatingList(dto);
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(dataUtil.getErrorString(e));
         }
         return d;
     }
 
     public ResponseDTO getInstructorsByClass(
-            int trainingClassID)
+            int trainingClassID, DataUtil dataUtil)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
-        TrainingClass tc = DataUtil.getTrainingClassByID(trainingClassID, em);
+        TrainingClass tc = dataUtil.getTrainingClassByID(trainingClassID);
         Company co = tc.getCompany();
         try {
 
@@ -157,7 +158,7 @@ public class TraineeUtil {
             for (Instructor cta : list) {
                 dto.add(new InstructorDTO(cta));
             }
-            List<InstructorClassDTO> icList = getInstructorClassesByCompany(co.getCompanyID());
+            List<InstructorClassDTO> icList = getInstructorClassesByCompany(co.getCompanyID(),dataUtil);
             for (InstructorDTO ins : dto) {
                 ins.setInstructorClassList(new ArrayList<InstructorClassDTO>());
                 for (InstructorClassDTO ic : icList) {
@@ -169,13 +170,13 @@ public class TraineeUtil {
             d.setInstructorList(dto);
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(dataUtil.getErrorString(e));
         }
         return d;
     }
 
     private List<InstructorClassDTO> getInstructorClassesByCompany(
-            int companyID)
+            int companyID, DataUtil dataUtil)
             throws DataException {
         List<InstructorClassDTO> dtoList = null;
         try {
@@ -190,22 +191,22 @@ public class TraineeUtil {
 
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(dataUtil.getErrorString(e));
         }
         return dtoList;
     }
 
     public ResponseDTO addHelpRequest(
-            HelpRequestDTO help)
+            HelpRequestDTO help, DataUtil dataUtil)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
 
             HelpRequest a = new HelpRequest();
-            a.setHelpType(DataUtil.getHelpTypeByID(help.getHelpType().
-                    getHelpTypeID(), em));
-            a.setCourseTraineeActivity(DataUtil.getCourseTraineeActivityByID(
-                    help.getCourseTraineeActivity().getCourseTraineeActivityID(), em));
+            a.setHelpType(dataUtil.getHelpTypeByID(help.getHelpType().
+                    getHelpTypeID()));
+            a.setCourseTraineeActivity(dataUtil.getCourseTraineeActivityByID(
+                    help.getCourseTraineeActivity().getCourseTraineeActivityID()));
             a.setComment(help.getComment());
             a.setDateRequested(new Date());
             em.persist(a);
@@ -214,7 +215,7 @@ public class TraineeUtil {
             //log.log(Level.INFO, "Help requested");
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to register Trainee", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(dataUtil.getErrorString(e));
         }
         return d;
     }
@@ -246,7 +247,7 @@ public class TraineeUtil {
     }
 
     public ResponseDTO getTraineeData(int trainingClassID,
-            int traineeID, int companyID, String countryCode) throws DataException {
+            int traineeID, int companyID, String countryCode, DataUtil dataUtil) throws DataException {
         log.log(Level.OFF, "getTraineeData trainingClassID: {0} traineeID: {1} companyID: {2}", new Object[]{trainingClassID, traineeID, companyID});
         ResponseDTO d = new ResponseDTO();
         try {
@@ -267,14 +268,14 @@ public class TraineeUtil {
                 list.add(z);
             }
             d.setTrainingClassCourseList(list);
-            d.setProvinceList(DataUtil.getProvinceListByCountryCode(countryCode, em).getProvinceList());
+            d.setProvinceList(dataUtil.getProvinceListByCountryCode(countryCode).getProvinceList());
             d.setTraineeList(getClassmates(trainingClassID));
-            d.setRatingList(DataUtil.getRatingList(companyID, em).getRatingList());
-            d.setHelpTypeList(DataUtil.getHelpTypeList(companyID, em).getHelpTypeList());
+            d.setRatingList(dataUtil.getRatingAndHelpList(companyID).getRatingList());
+            d.setHelpTypeList(dataUtil.getHelpTypeList(companyID).getHelpTypeList());
             log.log(Level.WARNING, "Trainee data retrieved, number courses: {0} classMates: {1}", new Object[]{d.getTrainingClassCourseList().size(), d.getTraineeList().size()});
         } catch (Exception e) {
             log.log(Level.WARNING, "Failed to get Trainee data", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(dataUtil.getErrorString(e));
         }
 
         return d;
@@ -305,14 +306,14 @@ public class TraineeUtil {
      * @throws DataException
      */
     public ResponseDTO registerTrainee(TraineeDTO trainee,
-            int trainingClassID, int cityID)
+            int trainingClassID, int cityID, DataUtil dataUtil)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
 
-            TrainingClass tc = DataUtil.getTrainingClassByID(trainingClassID, em);
-            Company c = DataUtil.getCompanyByID(tc.getCompany().getCompanyID(), em);
-            City city = DataUtil.getCityByID(cityID, em);
+            TrainingClass tc = dataUtil.getTrainingClassByID(trainingClassID);
+            Company c = dataUtil.getCompanyByID(tc.getCompany().getCompanyID());
+            City city = dataUtil.getCityByID(cityID);
 
             Trainee tr = new Trainee();
             tr.setFirstName(trainee.getFirstName());
@@ -323,7 +324,7 @@ public class TraineeUtil {
             tr.setCompany(c);
             tr.setCity(city);
             tr.setTrainingClass(tc);
-            tr.setPassword(DataUtil.createPassword());
+            tr.setPassword(dataUtil.createPassword());
             tr.setDateRegistered(new Date());
             tr.setActiveFlag(0);
             em.persist(tr);
@@ -339,7 +340,7 @@ public class TraineeUtil {
             d.setCompany(new CompanyDTO(c));
             try {
                 for (TrainingClassCourseDTO tcc : getCoursesByClass(trainingClassID)) {
-                    enrollTraineeInCourse(tr.getTraineeID(), tcc.getTrainingClassCourseID());
+                    enrollTraineeInCourse(tr.getTraineeID(), tcc.getTrainingClassCourseID(),dataUtil);
                 }
             } catch (Exception e) {
                 //swallow exception - instructor can update later
@@ -348,7 +349,7 @@ public class TraineeUtil {
                     new Object[]{tr.getFirstName(), tr.getLastName(), tc.getTrainingClassName()});
             d.setMessage("Trainee registered. OK!");
 
-        } catch (RollbackException e) {
+        } catch (PersistenceException e) {
             log.log(Level.WARNING, "Possible duplicate encountered, trainee");
             d.setStatusCode(ResponseDTO.ERROR_DUPLICATE);
             d.setMessage("A trainee with this email address already exists. "
@@ -356,13 +357,12 @@ public class TraineeUtil {
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to register Trainee", e);
             throw new DataException("Failed to register Trainee\n"
-                    + DataUtil.getErrorString(e));
+                    + dataUtil.getErrorString(e));
         }
         return d;
     }
 
-    public ResponseDTO loginTrainee(String email, String password,
-            GcmDeviceDTO device, PlatformUtil platformUtil) throws DataException {
+    public ResponseDTO loginTrainee(String email, String password, DataUtil dataUtil) throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
 
@@ -382,33 +382,14 @@ public class TraineeUtil {
                 d.setTrainingClassCourseList(getCoursesByClass(trainee.getTrainingClass().getTrainingClassID()));
                 d.setCourseTraineeActivityList(getActivitiesByTrainee(trainee.getTraineeID()));
 
-                d.setRatingList(DataUtil.getRatingList(trainee.getCompany().getCompanyID(), em).getRatingList());
-                d.setHelpTypeList(DataUtil.getHelpTypeList(trainee.getCompany().getCompanyID(), em).getHelpTypeList());
-                try {
-                    if (device != null) {
-                        GcmDevice gcm = new GcmDevice();
-                        gcm.setManufacturer(device.getManufacturer());
-                        gcm.setModel(device.getModel());
-                        gcm.setProduct(device.getProduct());
-                        gcm.setSerialNumber(device.getSerialNumber());
-                        gcm.setRegistrationID(device.getRegistrationID());
-                        gcm.setDateRegistered(new Date());
-                        gcm.setTrainee(trainee);
-                        em.persist(gcm);
+                d.setRatingList(dataUtil.getRatingAndHelpList(trainee.getCompany().getCompanyID()).getRatingList());
+                d.setHelpTypeList(dataUtil.getHelpTypeList(trainee.getCompany().getCompanyID()).getHelpTypeList());
+                
 
-                        CloudMessagingRegistrar.sendRegistration(gcm.getRegistrationID(), platformUtil);
-                    }
-                } catch (Exception e) {
-                    log.log(Level.WARNING, "Device registration failed", e);
-                    platformUtil.addErrorStore(ResponseDTO.ERROR_DATABASE,
-                            "Device registration failed\n"
-                            + DataUtil.getErrorString(e), "Trainee Services");
-                }
-
-                d.setMessage(DataUtil.OK_MESSAGE);
+                d.setMessage(dataUtil.OK_MESSAGE);
             } else {
                 d.setStatusCode(ResponseDTO.ERROR_USER_LOGIN);
-                d.setMessage(DataUtil.ERROR_MESSAGE);
+                d.setMessage(dataUtil.ERROR_MESSAGE);
             }
         } catch (NoResultException e) {
             d.setStatusCode(ResponseDTO.ERROR_USER_LOGIN);
@@ -416,7 +397,7 @@ public class TraineeUtil {
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to login user", e);
             throw new DataException("Failed to sign trainee in\n"
-                    + DataUtil.getErrorString(e));
+                    + dataUtil.getErrorString(e));
         }
         return d;
     }
@@ -477,11 +458,11 @@ public class TraineeUtil {
      * @throws DataException
      */
     private void enrollTraineeInCourse(int traineeID,
-            int trainingClassCourseID) throws DataException {
+            int trainingClassCourseID, DataUtil dataUtil) throws DataException {
         try {
 
-            Trainee tc = DataUtil.getTraineeByID(traineeID, em);
-            TrainingClassCourse tcc = DataUtil.getTrainingClassCourseByID(trainingClassCourseID, em);
+            Trainee tc = dataUtil.getTraineeByID(traineeID);
+            TrainingClassCourse tcc = dataUtil.getTrainingClassCourseByID(trainingClassCourseID);
             CourseTrainee a = new CourseTrainee();
             a.setDateEnrolled(new Date());
             a.setTrainee(tc);
@@ -506,7 +487,7 @@ public class TraineeUtil {
                     new Object[]{tcc.getCourse().getCourseName(), tc.getFirstName(), tc.getLastName(), cnt});
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to enroll Trainee in Course", e);
-            throw new DataException("Failed to enroll trainee in coures\n" + DataUtil.getErrorString(e));
+            throw new DataException("Failed to enroll trainee in coures\n" + dataUtil.getErrorString(e));
         }
     }
 
@@ -520,31 +501,31 @@ public class TraineeUtil {
      * @throws DataException
      */
     public ResponseDTO traineeCourseEvaluation(int courseTraineeID,
-            int ratingID, String comment) throws DataException {
+            int ratingID, String comment, DataUtil dataUtil) throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
 
-            CourseTrainee tc = DataUtil.getCourseTraineeByID(courseTraineeID, em);
+            CourseTrainee tc = dataUtil.getCourseTraineeByID(courseTraineeID);
 
             tc.setComment(comment);
-            tc.setRating(DataUtil.getRatingByID(ratingID, em));
+            tc.setRating(dataUtil.getRatingByID(ratingID));
             tc.setRatingDate(new Date());
             em.merge(tc);
 
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to evaluate course", e);
-            throw new DataException("Failed to evaluate course\n" + DataUtil.getErrorString(e));
+            throw new DataException("Failed to evaluate course\n" + dataUtil.getErrorString(e));
         }
         return d;
     }
 
     public ResponseDTO addTraineeActivity(
-            int activityID, CourseTraineeDTO ct) throws DataException {
+            int activityID, CourseTraineeDTO ct, DataUtil dataUtil) throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
 
-            CourseTrainee courseTrainee = DataUtil.getCourseTraineeByID(ct.getCourseTraineeID(), em);
-            Activity activity = DataUtil.getActivityByID(activityID, em);
+            CourseTrainee courseTrainee = dataUtil.getCourseTraineeByID(ct.getCourseTraineeID());
+            Activity activity = dataUtil.getActivityByID(activityID);
 
             CourseTraineeActivity cta = new CourseTraineeActivity();
             cta.setActivity(activity);
@@ -552,7 +533,7 @@ public class TraineeUtil {
             cta.setDateUpdated(new Date());
             cta.setComment(ct.getComment());
             if (ct.getRating() != null) {
-                cta.setRating(DataUtil.getRatingByID(ct.getRating().getRatingID(), em));
+                cta.setRating(dataUtil.getRatingByID(ct.getRating().getRatingID()));
             }
 
             em.persist(cta);
@@ -560,7 +541,7 @@ public class TraineeUtil {
             d.setCourseTraineeActivity(new CourseTraineeActivityDTO(cta));
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to add activity to trainee", e);
-            throw new DataException("Failed to add trainee activity\n" + DataUtil.getErrorString(e));
+            throw new DataException("Failed to add trainee activity\n" + dataUtil.getErrorString(e));
         }
         return d;
     }
@@ -573,15 +554,15 @@ public class TraineeUtil {
      * @throws DataException
      */
     public ResponseDTO traineeActivityEvaluation(
-            CourseTraineeActivityDTO cta, int traineeID) throws DataException {
+            CourseTraineeActivityDTO cta, int traineeID, DataUtil dataUtil) throws DataException {
 
         ResponseDTO d = new ResponseDTO();
         try {
 
-            CourseTraineeActivity tc = DataUtil.getCourseTraineeActivityByID(
-                    cta.getCourseTraineeActivityID(), em);
+            CourseTraineeActivity tc = dataUtil.getCourseTraineeActivityByID(
+                    cta.getCourseTraineeActivityID());
 
-            Rating rating = DataUtil.getRatingByID(cta.getRating().getRatingID(), em);
+            Rating rating = dataUtil.getRatingByID(cta.getRating().getRatingID());
             if (cta.getComment() != null) {
                 tc.setComment(cta.getComment());
             }
@@ -601,12 +582,12 @@ public class TraineeUtil {
                 tr.setComment(cta.getComment());
                 tr.setRating(rating);
                 tr.setDateUpdated(new Date());
-                tr.setTrainee(DataUtil.getTraineeByID(traineeID, em));
+                tr.setTrainee(dataUtil.getTraineeByID(traineeID));
 
                 em.persist(tr);
 
                 d.setTraineeRating(new TraineeRatingDTO(tr));
-                List<TraineeRatingDTO> trList = getTraineeRatingsByActivity(cta.getCourseTraineeActivityID()).getTraineeRatingList();
+                List<TraineeRatingDTO> trList = getTraineeRatingsByActivity(cta.getCourseTraineeActivityID(),dataUtil).getTraineeRatingList();
                 d.getCourseTraineeActivity().setTraineeRatingList(trList);
                 
             } catch (Exception e) {
@@ -617,7 +598,7 @@ public class TraineeUtil {
             log.log(Level.INFO, "Trainee evaluated activity");
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to evaluate activity", e);
-            throw new DataException("Failure to rate activity" + DataUtil.getErrorString(e));
+            throw new DataException("Failure to rate activity" + dataUtil.getErrorString(e));
         }
         return d;
     }
@@ -636,24 +617,24 @@ public class TraineeUtil {
     public ResponseDTO traineeActivityPeerEvaluation(
             int traineeID,
             int courseTraineeActivityID,
-            int ratingID, String comment) throws DataException {
+            int ratingID, String comment, DataUtil dataUtil) throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
 
-            Trainee trainee = DataUtil.getTraineeByID(traineeID, em);
-            CourseTraineeActivity tc = DataUtil.getCourseTraineeActivityByID(courseTraineeActivityID, em);
+            Trainee trainee = dataUtil.getTraineeByID(traineeID);
+            CourseTraineeActivity tc = dataUtil.getCourseTraineeActivityByID(courseTraineeActivityID);
 
             TraineeRating tr = new TraineeRating();
             tr.setComment(comment);
             tr.setCourseTraineeActivity(tc);
             tr.setDateUpdated(new Date());
-            tr.setRating(DataUtil.getRatingByID(ratingID, em));
+            tr.setRating(dataUtil.getRatingByID(ratingID));
             tr.setTrainee(trainee);
             em.persist(tr);
 
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to peer evaluate activity", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(dataUtil.getErrorString(e));
         }
         return d;
     }

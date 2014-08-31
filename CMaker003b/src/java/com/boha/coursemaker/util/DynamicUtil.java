@@ -18,7 +18,7 @@ import javax.ejb.TransactionManagementType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import javax.persistence.RollbackException;
+import javax.persistence.PersistenceException;
 
 /**
  *
@@ -32,12 +32,12 @@ public class DynamicUtil {
     EntityManager em;
 
     public ResponseDTO updateActivityEnrolment(int trainingClassID, int instructorID,
-            AdministratorUtil administratorUtil, InstructorUtil instructorUtil) throws
+            AdministratorUtil administratorUtil, InstructorUtil instructorUtil, DataUtil dataUtil) throws
             DataException {
         log.log(Level.INFO, "updateActivityEnrolment trainingClassID: {0} isntructorID: {1}", new Object[]{trainingClassID, instructorID});
         long start = System.currentTimeMillis();
         ResponseDTO d = new ResponseDTO();
-        TrainingClass tc = DataUtil.getTrainingClassByID(trainingClassID, em);
+        TrainingClass tc = dataUtil.getTrainingClassByID(trainingClassID);
         List<TrainingClassCourse> list = getTrainingClassCourseList(tc, em);
 
         int cnt = 0;
@@ -59,7 +59,7 @@ public class DynamicUtil {
                                 log.log(Level.INFO, "Enrolled courseTraineeID {0} \nactivity - {2}",
                                         new Object[]{cta.getCourseTrainee().getCourseTraineeID(),
                                             activ.getActivityName()});
-                            } catch (RollbackException e) {
+                            } catch (PersistenceException e) {
                                 em.merge(cta);
                                 cnt++;
                                 log.log(Level.INFO, "** Updated Enrolled courseTraineeID {0} \nactivity - {2}",
@@ -74,7 +74,7 @@ public class DynamicUtil {
 
             log.log(Level.INFO, "Trainee Activity enrolment done, total assigned: {0}", cnt);
             if (cnt > 0) {
-                d = instructorUtil.getTraineeActivityByInstructor(instructorID);
+                d = instructorUtil.getTraineeActivityByInstructor(instructorID, dataUtil);
             }
             d.setMessage("Trainee Activity enrolment done: " + cnt);
         } catch (Exception e) {

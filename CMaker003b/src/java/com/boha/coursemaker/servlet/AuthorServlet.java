@@ -43,6 +43,9 @@ public class AuthorServlet extends HttpServlet {
     AuthorUtil authorUtil;
     @EJB
     CloudMsgUtil cloudMsgUtil;
+    @EJB
+    DataUtil dataUtil;
+    
     
     /**
      * Processes requests for both HTTP
@@ -70,36 +73,36 @@ public class AuthorServlet extends HttpServlet {
             } else {
                 log.log(Level.INFO, "AuthorServlet starting ...reqType: {0}", dto.getRequestType());
                 switch (dto.getRequestType()) {
-                    case RequestDTO.SHUFFLE_CATEGORIES:
-                        
+                    case RequestDTO.COPY_COMPANY_CATEGORIES:
+                        resp = authorUtil.copyCourses(dto.getFromCompanyID(), dto.getToCompanyID());         
                         break;        
                     case RequestDTO.REGISTER_AUTHOR:
                         resp = authorUtil.registerAuthor(dto.getAuthor(),
-                                dto.getCompanyID());
+                                dto.getCompanyID(),dataUtil);
                         break;
                     case RequestDTO.GET_COMPANY_COURSE_LIST:
                         resp = authorUtil.getCompanyCourseList(
-                                dto.getCompanyID());
+                                dto.getCompanyID(),dataUtil);
                         break;
                     case RequestDTO.GET_CATEGORY_LIST_BY_COMPANY:
-                        resp = authorUtil.getCategoryList(dto.getCompanyID());
+                        resp = authorUtil.getCategoryList(dto.getCompanyID(),dataUtil);
                         break;
                     case RequestDTO.GET_COURSE_LIST_BY_CATEGORY:
-                        resp = authorUtil.getCoursesByCategory(dto.getCategoryID());
+                        resp = authorUtil.getCoursesByCategory(dto.getCategoryID(),dataUtil);
                         break;
                     
                     case RequestDTO.GET_OBJECTIVE_LIST_BY_COURSE:
-                        resp = authorUtil.getObjectivesByCourse(dto.getCourseID());
+                        resp = authorUtil.getObjectivesByCourse(dto.getCourseID(),dataUtil);
                         break;
                     case RequestDTO.GET_ACTIVITY_LIST_BY_LESSON:
-                        resp = authorUtil.getActivitiesByLesson(dto.getLessonID());
+                        resp = authorUtil.getActivitiesByLesson(dto.getLessonID(),dataUtil);
                         break;
                     
                     case RequestDTO.ADD_CATEGORY:
-                        resp = authorUtil.addCategory(dto.getCategory(), cloudMsgUtil, platformUtil);
+                        resp = authorUtil.addCategory(dto.getCategory(), cloudMsgUtil, platformUtil,dataUtil);
                         break;
                     case RequestDTO.LOGIN_AUTHOR:
-                        resp = authorUtil.loginAuthor(dto.getEmail(), dto.getPassword(), dto.getGcmDevice(), platformUtil);
+                        resp = authorUtil.loginAuthor(dto.getEmail(), dto.getPassword(),dataUtil);
                         if (resp.getStatusCode() == 0) {
                             StringBuilder sb = new StringBuilder();
                             sb.append("Author logging in with new device").append("\n");
@@ -111,55 +114,55 @@ public class AuthorServlet extends HttpServlet {
                         break;
                     case RequestDTO.REGISTER_COURSE:
                         resp = authorUtil.addCourse(dto.getCourse(),
-                                dto.getCompanyID(), dto.getAuthorID(), cloudMsgUtil, platformUtil);
+                                dto.getCompanyID(), dto.getAuthorID(), cloudMsgUtil, platformUtil,dataUtil);
                         break;
                    
                     case RequestDTO.ADD_OBJECTIVES:
                         resp = authorUtil.addObjective(dto.getObjective(),
-                                dto.getCourseID());
+                                dto.getCourseID(),dataUtil);
                         break;
                     case RequestDTO.ADD_ACTIVITIES:
                         resp = authorUtil.addActivity(dto.getActivity(),
-                                dto.getCourseID());
+                                dto.getCourseID(),dataUtil);
                         break;
                     case RequestDTO.ADD_RESOURCES:
-                        resp = authorUtil.addLessonResource(dto.getLessonResource());
+                        resp = authorUtil.addLessonResource(dto.getLessonResource(),dataUtil);
                         break;
                     //
                     case RequestDTO.UPDATE_ACTIVITIES:
-                        resp = authorUtil.updateActivities(dto.getActivityList());
+                        resp = authorUtil.updateActivities(dto.getActivityList(),dataUtil);
                         break;
                     case RequestDTO.UPDATE_OBJECTIVES:
-                        resp = authorUtil.updateObjectives(dto.getObjectiveList());
+                        resp = authorUtil.updateObjectives(dto.getObjectiveList(),dataUtil);
                         break;
                     //deletes
 
                     case RequestDTO.DELETE_OBJECTIVES:
                         resp = authorUtil.deleteObjectives(dto.getObjectiveList(),
-                                dto.getCourseID());
+                                dto.getCourseID(),dataUtil);
                         break;
                     case RequestDTO.DELETE_ACTIVITIES:
                         resp = authorUtil.deleteActivities(
-                                dto.getActivityList(), dto.getCourseID());
+                                dto.getActivityList(), dto.getCourseID(),dataUtil);
                         break;
                     case RequestDTO.DELETE_LESSON_RESOURCES:
                         resp = authorUtil.deleteLessonResources(
-                                dto.getLessonResourceList(), dto.getCourseID());
+                                dto.getLessonResourceList(), dto.getCourseID(),dataUtil);
                         break;
 
                    
                     case RequestDTO.DELETE_COURSE:
-                        resp = authorUtil.deleteCourse(dto.getCourseID(), dto.getAuthorID());
+                        resp = authorUtil.deleteCourse(dto.getCourseID(), dto.getAuthorID(),dataUtil);
                         break;
                     case RequestDTO.UPDATE_COURSE:
-                        resp = authorUtil.updateCourse(dto.getCourse(), dto.getAuthorID());
+                        resp = authorUtil.updateCourse(dto.getCourse(), dto.getAuthorID(),dataUtil);
                         break;
 
                     case RequestDTO.UPDATE_CATEGORY:
-                        resp = authorUtil.updateCategory(dto.getCategory());
+                        resp = authorUtil.updateCategory(dto.getCategory(),dataUtil);
                         break;
                     case RequestDTO.DELETE_CATEGORY:
-                        resp = authorUtil.deleteCategory(dto.getCategory());
+                        resp = authorUtil.deleteCategory(dto.getCategory(),dataUtil);
                         break;
 
                     default:
@@ -181,7 +184,7 @@ public class AuthorServlet extends HttpServlet {
             resp.setStatusCode(ResponseDTO.ERROR_INVALID_REQUEST);
             resp.setMessage("Server Error. Contact CourseMaker support");
             platformUtil.addErrorStore(resp.getStatusCode(),
-                    "Server Exception\n" + DataUtil.getErrorString(ex), "Author Services");
+                    "Server Exception\n" + dataUtil.getErrorString(ex), "Author Services");
         } finally {
             TraineeServlet.addCorsHeaders(response);
             Gson gson = new Gson();

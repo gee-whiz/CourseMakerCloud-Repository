@@ -206,6 +206,12 @@ public class RequestDTO {
     public static final int UPDATE_TRAINEE_SKILLS = 1303;
     public static final int UPDATE_COMPANY_SKILL = 1304;
     public static final int UPDATE_COMPANY_SKILL_LEVEL = 1305;
+    
+    public static final int ADD_ADMIN_DEVICE = 1306;
+    public static final int ADD_AUTHOR_DEVICE = 1307;
+    public static final int ADD_INSTRUCTOR_DEVICE = 1308;
+    public static final int ADD_TRAINEE_DEVICE = 1309;
+    public static final int COPY_COMPANY_CATEGORIES = 1310;
 
     public static String getRequestString(int requestType) {
         switch (requestType) {
@@ -494,10 +500,10 @@ public class RequestDTO {
             title, summary, countryCode;
     private long startDate, endDate, calendarID;
     //operation variables
-    private int companyID, lessonID, categoryID, cityID,
+    private Integer companyID, lessonID, categoryID, cityID,
             authorID, instructorID, trainingClassID, inventoryID,
             courseID, activityID, courseTraineeActivityID,
-            instructorClassID, demoAnnouncementID,
+            instructorClassID, demoAnnouncementID, fromCompanyID, toCompanyID,
             trainingClassCourseID, equipmentID, conditionFlag,
             administratorID, traineeID, traineeEquipmentID, trainingClassEventID;
     private List<Integer> IDs;
@@ -541,255 +547,12 @@ public class RequestDTO {
     List<InstructorClassDTO> instructorClassList;
     List<CourseDTO> courseList;
 
-    public SkillDTO getSkill() {
-        return skill;
+    public int getRequestType() {
+        return requestType;
     }
 
-    public void setSkill(SkillDTO skill) {
-        this.skill = skill;
-    }
-
-    public SkillLevelDTO getSkillLevel() {
-        return skillLevel;
-    }
-
-    public void setSkillLevel(SkillLevelDTO skillLevel) {
-        this.skillLevel = skillLevel;
-    }
-
-   
-
-    public List<TraineeSkillDTO> getTraineeSkillList() {
-        return traineeSkillList;
-    }
-
-    public void setTraineeSkillList(List<TraineeSkillDTO> traineeSkillList) {
-        this.traineeSkillList = traineeSkillList;
-    }
-   
-
-    
-    public List<Integer> getIDs() {
-        return IDs;
-    }
-
-    public void setIDs(List<Integer> IDs) {
-        this.IDs = IDs;
-    }
-
-    public List<Integer> getPriorityFlags() {
-        return priorityFlags;
-    }
-
-    public void setPriorityFlags(List<Integer> priorityFlags) {
-        this.priorityFlags = priorityFlags;
-    }
-
-  
-    public TraineeShoutDTO getTraineeShout() {
-        return traineeShout;
-    }
-
-    public TeamMemberDTO getTeamMember() {
-        return teamMember;
-    }
-
-    public void setTeamMember(TeamMemberDTO teamMember) {
-        this.teamMember = teamMember;
-    }
-
-    public DemoAnnouncementDTO getDemoAnnouncement() {
-        return demoAnnouncement;
-    }
-
-    public void setDemoAnnouncement(DemoAnnouncementDTO demoAnnouncement) {
-        this.demoAnnouncement = demoAnnouncement;
-    }
-
-    public int getDemoAnnouncementID() {
-        return demoAnnouncementID;
-    }
-
-    public void setDemoAnnouncementID(int demoAnnouncementID) {
-        this.demoAnnouncementID = demoAnnouncementID;
-    }
-
-    public void setTraineeShout(TraineeShoutDTO traineeShout) {
-        this.traineeShout = traineeShout;
-    }
-
-    public TeamDTO getTeam() {
-        return team;
-    }
-
-    public void setTeam(TeamDTO team) {
-        this.team = team;
-    }
-
-    public List<CourseDTO> getCourseList() {
-        return courseList;
-    }
-
-    public void setCourseList(List<CourseDTO> courseList) {
-        this.courseList = courseList;
-    }
-
-    public GcmDeviceDTO getGcmDevice() {
-        return gcmDevice;
-    }
-
-    public int getEquipmentID() {
-        return equipmentID;
-    }
-
-    public int getTraineeEquipmentID() {
-        return traineeEquipmentID;
-    }
-
-    public TrainingClassEventDTO getTrainingClassEvent() {
-        return trainingClassEvent;
-    }
-
-    public void setTrainingClassEvent(TrainingClassEventDTO trainingClassEvent) {
-        this.trainingClassEvent = trainingClassEvent;
-    }
-
-    public int getInstructorClassID() {
-        return instructorClassID;
-    }
-
-    public int getTrainingClassEventID() {
-        return trainingClassEventID;
-    }
-
-    public void setTrainingClassEventID(int trainingClassEventID) {
-        this.trainingClassEventID = trainingClassEventID;
-    }
-
-    public void setInstructorClassID(int instructorClassID) {
-        this.instructorClassID = instructorClassID;
-    }
-
-    public void setTraineeEquipmentID(int traineeEquipmentID) {
-        this.traineeEquipmentID = traineeEquipmentID;
-    }
-
-    public void setEquipmentID(int equipmentID) {
-        this.equipmentID = equipmentID;
-    }
-
-    public HelpResponseDTO getHelpResponse() {
-        return helpResponse;
-    }
-
-    public String getCountryCode() {
-        return countryCode;
-    }
-
-    public void setCountryCode(String countryCode) {
-        this.countryCode = countryCode;
-    }
-
-    public void setHelpResponse(HelpResponseDTO helpResponse) {
-        this.helpResponse = helpResponse;
-    }
-
-    public void setGcmDevice(GcmDeviceDTO gcmDevice) {
-        this.gcmDevice = gcmDevice;
-    }
-
-    public List<InstructorClassDTO> getInstructorClassList() {
-        return instructorClassList;
-    }
-
-    public void setInstructorClassList(List<InstructorClassDTO> instructorClassList) {
-        this.instructorClassList = instructorClassList;
-    }
-
-  
-    public int getCityID() {
-        return cityID;
-    }
-
-    public void setCityID(int cityID) {
-        this.cityID = cityID;
-    }
-
-    public String getGCMregistrationID() {
-        return GCMregistrationID;
-    }
-
-    public void setGCMregistrationID(String GCMregistrationID) {
-        this.GCMregistrationID = GCMregistrationID;
-    }
-
-    public List<LessonResourceDTO> getLessonResourceList() {
-        return lessonResourceList;
-    }
-
-    public void setLessonResourceList(List<LessonResourceDTO> lessonResourceList) {
-        this.lessonResourceList = lessonResourceList;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public long getCalendarID() {
-        return calendarID;
-    }
-
-    public void setCalendarID(long calendarID) {
-        this.calendarID = calendarID;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getSummary() {
-        return summary;
-    }
-
-    public void setSummary(String summary) {
-        this.summary = summary;
-    }
-
-    //
-    public int getTraineeID() {
-        return traineeID;
-    }
-
-    public CategoryDTO getCategory() {
-        return category;
-    }
-
-    public CompanyDTO getCompany() {
-        return company;
-    }
-
-    public List<ActivityDTO> getActivityList() {
-        return activityList;
-    }
-
-    public RatingDTO getRating() {
-        return rating;
-    }
-
-    public void setRating(RatingDTO rating) {
-        this.rating = rating;
-    }
-
-    public HelpTypeDTO getHelpType() {
-        return helpType;
-    }
-
-    public void setHelpType(HelpTypeDTO helpType) {
-        this.helpType = helpType;
-    }
-
-    public void setActivityList(List<ActivityDTO> activityList) {
-        this.activityList = activityList;
+    public void setRequestType(int requestType) {
+        this.requestType = requestType;
     }
 
     public long getDateFrom() {
@@ -806,236 +569,6 @@ public class RequestDTO {
 
     public void setDateTo(long dateTo) {
         this.dateTo = dateTo;
-    }
-
-    public void setCompany(CompanyDTO company) {
-        this.company = company;
-    }
-
-    public int getTrainingClassCourseID() {
-        return trainingClassCourseID;
-    }
-
-    public void setTrainingClassCourseID(int trainingClassCourseID) {
-        this.trainingClassCourseID = trainingClassCourseID;
-    }
-
-    public CourseDTO getCourse() {
-        return course;
-    }
-
-    public void setCourse(CourseDTO course) {
-        this.course = course;
-    }
-
-    public void setCategory(CategoryDTO category) {
-        this.category = category;
-    }
-
-
-    public LessonResourceDTO getLessonResource() {
-        return lessonResource;
-    }
-
-    public void setLessonResource(LessonResourceDTO lessonResource) {
-        this.lessonResource = lessonResource;
-    }
-
-    public ObjectiveDTO getObjective() {
-        return objective;
-    }
-
-    public void setObjective(ObjectiveDTO objective) {
-        this.objective = objective;
-    }
-
-    public List<ObjectiveDTO> getObjectiveList() {
-        return objectiveList;
-    }
-
-    public void setObjectiveList(List<ObjectiveDTO> objectiveList) {
-        this.objectiveList = objectiveList;
-    }
-
-    public ActivityDTO getActivity() {
-        return activity;
-    }
-
-    public void setActivity(ActivityDTO activity) {
-        this.activity = activity;
-    }
-
-    public void setTraineeID(int traineeID) {
-        this.traineeID = traineeID;
-    }
-
-    public int getTrainingCompanyCourseID() {
-        return trainingCompanyCourseID;
-    }
-
-    public int getCategoryID() {
-        return categoryID;
-    }
-
-    public void setCategoryID(int categoryID) {
-        this.categoryID = categoryID;
-    }
-
-    public int getConditionFlag() {
-        return conditionFlag;
-    }
-
-    public void setConditionFlag(int conditionFlag) {
-        this.conditionFlag = conditionFlag;
-    }
-
-    public void setTrainingCompanyCourseID(int trainingCompanyCourseID) {
-        this.trainingCompanyCourseID = trainingCompanyCourseID;
-    }
-
-    public HelpRequestDTO getHelpRequest() {
-        return helpRequest;
-    }
-
-    public long getStartDate() {
-        return startDate;
-    }
-
-    public EquipmentDTO getEquipment() {
-        return equipment;
-    }
-
-    public void setEquipment(EquipmentDTO equipment) {
-        this.equipment = equipment;
-    }
-
-    public void setStartDate(long startDate) {
-        this.startDate = startDate;
-    }
-
-    public long getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(long endDate) {
-        this.endDate = endDate;
-    }
-
-    public void setHelpRequest(HelpRequestDTO helpRequest) {
-        this.helpRequest = helpRequest;
-    }
-
-    public boolean isReturnEquipment() {
-        return returnEquipment;
-    }
-
-    public void setReturnEquipment(boolean returnEquipment) {
-        this.returnEquipment = returnEquipment;
-    }
-
-    public int getInventoryID() {
-        return inventoryID;
-    }
-
-    public void setInventoryID(int inventoryID) {
-        this.inventoryID = inventoryID;
-    }
-
-    public InventoryDTO getInventory() {
-        return inventory;
-    }
-
-    public void setInventory(InventoryDTO inventory) {
-        this.inventory = inventory;
-    }
-
-    //////
-    public AdministratorDTO getAdministrator() {
-        return administrator;
-    }
-
-    public CourseTraineeActivityDTO getCourseTraineeActivity() {
-        return courseTraineeActivity;
-    }
-
-    public void setCourseTraineeActivity(CourseTraineeActivityDTO courseTraineeActivity) {
-        this.courseTraineeActivity = courseTraineeActivity;
-    }
-
-    public int getActivityID() {
-        return activityID;
-    }
-
-    public CourseTraineeDTO getCourseTrainee() {
-        return courseTrainee;
-    }
-
-    public void setCourseTrainee(CourseTraineeDTO courseTrainee) {
-        this.courseTrainee = courseTrainee;
-    }
-
-    public int getCourseTraineeActivityID() {
-        return courseTraineeActivityID;
-    }
-
-    public void setCourseTraineeActivityID(int courseTraineeActivityID) {
-        this.courseTraineeActivityID = courseTraineeActivityID;
-    }
-
-    public void setActivityID(int activityID) {
-        this.activityID = activityID;
-    }
-
-    public void setAdministrator(AdministratorDTO administrator) {
-        this.administrator = administrator;
-    }
-
-    public TraineeDTO getTrainee() {
-        return trainee;
-    }
-
-    public void setTrainee(TraineeDTO trainee) {
-        this.trainee = trainee;
-    }
-
-    public InstructorDTO getInstructor() {
-        return instructor;
-    }
-
-    public TrainingClassDTO getTrainingClass() {
-        return trainingClass;
-    }
-
-    public TraineeEquipmentDTO getTraineeEquipment() {
-        return traineeEquipment;
-    }
-
-    public void setTraineeEquipment(TraineeEquipmentDTO traineeEquipment) {
-        this.traineeEquipment = traineeEquipment;
-    }
-
-    public void setTrainingClass(TrainingClassDTO trainingClass) {
-        this.trainingClass = trainingClass;
-    }
-
-    public void setInstructor(InstructorDTO instructor) {
-        this.instructor = instructor;
-    }
-
-    public int getAdministratorID() {
-        return administratorID;
-    }
-
-    public void setAdministratorID(int administratorID) {
-        this.administratorID = administratorID;
-    }
-
-    public int getTrainingClassID() {
-        return trainingClassID;
-    }
-
-    public void setTrainingClassID(int trainingClassID) {
-        this.trainingClassID = trainingClassID;
     }
 
     public String getEmail() {
@@ -1062,52 +595,284 @@ public class RequestDTO {
         this.password = password;
     }
 
-    public int getRequestType() {
-        return requestType;
+    public String getGCMregistrationID() {
+        return GCMregistrationID;
     }
 
-    public void setRequestType(int requestType) {
-        this.requestType = requestType;
+    public void setGCMregistrationID(String GCMregistrationID) {
+        this.GCMregistrationID = GCMregistrationID;
     }
 
-    public int getCompanyID() {
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getSummary() {
+        return summary;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
+    }
+
+    public String getCountryCode() {
+        return countryCode;
+    }
+
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
+    }
+
+    public long getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(long startDate) {
+        this.startDate = startDate;
+    }
+
+    public long getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(long endDate) {
+        this.endDate = endDate;
+    }
+
+    public long getCalendarID() {
+        return calendarID;
+    }
+
+    public void setCalendarID(long calendarID) {
+        this.calendarID = calendarID;
+    }
+
+    public Integer getCompanyID() {
         return companyID;
     }
 
-    public void setCompanyID(int companyID) {
+    public void setCompanyID(Integer companyID) {
         this.companyID = companyID;
     }
 
-    public int getCourseID() {
-        return courseID;
-    }
-
-    public void setCourseID(int courseID) {
-        this.courseID = courseID;
-    }
-
-    public int getAuthorID() {
-        return authorID;
-    }
-
-    public void setAuthorID(int authorID) {
-        this.authorID = authorID;
-    }
-
-    public int getInstructorID() {
-        return instructorID;
-    }
-
-    public void setInstructorID(int instructorID) {
-        this.instructorID = instructorID;
-    }
-
-    public int getLessonID() {
+    public Integer getLessonID() {
         return lessonID;
     }
 
-    public void setLessonID(int lessonID) {
+    public void setLessonID(Integer lessonID) {
         this.lessonID = lessonID;
+    }
+
+    public Integer getCategoryID() {
+        return categoryID;
+    }
+
+    public void setCategoryID(Integer categoryID) {
+        this.categoryID = categoryID;
+    }
+
+    public Integer getCityID() {
+        return cityID;
+    }
+
+    public void setCityID(Integer cityID) {
+        this.cityID = cityID;
+    }
+
+    public Integer getAuthorID() {
+        return authorID;
+    }
+
+    public void setAuthorID(Integer authorID) {
+        this.authorID = authorID;
+    }
+
+    public Integer getInstructorID() {
+        return instructorID;
+    }
+
+    public void setInstructorID(Integer instructorID) {
+        this.instructorID = instructorID;
+    }
+
+    public Integer getTrainingClassID() {
+        return trainingClassID;
+    }
+
+    public void setTrainingClassID(Integer trainingClassID) {
+        this.trainingClassID = trainingClassID;
+    }
+
+    public Integer getInventoryID() {
+        return inventoryID;
+    }
+
+    public void setInventoryID(Integer inventoryID) {
+        this.inventoryID = inventoryID;
+    }
+
+    public Integer getCourseID() {
+        return courseID;
+    }
+
+    public void setCourseID(Integer courseID) {
+        this.courseID = courseID;
+    }
+
+    public Integer getActivityID() {
+        return activityID;
+    }
+
+    public void setActivityID(Integer activityID) {
+        this.activityID = activityID;
+    }
+
+    public Integer getCourseTraineeActivityID() {
+        return courseTraineeActivityID;
+    }
+
+    public void setCourseTraineeActivityID(Integer courseTraineeActivityID) {
+        this.courseTraineeActivityID = courseTraineeActivityID;
+    }
+
+    public Integer getInstructorClassID() {
+        return instructorClassID;
+    }
+
+    public void setInstructorClassID(Integer instructorClassID) {
+        this.instructorClassID = instructorClassID;
+    }
+
+    public Integer getDemoAnnouncementID() {
+        return demoAnnouncementID;
+    }
+
+    public void setDemoAnnouncementID(Integer demoAnnouncementID) {
+        this.demoAnnouncementID = demoAnnouncementID;
+    }
+
+    public Integer getFromCompanyID() {
+        return fromCompanyID;
+    }
+
+    public void setFromCompanyID(Integer fromCompanyID) {
+        this.fromCompanyID = fromCompanyID;
+    }
+
+    public Integer getToCompanyID() {
+        return toCompanyID;
+    }
+
+    public void setToCompanyID(Integer toCompanyID) {
+        this.toCompanyID = toCompanyID;
+    }
+
+    public Integer getTrainingClassCourseID() {
+        return trainingClassCourseID;
+    }
+
+    public void setTrainingClassCourseID(Integer trainingClassCourseID) {
+        this.trainingClassCourseID = trainingClassCourseID;
+    }
+
+    public Integer getEquipmentID() {
+        return equipmentID;
+    }
+
+    public void setEquipmentID(Integer equipmentID) {
+        this.equipmentID = equipmentID;
+    }
+
+    public Integer getConditionFlag() {
+        return conditionFlag;
+    }
+
+    public void setConditionFlag(Integer conditionFlag) {
+        this.conditionFlag = conditionFlag;
+    }
+
+    public Integer getAdministratorID() {
+        return administratorID;
+    }
+
+    public void setAdministratorID(Integer administratorID) {
+        this.administratorID = administratorID;
+    }
+
+    public Integer getTraineeID() {
+        return traineeID;
+    }
+
+    public void setTraineeID(Integer traineeID) {
+        this.traineeID = traineeID;
+    }
+
+    public Integer getTraineeEquipmentID() {
+        return traineeEquipmentID;
+    }
+
+    public void setTraineeEquipmentID(Integer traineeEquipmentID) {
+        this.traineeEquipmentID = traineeEquipmentID;
+    }
+
+    public Integer getTrainingClassEventID() {
+        return trainingClassEventID;
+    }
+
+    public void setTrainingClassEventID(Integer trainingClassEventID) {
+        this.trainingClassEventID = trainingClassEventID;
+    }
+
+    public List<Integer> getIDs() {
+        return IDs;
+    }
+
+    public void setIDs(List<Integer> IDs) {
+        this.IDs = IDs;
+    }
+
+    public List<Integer> getPriorityFlags() {
+        return priorityFlags;
+    }
+
+    public void setPriorityFlags(List<Integer> priorityFlags) {
+        this.priorityFlags = priorityFlags;
+    }
+
+    public boolean isReturnEquipment() {
+        return returnEquipment;
+    }
+
+    public void setReturnEquipment(boolean returnEquipment) {
+        this.returnEquipment = returnEquipment;
+    }
+
+    public RatingDTO getRating() {
+        return rating;
+    }
+
+    public void setRating(RatingDTO rating) {
+        this.rating = rating;
+    }
+
+    public HelpTypeDTO getHelpType() {
+        return helpType;
+    }
+
+    public void setHelpType(HelpTypeDTO helpType) {
+        this.helpType = helpType;
+    }
+
+    public CompanyDTO getCompany() {
+        return company;
+    }
+
+    public void setCompany(CompanyDTO company) {
+        this.company = company;
     }
 
     public AuthorDTO getAuthor() {
@@ -1118,6 +883,22 @@ public class RequestDTO {
         this.author = author;
     }
 
+    public TraineeShoutDTO getTraineeShout() {
+        return traineeShout;
+    }
+
+    public void setTraineeShout(TraineeShoutDTO traineeShout) {
+        this.traineeShout = traineeShout;
+    }
+
+    public CourseTraineeDTO getCourseTrainee() {
+        return courseTrainee;
+    }
+
+    public void setCourseTrainee(CourseTraineeDTO courseTrainee) {
+        this.courseTrainee = courseTrainee;
+    }
+
     public boolean isZippedResponse() {
         return zippedResponse;
     }
@@ -1125,4 +906,238 @@ public class RequestDTO {
     public void setZippedResponse(boolean zippedResponse) {
         this.zippedResponse = zippedResponse;
     }
+
+    public TrainingClassDTO getTrainingClass() {
+        return trainingClass;
+    }
+
+    public void setTrainingClass(TrainingClassDTO trainingClass) {
+        this.trainingClass = trainingClass;
+    }
+
+    public AdministratorDTO getAdministrator() {
+        return administrator;
+    }
+
+    public void setAdministrator(AdministratorDTO administrator) {
+        this.administrator = administrator;
+    }
+
+    public TraineeDTO getTrainee() {
+        return trainee;
+    }
+
+    public void setTrainee(TraineeDTO trainee) {
+        this.trainee = trainee;
+    }
+
+    public InstructorDTO getInstructor() {
+        return instructor;
+    }
+
+    public void setInstructor(InstructorDTO instructor) {
+        this.instructor = instructor;
+    }
+
+    public TraineeEquipmentDTO getTraineeEquipment() {
+        return traineeEquipment;
+    }
+
+    public void setTraineeEquipment(TraineeEquipmentDTO traineeEquipment) {
+        this.traineeEquipment = traineeEquipment;
+    }
+
+    public CourseTraineeActivityDTO getCourseTraineeActivity() {
+        return courseTraineeActivity;
+    }
+
+    public void setCourseTraineeActivity(CourseTraineeActivityDTO courseTraineeActivity) {
+        this.courseTraineeActivity = courseTraineeActivity;
+    }
+
+    public HelpRequestDTO getHelpRequest() {
+        return helpRequest;
+    }
+
+    public void setHelpRequest(HelpRequestDTO helpRequest) {
+        this.helpRequest = helpRequest;
+    }
+
+    public HelpResponseDTO getHelpResponse() {
+        return helpResponse;
+    }
+
+    public void setHelpResponse(HelpResponseDTO helpResponse) {
+        this.helpResponse = helpResponse;
+    }
+
+    public InventoryDTO getInventory() {
+        return inventory;
+    }
+
+    public void setInventory(InventoryDTO inventory) {
+        this.inventory = inventory;
+    }
+
+    public EquipmentDTO getEquipment() {
+        return equipment;
+    }
+
+    public void setEquipment(EquipmentDTO equipment) {
+        this.equipment = equipment;
+    }
+
+    public int getTrainingCompanyCourseID() {
+        return trainingCompanyCourseID;
+    }
+
+    public void setTrainingCompanyCourseID(int trainingCompanyCourseID) {
+        this.trainingCompanyCourseID = trainingCompanyCourseID;
+    }
+
+    public CourseDTO getCourse() {
+        return course;
+    }
+
+    public void setCourse(CourseDTO course) {
+        this.course = course;
+    }
+
+    public CategoryDTO getCategory() {
+        return category;
+    }
+
+    public void setCategory(CategoryDTO category) {
+        this.category = category;
+    }
+
+    public ObjectiveDTO getObjective() {
+        return objective;
+    }
+
+    public void setObjective(ObjectiveDTO objective) {
+        this.objective = objective;
+    }
+
+    public LessonResourceDTO getLessonResource() {
+        return lessonResource;
+    }
+
+    public void setLessonResource(LessonResourceDTO lessonResource) {
+        this.lessonResource = lessonResource;
+    }
+
+    public ActivityDTO getActivity() {
+        return activity;
+    }
+
+    public void setActivity(ActivityDTO activity) {
+        this.activity = activity;
+    }
+
+    public GcmDeviceDTO getGcmDevice() {
+        return gcmDevice;
+    }
+
+    public void setGcmDevice(GcmDeviceDTO gcmDevice) {
+        this.gcmDevice = gcmDevice;
+    }
+
+    public TrainingClassEventDTO getTrainingClassEvent() {
+        return trainingClassEvent;
+    }
+
+    public void setTrainingClassEvent(TrainingClassEventDTO trainingClassEvent) {
+        this.trainingClassEvent = trainingClassEvent;
+    }
+
+    public TeamDTO getTeam() {
+        return team;
+    }
+
+    public void setTeam(TeamDTO team) {
+        this.team = team;
+    }
+
+    public TeamMemberDTO getTeamMember() {
+        return teamMember;
+    }
+
+    public void setTeamMember(TeamMemberDTO teamMember) {
+        this.teamMember = teamMember;
+    }
+
+    public DemoAnnouncementDTO getDemoAnnouncement() {
+        return demoAnnouncement;
+    }
+
+    public void setDemoAnnouncement(DemoAnnouncementDTO demoAnnouncement) {
+        this.demoAnnouncement = demoAnnouncement;
+    }
+
+    public SkillDTO getSkill() {
+        return skill;
+    }
+
+    public void setSkill(SkillDTO skill) {
+        this.skill = skill;
+    }
+
+    public SkillLevelDTO getSkillLevel() {
+        return skillLevel;
+    }
+
+    public void setSkillLevel(SkillLevelDTO skillLevel) {
+        this.skillLevel = skillLevel;
+    }
+
+    public List<TraineeSkillDTO> getTraineeSkillList() {
+        return traineeSkillList;
+    }
+
+    public void setTraineeSkillList(List<TraineeSkillDTO> traineeSkillList) {
+        this.traineeSkillList = traineeSkillList;
+    }
+
+    public List<ActivityDTO> getActivityList() {
+        return activityList;
+    }
+
+    public void setActivityList(List<ActivityDTO> activityList) {
+        this.activityList = activityList;
+    }
+
+    public List<ObjectiveDTO> getObjectiveList() {
+        return objectiveList;
+    }
+
+    public void setObjectiveList(List<ObjectiveDTO> objectiveList) {
+        this.objectiveList = objectiveList;
+    }
+
+    public List<LessonResourceDTO> getLessonResourceList() {
+        return lessonResourceList;
+    }
+
+    public void setLessonResourceList(List<LessonResourceDTO> lessonResourceList) {
+        this.lessonResourceList = lessonResourceList;
+    }
+
+    public List<InstructorClassDTO> getInstructorClassList() {
+        return instructorClassList;
+    }
+
+    public void setInstructorClassList(List<InstructorClassDTO> instructorClassList) {
+        this.instructorClassList = instructorClassList;
+    }
+
+    public List<CourseDTO> getCourseList() {
+        return courseList;
+    }
+
+    public void setCourseList(List<CourseDTO> courseList) {
+        this.courseList = courseList;
+    }
+
+    
 }

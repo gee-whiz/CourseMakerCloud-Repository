@@ -11,7 +11,6 @@ import com.boha.coursemaker.data.Category;
 import com.boha.coursemaker.data.Company;
 import com.boha.coursemaker.data.Course;
 import com.boha.coursemaker.data.CourseAuthor;
-import com.boha.coursemaker.data.GcmDevice;
 import com.boha.coursemaker.data.LessonResource;
 import com.boha.coursemaker.data.Objective;
 
@@ -23,7 +22,6 @@ import com.boha.coursemaker.dto.LessonResourceDTO;
 import com.boha.coursemaker.dto.platform.ResponseDTO;
 import com.boha.coursemaker.dto.CourseDTO;
 import com.boha.coursemaker.dto.CompanyDTO;
-import com.boha.coursemaker.dto.GcmDeviceDTO;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -35,9 +33,8 @@ import javax.ejb.TransactionManagementType;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceException;
 import javax.persistence.Query;
-import javax.persistence.RollbackException;
+import javax.persistence.PersistenceException;
 
 /**
  *
@@ -50,7 +47,82 @@ public class AuthorUtil {
     @PersistenceContext
     EntityManager em;
 
-    public ResponseDTO updateObjectives(List<ObjectiveDTO> list)
+    public ResponseDTO copyCourses(int fromCompanyID, int toCompanyID) throws DataException {
+        ResponseDTO resp = new ResponseDTO();
+        try {
+            Query q = em.createNamedQuery("Category.findByCompanyID", Category.class);
+            q.setParameter("id", fromCompanyID);
+            List<Category> cats = q.getResultList();
+            Company toComp = em.find(Company.class, toCompanyID);
+            for (Category category : cats) {
+                Category nc = new Category();
+                nc.setCategoryName(category.getCategoryName());
+                nc.setCompany(toComp);
+                nc.setPriorityFlag(category.getPriorityFlag());
+                em.persist(nc);
+                Query x = em.createNamedQuery("Category.findByNameInCompany", Category.class);
+                x.setParameter("name", nc.getCategoryName());
+                x.setParameter("id", toCompanyID);
+                x.setMaxResults(1);
+                Category fc = (Category) x.getSingleResult();
+                log.log(Level.INFO, "Category {0} copied", fc.getCategoryName());
+                for (Course course : category.getCourseList()) {
+                    Course ncrs = new Course();
+                    ncrs.setCategory(fc);
+                    ncrs.setCompany(toComp);
+                    ncrs.setCourseName(course.getCourseName());
+                    ncrs.setDescription(course.getDescription());
+                    ncrs.setDateUpdated(new Date());
+                    ncrs.setPriorityFlag(course.getPriorityFlag());                  
+                    em.persist(ncrs);
+                    
+                    x = em.createNamedQuery("Course.findByNameInCategory", Course.class);
+                    x.setParameter("courseName", ncrs.getCourseName());
+                    x.setParameter("id", fc.getCategoryID());
+                    x.setMaxResults(1);
+                    Course fcc = (Course) x.getSingleResult();
+                    log.log(Level.OFF, "Course {0} copied", fcc.getCourseName());
+
+                    for (Activity act : course.getActivityList()) {
+                        Activity a = new Activity();
+                        a.setCourse(fcc);
+                        a.setActivityName(act.getActivityName());
+                        a.setDescription(act.getDescription());
+                        a.setPriorityFlag(act.getPriorityFlag());
+                        
+                        em.persist(a);
+                        log.log(Level.INFO, "Activity {0} copied", a.getActivityName());
+                    }
+                    for (LessonResource link : course.getLessonResourceList()) {
+                        LessonResource r = new LessonResource();
+                        r.setCourse(fcc);
+                        r.setDateUpdated(new Date());
+                        r.setResourceName(link.getResourceName());
+                        r.setUrl(link.getUrl());
+                        em.persist(r);
+                        log.log(Level.INFO, "Link {0} copied", r.getUrl());
+                    }
+                    for (Objective link : course.getObjectiveList()) {
+                        Objective r = new Objective();
+                        r.setCourse(fcc);
+                        r.setDescription(link.getDescription());
+                        r.setObjectiveName(link.getObjectiveName());
+                        em.persist(r);
+                        log.log(Level.OFF, "Objective {0} copied", r.getObjectiveName());
+                    }
+
+                }
+                resp.setMessage("Category hierarchy copied to new company");
+            }
+        } catch (Exception e) {
+            log.log(Level.SEVERE, null, e);
+            throw new DataException("Failed to copy categories & hierarchy");
+        }
+        
+        return resp;
+    }
+
+    public ResponseDTO updateObjectives(List<ObjectiveDTO> list, DataUtil dataUtil)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
 
@@ -58,7 +130,7 @@ public class AuthorUtil {
         try {
 
             for (ObjectiveDTO dto : list) {
-                Objective a = DataUtil.getObjectiveByID(dto.getObjectiveID(), em);
+                Objective a = dataUtil.getObjectiveByID(dto.getObjectiveID());
                 if (a != null) {
                     if (dto.getObjectiveName() != null) {
                         a.setObjectiveName(dto.getObjectiveName());
@@ -85,14 +157,14 @@ public class AuthorUtil {
             d.setMessage("Objectives updated OK");
             log.log(Level.INFO, "Objectives updated ");
         } catch (Exception e) {
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(dataUtil.getErrorString(e));
 
         } finally {
         }
         return d;
     }
 
-    public ResponseDTO updateActivities(List<ActivityDTO> list)
+    public ResponseDTO updateActivities(List<ActivityDTO> list, DataUtil dataUtil)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
 
@@ -130,14 +202,14 @@ public class AuthorUtil {
             //log.log(Level.INFO, "Activities updated ");
         } catch (Exception e) {
             log.log(Level.SEVERE, "", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(dataUtil.getErrorString(e));
 
         } finally {
         }
         return d;
     }
 
-    public ResponseDTO loginAuthor(String email, String password, GcmDeviceDTO device, PlatformUtil platformUtil) throws DataException {
+    public ResponseDTO loginAuthor(String email, String password, DataUtil dataUtil) throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
 
@@ -152,27 +224,6 @@ public class AuthorUtil {
                 d.setCompany(new CompanyDTO(author.getCompany()));
                 d.setCategoryList(getCategories(author.getCompany(), false));
 
-                try {
-                    if (device != null) {
-                        GcmDevice gcm = new GcmDevice();
-                        gcm.setManufacturer(device.getManufacturer());
-                        gcm.setModel(device.getModel());
-                        gcm.setProduct(device.getProduct());
-                        gcm.setSerialNumber(device.getSerialNumber());
-                        gcm.setRegistrationID(device.getRegistrationID());
-                        gcm.setDateRegistered(new Date());
-                        gcm.setAuthor(author);
-                        em.persist(gcm);
-
-                        CloudMessagingRegistrar.sendRegistration(gcm.getRegistrationID(), platformUtil);
-
-                    }
-                } catch (Exception e) {
-                    log.log(Level.WARNING, "Device registration failed", e);
-                    platformUtil.addErrorStore(ResponseDTO.ERROR_DATABASE,
-                            "Device registration failed\n"
-                            + DataUtil.getErrorString(e), "Author Services");
-                }
                 //log.log(Level.INFO, "Author signed in: {1} {2}",
                 //      new Object[]{author.getEmail(), author.getFirstName(), author.getLastName()});
             } else {
@@ -184,18 +235,18 @@ public class AuthorUtil {
             d.setMessage("Email or password invalid. Please check!");
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to login user", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(dataUtil.getErrorString(e));
         }
         return d;
     }
 
-    public ResponseDTO registerAuthor(AuthorDTO author, int companyID)
+    public ResponseDTO registerAuthor(AuthorDTO author, int companyID, DataUtil dataUtil)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
 
         try {
 
-            Company tc = DataUtil.getCompanyByID(companyID, em);
+            Company tc = dataUtil.getCompanyByID(companyID);
 
             Author a = new Author();
             a.setFirstName(author.getFirstName());
@@ -203,7 +254,7 @@ public class AuthorUtil {
             a.setEmail(author.getEmail());
             a.setCellphone(author.getCellphone());
             a.setCompany(tc);
-            a.setPassword(DataUtil.createPassword());
+            a.setPassword(dataUtil.createPassword());
             a.setDateRegistered(new Date());
             em.persist(a);
 
@@ -219,7 +270,7 @@ public class AuthorUtil {
 
             //log.log(Level.INFO, " Company: {0} Author registered: {1} {2}",
             //      new Object[]{tc.getCompanyName(), a.getFirstName(), a.getLastName()});
-        } catch (RollbackException e) {
+        } catch (PersistenceException e) {
             log.log(Level.WARNING, "Failed, might be duplicate", e);
             d.setStatusCode(ResponseDTO.ERROR_DUPLICATE);
             d.setMessage("Author with this email already exists. Please Sign In");
@@ -227,7 +278,7 @@ public class AuthorUtil {
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to register Author", e);
             throw new DataException("Failed to register Author\n"
-                    + DataUtil.getErrorString(e));
+                    + dataUtil.getErrorString(e));
 
         } finally {
         }
@@ -243,8 +294,8 @@ public class AuthorUtil {
         return gList;
     }
 
-    public List<CategoryDTO> getCategoriesx(int companyID, boolean getCourses) {
-        Company co = DataUtil.getCompanyByID(companyID, em);
+    public List<CategoryDTO> getCategories(int companyID, boolean getCourses, DataUtil dataUtil) {
+        Company co = dataUtil.getCompanyByID(companyID);
         List<Category> list = co.getCategoryList();
         List<CategoryDTO> gList = new ArrayList<>();
         for (Category c : list) {
@@ -254,11 +305,11 @@ public class AuthorUtil {
     }
 
     public List<CategoryDTO> addInitialCategories(
-            int companyID, EntityManager em) throws DataException {
+            int companyID, DataUtil dataUtil) throws DataException {
 
         List<CategoryDTO> dto = new ArrayList<>();
         try {
-            Company tc = DataUtil.getCompanyByID(companyID, em);
+            Company tc = dataUtil.getCompanyByID(companyID);
 
             Category a = new Category();
             a.setCategoryName("Cloud Application Computing");
@@ -321,13 +372,13 @@ public class AuthorUtil {
 
         } catch (Exception e) {
             log.log(Level.SEVERE, "***ERROR*** Adding category", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(dataUtil.getErrorString(e));
         }
         return dto;
     }
 
     public ResponseDTO addCategory(
-            CategoryDTO category, CloudMsgUtil cloudMsgUtil, PlatformUtil platformUtil) throws DataException {
+            CategoryDTO category, CloudMsgUtil cloudMsgUtil, PlatformUtil platformUtil, DataUtil dataUtil) throws DataException {
         log.log(Level.INFO, "......starting to add category");
         ResponseDTO d = new ResponseDTO();
         try {
@@ -368,7 +419,7 @@ public class AuthorUtil {
 
         } catch (Exception e) {
             log.log(Level.SEVERE, "***ERROR*** Adding category", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(dataUtil.getErrorString(e));
         }
 
         return d;
@@ -387,13 +438,13 @@ public class AuthorUtil {
     }
 
     public ResponseDTO deleteCategory(
-            CategoryDTO category) throws DataException {
+            CategoryDTO category, DataUtil dataUtil) throws DataException {
 
         ResponseDTO d = new ResponseDTO();
 
         try {
 
-            Category a = DataUtil.getCategoryByID(category.getCategoryID(), em);
+            Category a = dataUtil.getCategoryByID(category.getCategoryID());
             em.remove(a);
 
             Query q = em.createNamedQuery("Category.findByCompanyID", Category.class);
@@ -409,7 +460,7 @@ public class AuthorUtil {
             //      new Object[]{a.getCategoryName()});
         } catch (Exception e) {
             log.log(Level.SEVERE, "***ERROR*** deleting category", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(dataUtil.getErrorString(e));
         } finally {
         }
 
@@ -417,22 +468,22 @@ public class AuthorUtil {
     }
 
     public ResponseDTO updateCategory(
-            CategoryDTO category) throws DataException {
+            CategoryDTO category, DataUtil dataUtil) throws DataException {
 
         ResponseDTO d = new ResponseDTO();
 
         try {
 
-            Category a = DataUtil.getCategoryByID(category.getCategoryID(), em);
+            Category a = dataUtil.getCategoryByID(category.getCategoryID());
             a.setCategoryName(category.getCategoryName());
             a.setPriorityFlag(category.getPriorityFlag());
             em.merge(a);
 
-            d = getCategoryList(category.getCompanyID());
+            d = getCategoryList(category.getCompanyID(),dataUtil);
             d.setMessage("category updated on server");
         } catch (Exception e) {
             log.log(Level.SEVERE, "***ERROR*** update category", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(dataUtil.getErrorString(e));
         } finally {
         }
 
@@ -447,7 +498,7 @@ public class AuthorUtil {
      * @throws DataException
      */
     public ResponseDTO getCompanyCourseList(
-            int companyID)
+            int companyID, DataUtil dataUtil)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
@@ -493,7 +544,7 @@ public class AuthorUtil {
 
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed ", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(dataUtil.getErrorString(e));
         }
 
         return d;
@@ -550,7 +601,7 @@ public class AuthorUtil {
      * @throws DataException
      */
     public ResponseDTO addActivity(ActivityDTO a,
-            int courseID)
+            int courseID, DataUtil dataUtil)
             throws DataException {
         log.log(Level.OFF, "------- add activity, courseID: {0}", courseID);
         ResponseDTO d = new ResponseDTO();
@@ -579,13 +630,13 @@ public class AuthorUtil {
             d.setMessage("activity added on server");
             //log.log(Level.INFO, "Activity added to course: {0} - added: {1}",
             //      new Object[]{lesson.getLessonName(), activity.getActivityName()});
-        } catch (RollbackException e) {
+        } catch (PersistenceException e) {
             d.setStatusCode(ResponseDTO.ERROR_DUPLICATE);
             d.setMessage("The activity already exists");
 
         } catch (Exception e) {
             log.log(Level.SEVERE, "***ERROR*** Adding act", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(dataUtil.getErrorString(e));
         } finally {
         }
 
@@ -600,14 +651,14 @@ public class AuthorUtil {
      * @return
      * @throws DataException
      */
-    public ResponseDTO addObjective(ObjectiveDTO objective, int courseID)
+    public ResponseDTO addObjective(ObjectiveDTO objective, int courseID, DataUtil dataUtil)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
 
         Course course;
         try {
 
-            course = DataUtil.getCourseByID(courseID, em);
+            course = dataUtil.getCourseByID(courseID);
             Objective ls = new Objective();
             ls.setCourse(course);
             ls.setDescription(objective.getDescription());
@@ -627,13 +678,13 @@ public class AuthorUtil {
             d.setMessage("objective added on server");
             //log.log(Level.INFO, "Objective added to course: {0} - added objective: {1}",
             //      new Object[]{course.getCourseName(), ls.getObjectiveName()});
-        } catch (RollbackException e) {
+        } catch (PersistenceException e) {
             d.setStatusCode(ResponseDTO.ERROR_DUPLICATE);
             d.setMessage("The objective already exists");
 
         } catch (Exception e) {
             log.log(Level.SEVERE, "***ERROR*** Adding objective", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(dataUtil.getErrorString(e));
         } finally {
 
             return d;
@@ -647,7 +698,7 @@ public class AuthorUtil {
      * @return
      * @throws DataException
      */
-    public ResponseDTO addLessonResource(LessonResourceDTO l)
+    public ResponseDTO addLessonResource(LessonResourceDTO l, DataUtil dataUtil)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
         log.log(Level.OFF, "addLessonResource courseID: {0}", l.getCourseID());
@@ -674,13 +725,13 @@ public class AuthorUtil {
             d.setMessage("resource added on server");
             //log.log(Level.INFO, "Lesson Resource added to lesson: {0} - added resources: {1}",
             //      new Object[]{lesson.getLessonName(), ls.getUrl()});
-        } catch (RollbackException e) {
+        } catch (PersistenceException e) {
             d.setStatusCode(ResponseDTO.ERROR_DUPLICATE);
             d.setMessage("The link already exists");
 
         } catch (Exception e) {
             log.log(Level.SEVERE, "***ERROR*** Adding resource", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(dataUtil.getErrorString(e));
         } finally {
 
             return d;
@@ -712,7 +763,7 @@ public class AuthorUtil {
     }
 
     public ResponseDTO getActivitiesByLesson(
-            int lessonID)
+            int lessonID, DataUtil dataUtil)
             throws DataException {
 
         ResponseDTO d = new ResponseDTO();
@@ -730,13 +781,13 @@ public class AuthorUtil {
             d.setMessage("activities listed");
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed ", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(dataUtil.getErrorString(e));
         }
         return d;
     }
 
     public ResponseDTO getObjectivesByCourse(
-            int courseID)
+            int courseID, DataUtil dataUtil)
             throws DataException {
 
         ResponseDTO d = new ResponseDTO();
@@ -754,7 +805,7 @@ public class AuthorUtil {
             d.setMessage("objectives listed");
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed ", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(dataUtil.getErrorString(e));
         }
         return d;
     }
@@ -785,7 +836,7 @@ public class AuthorUtil {
         return dto;
     }
 
-    public ResponseDTO getCoursesByCategory(int categoryID)
+    public ResponseDTO getCoursesByCategory(int categoryID, DataUtil dataUtil)
             throws DataException {
 
         ResponseDTO d = new ResponseDTO();
@@ -820,7 +871,7 @@ public class AuthorUtil {
             d.setMessage("courses listed " + dtoList.size());
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed ", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(dataUtil.getErrorString(e));
         }
         return d;
     }
@@ -847,7 +898,7 @@ public class AuthorUtil {
         return dto;
     }
 
-    public ResponseDTO getCategoryList(int trainingCompanyID)
+    public ResponseDTO getCategoryList(int trainingCompanyID, DataUtil dataUtil)
             throws DataException {
 
         ResponseDTO d = new ResponseDTO();
@@ -893,7 +944,7 @@ public class AuthorUtil {
             d.setMessage("categories listed " + dtoList.size());
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed ", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(dataUtil.getErrorString(e));
         }
         return d;
     }
@@ -914,7 +965,7 @@ public class AuthorUtil {
         return list;
     }
 
-    public ResponseDTO shuffleCategories(List<Integer> IDs) throws DataException {
+    public ResponseDTO shuffleCategories(List<Integer> IDs, DataUtil dataUtil) throws DataException {
         ResponseDTO resp = new ResponseDTO();
         try {
             int index = 0, companyID = 0;
@@ -927,7 +978,7 @@ public class AuthorUtil {
                 }
                 index++;
             }
-            resp = getCategoryList(companyID);
+            resp = getCategoryList(companyID,dataUtil);
             log.log(Level.INFO, "Cats shuffled");
         } catch (Exception e) {
             log.log(Level.SEVERE, "Fail", e);
@@ -936,7 +987,7 @@ public class AuthorUtil {
         return resp;
     }
 
-    public ResponseDTO shuffleCourses(List<Integer> IDs) throws DataException {
+    public ResponseDTO shuffleCourses(List<Integer> IDs, DataUtil dataUtil) throws DataException {
         ResponseDTO resp = new ResponseDTO();
         try {
             int index = 0, companyID = 0;
@@ -949,7 +1000,7 @@ public class AuthorUtil {
                 }
                 index++;
             }
-            resp = getCategoryList(companyID);
+            resp = getCategoryList(companyID, dataUtil);
             log.log(Level.INFO, "Courses shuffled");
         } catch (Exception e) {
             log.log(Level.SEVERE, "Fail", e);
@@ -958,7 +1009,7 @@ public class AuthorUtil {
         return resp;
     }
 
-    public ResponseDTO shuffleActivities(List<Integer> IDs) throws DataException {
+    public ResponseDTO shuffleActivities(List<Integer> IDs, DataUtil dataUtil) throws DataException {
         ResponseDTO resp = new ResponseDTO();
         try {
             int index = 0, companyID = 0;
@@ -971,7 +1022,7 @@ public class AuthorUtil {
                     companyID = cat.getCourse().getCompany().getCompanyID();
                 }
             }
-            resp = getCategoryList(companyID);
+            resp = getCategoryList(companyID,dataUtil);
             log.log(Level.INFO, "Activities shuffled");
         } catch (Exception e) {
             log.log(Level.SEVERE, "Fail", e);
@@ -1009,7 +1060,7 @@ public class AuthorUtil {
      */
     public ResponseDTO addCourse(CourseDTO course,
             int companyID,
-            int authorID, CloudMsgUtil cloudMsgUtil, PlatformUtil platformUtil)
+            int authorID, CloudMsgUtil cloudMsgUtil, PlatformUtil platformUtil, DataUtil dataUtil)
             throws DataException {
         log.log(Level.INFO, "### adding course, company: {0} author: {1}", new Object[]{companyID, authorID});
         ResponseDTO d = new ResponseDTO();
@@ -1148,7 +1199,7 @@ public class AuthorUtil {
 
         } catch (Exception e) {
             log.log(Level.SEVERE, "***ERROR*** Adding course", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(dataUtil.getErrorString(e));
         } finally {
         }
 
@@ -1156,11 +1207,11 @@ public class AuthorUtil {
     }
 
     public ResponseDTO updateCourse(CourseDTO course,
-            int authorID)
+            int authorID, DataUtil dataUtil)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
-            Course c = DataUtil.getCourseByID(course.getCourseID(), em);
+            Course c = dataUtil.getCourseByID(course.getCourseID());
             if (course.getCourseName() != null) {
                 c.setCourseName(course.getCourseName());
             }
@@ -1185,20 +1236,20 @@ public class AuthorUtil {
 
                     CourseAuthor ca = new CourseAuthor();
                     ca.setCourse(c);
-                    ca.setAuthor(DataUtil.getAuthorByID(authorID, em));
+                    ca.setAuthor(dataUtil.getAuthorByID(authorID));
                     ca.setDateUpdated(new Date());
                     em.persist(ca);
 
                 }
             }
 
-            d = getCategoryList(course.getCompanyID());
+            d = getCategoryList(course.getCompanyID(),  dataUtil);
             d.setMessage("course updated on server");
 
             //log.log(Level.INFO, "### Course added: {0}", course.getCourseName());
         } catch (Exception e) {
             log.log(Level.SEVERE, "***ERROR*** Adding course", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(dataUtil.getErrorString(e));
         } finally {
         }
 
@@ -1206,20 +1257,20 @@ public class AuthorUtil {
     }
 
     public ResponseDTO deleteCourse(int courseID,
-            int authorID)
+            int authorID, DataUtil dataUtil)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
 
         try {
-            Course c = DataUtil.getCourseByID(courseID, em);
+            Course c = dataUtil.getCourseByID(courseID);
             em.remove(c);
 
-            d = getCategoryList(c.getCompany().getCompanyID());
+            d = getCategoryList(c.getCompany().getCompanyID(),dataUtil);
             d.setMessage(c.getCourseName() + " deleted from server");
 
         } catch (Exception e) {
             log.log(Level.SEVERE, "***ERROR*** deleting course", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(dataUtil.getErrorString(e));
         } finally {
         }
 
@@ -1227,13 +1278,13 @@ public class AuthorUtil {
     }
 
     public ResponseDTO deleteActivities(List<ActivityDTO> actList,
-            int courseID)
+            int courseID, DataUtil dataUtil)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
 
             for (ActivityDTO activity : actList) {
-                Activity a = DataUtil.getActivityByID(activity.getActivityID(), em);
+                Activity a = dataUtil.getActivityByID(activity.getActivityID());
                 em.remove(a);
             }
 
@@ -1250,7 +1301,7 @@ public class AuthorUtil {
 
         } catch (Exception e) {
             log.log(Level.SEVERE, "***ERROR*** Adding course", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(dataUtil.getErrorString(e));
         } finally {
         }
 
@@ -1258,7 +1309,7 @@ public class AuthorUtil {
     }
 
     public ResponseDTO deleteObjectives(List<ObjectiveDTO> objectiveList,
-            int courseID)
+            int courseID, DataUtil dataUtil)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
 
@@ -1266,7 +1317,7 @@ public class AuthorUtil {
         try {
 
             for (ObjectiveDTO l : objectiveList) {
-                Objective ls = DataUtil.getObjectiveByID(l.getObjectiveID(), em);
+                Objective ls = dataUtil.getObjectiveByID(l.getObjectiveID());
                 em.remove(ls);
                 cnt++;
             }
@@ -1284,14 +1335,14 @@ public class AuthorUtil {
 
         } catch (Exception e) {
             log.log(Level.SEVERE, "***ERROR***", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(dataUtil.getErrorString(e));
         } finally {
         }
 
         return d;
     }
 
-    public ResponseDTO deleteLessonResources(List<LessonResourceDTO> resourceList, int lessonID)
+    public ResponseDTO deleteLessonResources(List<LessonResourceDTO> resourceList, int lessonID, DataUtil dataUtil)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
 
@@ -1299,7 +1350,7 @@ public class AuthorUtil {
         try {
 
             for (LessonResourceDTO l : resourceList) {
-                LessonResource ls = DataUtil.getLessonResourceByID(l.getLessonResourceID(), em);
+                LessonResource ls = dataUtil.getLessonResourceByID(l.getLessonResourceID());
                 em.remove(ls);
                 cnt++;
             }
@@ -1317,7 +1368,7 @@ public class AuthorUtil {
 
         } catch (Exception e) {
             log.log(Level.SEVERE, "***ERROR*** del resorce", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(dataUtil.getErrorString(e));
         } finally {
         }
 

@@ -58,6 +58,8 @@ public class InstructorWebSocket {
     AuthorUtil authorUtil;
     @EJB
     DynamicUtil dynamicUtil;
+    @EJB
+    DataUtil dataUtil;
 
     private static final Set<Session> peers
             = Collections.synchronizedSet(new HashSet<Session>());
@@ -95,66 +97,73 @@ public class InstructorWebSocket {
                 case RequestDTO.GET_TRAINEE_DATA:
                     resp = traineeUtil.getTraineeData(dto.getTrainingClassID(),
                             dto.getTraineeID(), dto.getCompanyID(),
-                            dto.getCountryCode());
+                            dto.getCountryCode(),dataUtil);
+                    break;
+                case RequestDTO.ADD_COURSES_TO_CLASS:
+                    resp = administratorUtil.addClassCourses(
+                            dto.getTrainingClassID(), dto.getCourseList(), null,dataUtil);
                     break;
                 case RequestDTO.DELETE_EVENT:
-                    resp = instructorUtil.deleteTrainingClassEvent(dto.getTrainingClassEventID());
+                    resp = instructorUtil.deleteTrainingClassEvent(dto.getTrainingClassEventID(),dataUtil);
                     break;
                 case RequestDTO.UPDATE_EVENT:
-                    resp = instructorUtil.updateTrainingClassEvent(dto.getTrainingClassEvent());
+                    resp = instructorUtil.updateTrainingClassEvent(dto.getTrainingClassEvent(),dataUtil);
                     break;
                 case RequestDTO.ADD_TRAINEE_SKILLS:
-                    resp = instructorUtil.addTraineeSkills(dto.getTraineeSkillList());
+                    resp = instructorUtil.addTraineeSkills(dto.getTraineeSkillList(),dataUtil);
                     break;
                 case RequestDTO.ADD_COMPANY_SKILL:
-                    resp = instructorUtil.addSkill(dto.getSkill());
+                    resp = instructorUtil.addSkill(dto.getSkill(),dataUtil);
                     break;
                 case RequestDTO.UPDATE_COMPANY_SKILL:
-                    resp = instructorUtil.updateSkill(dto.getSkill());
+                    resp = instructorUtil.updateSkill(dto.getSkill(),dataUtil);
                     break;
                 case RequestDTO.ADD_COMPANY_SKILL_LEVEL:
-                    resp = instructorUtil.addSkillLevel(dto.getSkillLevel());
+                    resp = instructorUtil.addSkillLevel(dto.getSkillLevel(),dataUtil);
                     break;
                 case RequestDTO.UPDATE_COMPANY_SKILL_LEVEL:
-                    resp = instructorUtil.updateSkillLevel(dto.getSkillLevel());
+                    resp = instructorUtil.updateSkillLevel(dto.getSkillLevel(),dataUtil);
                     break;
                 case RequestDTO.ADD_EVENTS:
-                    resp = instructorUtil.addTrainingClassEvent(dto.getTrainingClassEvent());
+                    resp = instructorUtil.addTrainingClassEvent(dto.getTrainingClassEvent(),dataUtil);
                     break;
                 case RequestDTO.GET_EVENTS_BY_CLASS:
                     resp = instructorUtil.getTrainingClassEvents(dto.getTrainingClassID());
                     break;
                 case RequestDTO.GET_TRAINING_CLASSES_BY_INSTRUCTOR:
-                    resp = instructorUtil.getTrainingClassesByInstructor(dto.getInstructorID());
+                    resp = instructorUtil.getTrainingClassesByInstructor(dto.getInstructorID(),dataUtil);
                     break;
 
                 case RequestDTO.ADD_INSTRUCTOR_RATINGS:
-                    resp = instructorUtil.rateTrainee(dto.getCourseTraineeActivity(), dto.getInstructorID());
+                    resp = instructorUtil.rateTrainee(dto.getCourseTraineeActivity(), 
+                            dto.getInstructorID(),dataUtil);
                     break;
                 case RequestDTO.HELP_REQUESTS_BY_INSTRUCTOR:
                     resp = instructorUtil.getHelpRequests(
                             dto.getInstructorID(), dto.getStartDate(), dto.getEndDate());
                     break;
                 case RequestDTO.GET_COUNTRY_LIST:
-                    resp = DataUtil.getProvinceListByCountryCode(dto.getCountryCode(), administratorUtil.getEm());
+                    resp = dataUtil.getProvinceListByCountryCode(dto.getCountryCode());
                     break;
                 case RequestDTO.GCM_SEND_INSTRUCTOR_TO_TRAINEE_MSG:
-                    resp = cloudMsgUtil.sendInstructorToTraineeMessage(dto.getHelpResponse(), platformUtil);
+                    resp = cloudMsgUtil.sendInstructorToTraineeMessage(dto.getHelpResponse(), 
+                            platformUtil,dataUtil);
                     break;
                 case RequestDTO.REGISTER_INSTRUCTOR:
-                    resp = instructorUtil.registerInstructor(dto.getInstructor());
+                    resp = instructorUtil.registerInstructor(dto.getInstructor(),dataUtil);
                     break;
                 case RequestDTO.GET_COMPANY_CLASS_LIST:
-                    resp = DataUtil.getTrainingClassList(dto.getCompanyID(), administratorUtil.getEm());
+                    resp = dataUtil.getTrainingClassList(dto.getCompanyID());
                     break;
 
                 case RequestDTO.GET_CLASS_ACTIVITY_LIST:
-                    resp = instructorUtil.getClassActivities(dto.getTrainingClassID());
+                    resp = instructorUtil.getClassActivities(dto.getTrainingClassID(),dataUtil);
                     break;
 
                 case RequestDTO.LOGIN_INSTRUCTOR:
                     resp = instructorUtil.loginInstructor(dto.getEmail(),
-                            dto.getPassword(), dto.getGcmDevice(), platformUtil);
+                            dto.getPassword(),dataUtil);
+                    resp.setProvinceList(dataUtil.getProvinceListByCountryCode(dto.getCountryCode()).getProvinceList());
                     if (resp.getStatusCode() == 0) {
                         StringBuilder sb = new StringBuilder();
                         sb.append("Instructor logging in with new device").append("\n");
@@ -166,43 +175,44 @@ public class InstructorWebSocket {
                     break;
                 case RequestDTO.GET_HELP_REQUEST_LIST:
                     resp = administratorUtil.getHelpRequestListByPeriod(dto.getTrainingClassID(),
-                            dto.getStartDate(), dto.getEndDate());
+                            dto.getStartDate(), dto.getEndDate(), dataUtil);
                     break;
 
                 case RequestDTO.GET_COMPANY_COURSE_LIST:
                     resp = authorUtil.getCompanyCourseList(
-                            dto.getCompanyID());
+                            dto.getCompanyID(),dataUtil);
                     break;
                 case RequestDTO.GET_TRAINEE_ACTIVITY_TOTALS:
-                    resp = instructorUtil.getTraineeActivityTotalsByClass(dto.getTrainingClassID());
+                    resp = instructorUtil.getTraineeActivityTotalsByClass(dto.getTrainingClassID(),dataUtil);
                     break;
                 case RequestDTO.GET_TRAINEE_ACTIVITY_TOTALS_BY_COMPANY:
-                    resp = instructorUtil.getTraineeActivityByCompany(dto.getCompanyID());
+                    resp = instructorUtil.getTraineeActivityByCompany(dto.getCompanyID(),dataUtil);
                     break;
                 case RequestDTO.GET_TRAINEE_ACTIVITY_TOTALS_BY_INSTRUCTOR:
                     resp = instructorUtil.getTraineeActivityByInstructor(
-                            dto.getInstructorID());
+                            dto.getInstructorID(),dataUtil);
                     break;
 
                 case RequestDTO.GET_CLASS_TRAINEE_LIST:
-                    resp = instructorUtil.getClassTrainees(dto.getTrainingClassID());
+                    resp = instructorUtil.getClassTrainees(dto.getTrainingClassID(),dataUtil);
                     break;
                 case RequestDTO.GET_CATEGORIES_BY_COMPANY:
-                    resp = instructorUtil.getCategoriesByCompany(dto.getCompanyID());
+                    resp = instructorUtil.getCategoriesByCompany(dto.getCompanyID(),dataUtil);
                     break;
                 case RequestDTO.GET_COURSE_LIST_BY_CLASS:
-                    resp = instructorUtil.getCourseByClass(dto.getTrainingClassID());
+                    resp = instructorUtil.getCourseByClass(dto.getTrainingClassID(),dataUtil);
                     break;
                 case RequestDTO.GET_INSTRUCTOR_CLASSES:
-                    resp = instructorUtil.getInstructorClasses(dto.getInstructorID());
+                    resp = instructorUtil.getInstructorClasses(dto.getInstructorID(),dataUtil);
                     break;
                 case RequestDTO.ENROLL_IN_COURSE:
-                    resp = administratorUtil.assignClassCoursesToTrainees(dto.getTrainingClassID());
+                    resp = administratorUtil.assignClassCoursesToTrainees(dto.getTrainingClassID(),dataUtil);
                     break;
 
                 case RequestDTO.ENROLL_TRAINEES_FOR_ACTIVITIES:
-                    resp = dynamicUtil.updateActivityEnrolment(dto.getTrainingClassID(), dto.getInstructorID(),
-                            administratorUtil, instructorUtil);
+                    resp = dynamicUtil.updateActivityEnrolment(dto.getTrainingClassID(), 
+                            dto.getInstructorID(),
+                            administratorUtil, instructorUtil,dataUtil);
                     break;
                 default:
                     resp.setStatusCode(ResponseDTO.ERROR_UNKNOWN_REQUEST);

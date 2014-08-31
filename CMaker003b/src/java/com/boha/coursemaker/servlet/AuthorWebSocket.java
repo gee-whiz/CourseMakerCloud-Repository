@@ -10,6 +10,7 @@ import com.boha.coursemaker.dto.platform.ResponseDTO;
 import com.boha.coursemaker.util.AuthorUtil;
 import com.boha.coursemaker.util.CloudMsgUtil;
 import com.boha.coursemaker.util.DataException;
+import com.boha.coursemaker.util.DataUtil;
 import com.boha.coursemaker.util.GZipUtility;
 import com.boha.coursemaker.util.PlatformUtil;
 import com.google.gson.Gson;
@@ -20,7 +21,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -47,6 +47,8 @@ public class AuthorWebSocket {
     AuthorUtil authorUtil;
     @EJB
     CloudMsgUtil cloudMsgUtil;
+    @EJB
+    DataUtil dataUtil;
 
     private static final Set<Session> peers
             = Collections.synchronizedSet(new HashSet<Session>());
@@ -81,41 +83,42 @@ public class AuthorWebSocket {
             RequestDTO dto = gson.fromJson(message, RequestDTO.class);
             switch (dto.getRequestType()) {
                 case RequestDTO.SHUFFLE_CATEGORIES:
-                    resp = authorUtil.shuffleCategories(dto.getIDs());
+                    resp = authorUtil.shuffleCategories(dto.getIDs(),dataUtil);
                     break;
                 case RequestDTO.SHUFFLE_COURSES:
-                    resp = authorUtil.shuffleCourses(dto.getIDs());
+                    resp = authorUtil.shuffleCourses(dto.getIDs(),dataUtil);
                     break;
                 case RequestDTO.SHUFFLE_ACTIVITIES:
-                    resp = authorUtil.shuffleActivities(dto.getIDs());
+                    resp = authorUtil.shuffleActivities(dto.getIDs(),dataUtil);
                     break;
                 case RequestDTO.REGISTER_AUTHOR:
                     resp = authorUtil.registerAuthor(dto.getAuthor(),
-                            dto.getCompanyID());
+                            dto.getCompanyID(),dataUtil);
                     break;
                 case RequestDTO.GET_COMPANY_COURSE_LIST:
                     resp = authorUtil.getCompanyCourseList(
-                            dto.getCompanyID());
+                            dto.getCompanyID(),dataUtil);
                     break;
                 case RequestDTO.GET_CATEGORY_LIST_BY_COMPANY:
-                    resp = authorUtil.getCategoryList(dto.getCompanyID());
+                    resp = authorUtil.getCategoryList(dto.getCompanyID(),dataUtil);
                     break;
                 case RequestDTO.GET_COURSE_LIST_BY_CATEGORY:
-                    resp = authorUtil.getCoursesByCategory(dto.getCategoryID());
+                    resp = authorUtil.getCoursesByCategory(dto.getCategoryID(),dataUtil);
                     break;
 
                 case RequestDTO.GET_OBJECTIVE_LIST_BY_COURSE:
-                    resp = authorUtil.getObjectivesByCourse(dto.getCourseID());
+                    resp = authorUtil.getObjectivesByCourse(dto.getCourseID(),dataUtil);
                     break;
                 case RequestDTO.GET_ACTIVITY_LIST_BY_LESSON:
-                    resp = authorUtil.getActivitiesByLesson(dto.getLessonID());
+                    resp = authorUtil.getActivitiesByLesson(dto.getLessonID(),dataUtil);
                     break;
 
                 case RequestDTO.ADD_CATEGORY:
-                    resp = authorUtil.addCategory(dto.getCategory(), cloudMsgUtil, platformUtil);
+                    resp = authorUtil.addCategory(dto.getCategory(), cloudMsgUtil, platformUtil,dataUtil);
                     break;
                 case RequestDTO.LOGIN_AUTHOR:
-                    resp = authorUtil.loginAuthor(dto.getEmail(), dto.getPassword(), dto.getGcmDevice(), platformUtil);
+                    resp = authorUtil.loginAuthor(dto.getEmail(), 
+                            dto.getPassword(),dataUtil);
                     if (resp.getStatusCode() == 0) {
                         StringBuilder sb = new StringBuilder();
                         sb.append("Author logging in with new device").append("\n");
@@ -127,54 +130,54 @@ public class AuthorWebSocket {
                     break;
                 case RequestDTO.REGISTER_COURSE:
                     resp = authorUtil.addCourse(dto.getCourse(),
-                            dto.getCompanyID(), dto.getAuthorID(), cloudMsgUtil, platformUtil);
+                            dto.getCompanyID(), dto.getAuthorID(), cloudMsgUtil, platformUtil,dataUtil);
                     break;
 
                 case RequestDTO.ADD_OBJECTIVES:
                     resp = authorUtil.addObjective(dto.getObjective(),
-                            dto.getCourseID());
+                            dto.getCourseID(),dataUtil);
                     break;
                 case RequestDTO.ADD_ACTIVITIES:
                     resp = authorUtil.addActivity(dto.getActivity(),
-                            dto.getCourseID());
+                            dto.getCourseID(),dataUtil);
                     break;
                 case RequestDTO.ADD_RESOURCES:
-                    resp = authorUtil.addLessonResource(dto.getLessonResource());
+                    resp = authorUtil.addLessonResource(dto.getLessonResource(),dataUtil);
                     break;
                 //
                 case RequestDTO.UPDATE_ACTIVITIES:
-                    resp = authorUtil.updateActivities(dto.getActivityList());
+                    resp = authorUtil.updateActivities(dto.getActivityList(),dataUtil);
                     break;
                 case RequestDTO.UPDATE_OBJECTIVES:
-                    resp = authorUtil.updateObjectives(dto.getObjectiveList());
+                    resp = authorUtil.updateObjectives(dto.getObjectiveList(),dataUtil);
                     break;
                 //deletes
 
                 case RequestDTO.DELETE_OBJECTIVES:
                     resp = authorUtil.deleteObjectives(dto.getObjectiveList(),
-                            dto.getCourseID());
+                            dto.getCourseID(),dataUtil);
                     break;
                 case RequestDTO.DELETE_ACTIVITIES:
                     resp = authorUtil.deleteActivities(
-                            dto.getActivityList(), dto.getCourseID());
+                            dto.getActivityList(), dto.getCourseID(),dataUtil);
                     break;
                 case RequestDTO.DELETE_LESSON_RESOURCES:
                     resp = authorUtil.deleteLessonResources(
-                            dto.getLessonResourceList(), dto.getCourseID());
+                            dto.getLessonResourceList(), dto.getCourseID(),dataUtil);
                     break;
 
                 case RequestDTO.DELETE_COURSE:
-                    resp = authorUtil.deleteCourse(dto.getCourseID(), dto.getAuthorID());
+                    resp = authorUtil.deleteCourse(dto.getCourseID(), dto.getAuthorID(),dataUtil);
                     break;
                 case RequestDTO.UPDATE_COURSE:
-                    resp = authorUtil.updateCourse(dto.getCourse(), dto.getAuthorID());
+                    resp = authorUtil.updateCourse(dto.getCourse(), dto.getAuthorID(),dataUtil);
                     break;
 
                 case RequestDTO.UPDATE_CATEGORY:
-                    resp = authorUtil.updateCategory(dto.getCategory());
+                    resp = authorUtil.updateCategory(dto.getCategory(),dataUtil);
                     break;
                 case RequestDTO.DELETE_CATEGORY:
-                    resp = authorUtil.deleteCategory(dto.getCategory());
+                    resp = authorUtil.deleteCategory(dto.getCategory(),dataUtil);
                     break;
 
                 default:

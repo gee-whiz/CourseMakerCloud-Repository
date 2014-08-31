@@ -26,7 +26,7 @@ import javax.ejb.TransactionManagementType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import javax.persistence.RollbackException;
+import javax.persistence.PersistenceException;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
@@ -40,7 +40,7 @@ import javax.validation.ConstraintViolationException;
 public class TeamUtil {
     @PersistenceContext
     EntityManager em;
-    public  ResponseDTO getTeamsByCompany(Integer companyID) throws DataException {
+    public  ResponseDTO getTeamsByCompany(Integer companyID, DataUtil dataUtil) throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
             
@@ -63,12 +63,12 @@ public class TeamUtil {
             d.setTeamList(dto);
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to get data", e);
-            throw new DataException("Failed to get data\n" + DataUtil.getErrorString(e));
+            throw new DataException("Failed to get data\n" + dataUtil.getErrorString(e));
         }
         return d;
     }
 
-    public  ResponseDTO getTeamsByClass(Integer trainingClassID) throws DataException {
+    public  ResponseDTO getTeamsByClass(Integer trainingClassID, DataUtil dataUtil) throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
             
@@ -91,7 +91,7 @@ public class TeamUtil {
             d.setTeamList(dto);
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to get data", e);
-            throw new DataException("Failed to get data\n" + DataUtil.getErrorString(e));
+            throw new DataException("Failed to get data\n" + dataUtil.getErrorString(e));
         }
         return d;
     }
@@ -120,7 +120,7 @@ public class TeamUtil {
         return dto;
     }
 
-    public  ResponseDTO getDemoAnnouncementsByClass(Integer trainingClassID) throws DataException {
+    public  ResponseDTO getDemoAnnouncementsByClass(Integer trainingClassID, DataUtil dataUtil) throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
             
@@ -136,12 +136,12 @@ public class TeamUtil {
 
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to get data", e);
-            throw new DataException("Failed to get data\n" + DataUtil.getErrorString(e));
+            throw new DataException("Failed to get data\n" + dataUtil.getErrorString(e));
         }
         return d;
     }
 
-    public  ResponseDTO getDemoAnnouncementsByCompany(Integer companyID) throws DataException {
+    public  ResponseDTO getDemoAnnouncementsByCompany(Integer companyID, DataUtil dataUtil) throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
             
@@ -156,12 +156,12 @@ public class TeamUtil {
 
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to get data", e);
-            throw new DataException("Failed to get data\n" + DataUtil.getErrorString(e));
+            throw new DataException("Failed to get data\n" + dataUtil.getErrorString(e));
         }
         return d;
     }
 
-    public  ResponseDTO cancelDemoAnnouncement(Integer demoAnnouncementID) throws DataException {
+    public  ResponseDTO cancelDemoAnnouncement(Integer demoAnnouncementID, DataUtil dataUtil) throws DataException {
         ResponseDTO d = new ResponseDTO();
 
         try {
@@ -173,18 +173,18 @@ public class TeamUtil {
             log.log(Level.INFO, "Demo cancelled");
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to cancel demo", e);
-            throw new DataException("Failed to cancel demo\n" + DataUtil.getErrorString(e));
+            throw new DataException("Failed to cancel demo\n" + dataUtil.getErrorString(e));
         }
         return d;
     }
 
-    public  ResponseDTO addTeam(TeamDTO team) throws DataException {
+    public  ResponseDTO addTeam(TeamDTO team, DataUtil dataUtil) throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {               
             Team a = new Team();
             a.setDateRegistered(new Date());
             a.setTeamName(team.getTeamName());
-            a.setTrainingClass(DataUtil.getTrainingClassByID(team.getTrainingClassID(), em));
+            a.setTrainingClass(dataUtil.getTrainingClassByID(team.getTrainingClassID()));
             
             em.persist(a);
             //get id 
@@ -201,7 +201,7 @@ public class TeamUtil {
                     log.log(Level.INFO, "team.getTeamMemberList().size(): {0}", team.getTeamMemberList().size());
                     TeamMemberDTO tm = team.getTeamMemberList().get(0);
                     tm.setTeamID(xx.getTeamID());
-                    ResponseDTO r = addTeamMember(tm);
+                    ResponseDTO r = addTeamMember(tm,dataUtil);
                     if (r.getStatusCode() == 0) {
                         td.setTeamMemberList(r.getTeamMemberList());
                     }
@@ -211,17 +211,17 @@ public class TeamUtil {
             }
             d.setTeam(td);
 
-        } catch (RollbackException e) {
+        } catch (PersistenceException e) {
             d.setStatusCode(ResponseDTO.ERROR_DUPLICATE);
             d.setMessage("Duplicate team found. This team already exists");
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to add team", e);
-            throw new DataException("Failed to add team\n" + DataUtil.getErrorString(e));
+            throw new DataException("Failed to add team\n" + dataUtil.getErrorString(e));
         }
         return d;
     }
 
-    public  ResponseDTO addTeamMember(TeamMemberDTO member) throws DataException {
+    public  ResponseDTO addTeamMember(TeamMemberDTO member, DataUtil dataUtil) throws DataException {
 
         ResponseDTO d = new ResponseDTO();
         try {          
@@ -233,7 +233,7 @@ public class TeamUtil {
                 throw new DataException("Team is NULL. teamID: " + member.getTeamID());
             }
             a.setTeam(team);
-            Trainee trainee = DataUtil.getTraineeByID(member.getTraineeID(), em);
+            Trainee trainee = dataUtil.getTraineeByID(member.getTraineeID());
              if (trainee == null) {
                  log.log(Level.SEVERE, "FUCK!!! - trainee is null");
                 throw new DataException("Trainee is NULL. traineeID: " + member.getTraineeID());
@@ -252,7 +252,7 @@ public class TeamUtil {
             d.setTeamMemberList(dto);
             log.log(Level.INFO, "Team member added: {0} - {1} {2}",
                     new Object[]{a.getTeam().getTeamName(), a.getTrainee().getFirstName(), a.getTrainee().getLastName()});
-        } catch (RollbackException e) {
+        } catch (PersistenceException e) {
             d.setStatusCode(ResponseDTO.ERROR_DUPLICATE);
             d.setMessage("Team member already in the team.");
         } catch (ConstraintViolationException e) {
@@ -262,15 +262,15 @@ public class TeamUtil {
                 ConstraintViolation<? extends Object> constraintViolation = it.next();
                 log.log(Level.SEVERE, "FUCK!!! - " + constraintViolation.getMessage(), e);               
             }
-             throw new DataException("Failed to add TeamMember\n" + DataUtil.getErrorString(e));
+             throw new DataException("Failed to add TeamMember\n" + dataUtil.getErrorString(e));
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to add team member", e);
-            throw new DataException("Failed to add team member\n" + DataUtil.getErrorString(e));
+            throw new DataException("Failed to add team member\n" + dataUtil.getErrorString(e));
         }
         return d;
     }
 
-    public  ResponseDTO addDemoAnnouncement(DemoAnnouncementDTO ann) throws DataException {
+    public  ResponseDTO addDemoAnnouncement(DemoAnnouncementDTO ann, DataUtil dataUtil) throws DataException {
 
         ResponseDTO d = new ResponseDTO();
         String name = null;
@@ -286,11 +286,11 @@ public class TeamUtil {
                 name = a.getTeam().getTeamName();
             }
             if (ann.getTraineeID() > 0) {
-                a.setTrainee(DataUtil.getTraineeByID(ann.getTraineeID(), em));
+                a.setTrainee(dataUtil.getTraineeByID(ann.getTraineeID()));
                 name = a.getTrainee().getFirstName() + " " + a.getTrainee().getLastName();
             }
             if (ann.getTrainingClassID() > 0) {
-                a.setTrainingClass(DataUtil.getTrainingClassByID(ann.getTrainingClassID(), em));
+                a.setTrainingClass(dataUtil.getTrainingClassByID(ann.getTrainingClassID()));
             }           
             em.persist(a);
             Query q = null;
@@ -316,7 +316,7 @@ public class TeamUtil {
                     new Object[]{name, a.getDemoDate().toString()});
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to add Demo announcement", e);
-            throw new DataException("Failed to add Demo announcement\n" + DataUtil.getErrorString(e));
+            throw new DataException("Failed to add Demo announcement\n" + dataUtil.getErrorString(e));
         }
         return d;
     }

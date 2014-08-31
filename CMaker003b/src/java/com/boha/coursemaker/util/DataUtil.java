@@ -46,20 +46,27 @@ import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 /**
- * Utility class with all static methods to handle database access
+ * Utility class with all  methods to handle database access
  *
  * @author Aubrey
  */
+@Stateless
+@TransactionManagement(TransactionManagementType.CONTAINER)
 public class DataUtil {
+@PersistenceContext
+    private EntityManager em;
+    private  final Logger log = Logger.getLogger("DataUtil");
 
-    private static final Logger log = Logger.getLogger("DataUtil");
-
-    public static String getErrorString(Exception e) {
+    public  String getErrorString(Exception e) {
         StringBuilder sb = new StringBuilder();
         if (e.getMessage() != null) {
             sb.append(e.getMessage()).append("\n\n");
@@ -81,7 +88,7 @@ public class DataUtil {
         return sb.toString();
     }
 
-    public static ResponseDTO getTrainingClassList(Integer companyID, EntityManager em)
+    public  ResponseDTO getTrainingClassList(Integer companyID)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
@@ -96,12 +103,12 @@ public class DataUtil {
             d.setTrainingClassList(dto);
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed ", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(getErrorString(e));
         }
         return d;
     }
 
-    public static ResponseDTO getProvinceListByCountryCode(String countryCode, EntityManager em)
+    public  ResponseDTO getProvinceListByCountryCode(String countryCode)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
@@ -115,7 +122,7 @@ public class DataUtil {
                 dto.add(new ProvinceDTO(ht));
             }
 
-            List<CityDTO> cList = getCityListByCountryCode(countryCode, em);
+            List<CityDTO> cList = getCityListByCountryCode(countryCode);
             for (ProvinceDTO p : dto) {
                 for (CityDTO city : cList) {
                     if (city.getProvinceID() == p.getProvinceID()) {
@@ -133,7 +140,7 @@ public class DataUtil {
         return d;
     }
 
-    public static List<CityDTO> getCityListByCountryCode(String countryCode, EntityManager em)
+    public  List<CityDTO> getCityListByCountryCode(String countryCode)
             throws DataException {
         List<CityDTO> dto;
         try {
@@ -148,16 +155,15 @@ public class DataUtil {
             log.log(Level.INFO, "Cities found in country: {0}", dto.size());
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed ", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(getErrorString(e));
         }
         return dto;
     }
 
-    public static ResponseDTO getEquipmentList(Integer trainingCompanyID, EntityManager em)
+    public  ResponseDTO getEquipmentList(Integer trainingCompanyID)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
-
             Query q = em.createNamedQuery("Equipment.findByCompanyID");
             q.setParameter("id", trainingCompanyID);
             List<Equipment> list = q.getResultList();
@@ -168,12 +174,12 @@ public class DataUtil {
             d.setEquipmentList(dto);
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed ", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(getErrorString(e));
         }
         return d;
     }
 
-    public static ResponseDTO getRatingList(Integer companyID, EntityManager em)
+    public  ResponseDTO getRatingAndHelpList(Integer companyID)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
@@ -186,16 +192,17 @@ public class DataUtil {
                 dto.add(new RatingDTO(ht));
             }
             d.setRatingList(dto);
+            d.setHelpTypeList(getHelpTypeList(companyID).getHelpTypeList());
             log.log(Level.INFO, "found Ratings: {0}", d.getRatingList().size());
             
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed ", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(getErrorString(e));
         }
         return d;
     }
 
-    public static ResponseDTO getHelpTypeList(Integer companyID, EntityManager em)
+    public  ResponseDTO getHelpTypeList(Integer companyID)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
@@ -211,20 +218,20 @@ public class DataUtil {
             log.log(Level.INFO, "found HelpTypes: {0}", d.getHelpTypeList().size());
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed ", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(getErrorString(e));
         }
         return d;
     }
 
-    public static ResponseDTO deactivateInstructor(InstructorDTO instructor, Integer administrationID, EntityManager em)
+    public  ResponseDTO deactivateInstructor(InstructorDTO instructor, Integer administrationID)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
 
             EntityTransaction tran = em.getTransaction();
 
-            Instructor tc = getInstructorByID(instructor.getInstructorID(), em);
-            Administrator adm = getAdministratorByID(administrationID, em);
+            Instructor tc = getInstructorByID(instructor.getInstructorID());
+            Administrator adm = getAdministratorByID(administrationID);
             tran.begin();
             tc.setActiveFlag(1);
             tc.setAdministrator(adm);
@@ -234,24 +241,24 @@ public class DataUtil {
             log.log(Level.INFO, "Instructor deactivated {0} {1}", new Object[]{tc.getFirstName(), tc.getLastName()});
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to deactivate instructor", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(getErrorString(e));
         }
         return d;
     }
 
-    public static ResponseDTO registerAdministrator(AdministratorDTO admin, Integer companyID,
-            Integer administrationID, EntityManager em)
+    public  ResponseDTO registerAdministrator(AdministratorDTO admin, Integer companyID,
+            Integer administrationID)
             throws DataException {
         ResponseDTO d = new ResponseDTO();
         try {
 
             EntityTransaction tran = em.getTransaction();
 
-            Administrator superUser = getAdministratorByID(administrationID, em);
+            Administrator superUser = getAdministratorByID(administrationID);
             if (superUser.getSuperUserFlag() == 0) {
                 throw new DataException("A non-superUser admin tried to register another admin. This is a No-No!");
             }
-            Company tc = getCompanyByID(companyID, em);
+            Company tc = getCompanyByID(companyID);
             tran.begin();
             Administrator a = new Administrator();
             a.setFirstName(admin.getFirstName());
@@ -268,166 +275,166 @@ public class DataUtil {
                     new Object[]{tc.getCompanyName(), a.getFirstName(), a.getLastName()});
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to register Administrator", e);
-            throw new DataException(DataUtil.getErrorString(e));
+            throw new DataException(getErrorString(e));
         }
         return d;
     }
-    public static final String OK_MESSAGE = "Signed in OK! Welcome.";
-    public static final String ERROR_MESSAGE = "Email or password invalid. Please try again or contact Support";
-    public static final int TRAINEE = 1, INSTRUCTOR = 2, AUTHOR = 3, ADMIN = 4, EXECUTIVE = 5;
+    public  final String OK_MESSAGE = "Signed in OK! Welcome.";
+    public  final String ERROR_MESSAGE = "Email or password invalid. Please try again or contact Support";
+    public  final int TRAINEE = 1, INSTRUCTOR = 2, AUTHOR = 3, ADMIN = 4, EXECUTIVE = 5;
 
-    public static City getCityByID(Integer id, EntityManager em) {
+    public  City getCityByID(Integer id) {
 
         City c = em.find(City.class, id);
         return c;
     }
 
-    public static Company getCompanyByID(Integer id, EntityManager em) {
+    public  Company getCompanyByID(Integer id) {
 
         Company c = em.find(Company.class, id);
         return c;
     }
 
-    public static Author getAuthorByID(Integer id, EntityManager em) {
+    public  Author getAuthorByID(Integer id) {
 
         Author c = em.find(Author.class, id);
         return c;
     }
 
    
-    public static Objective getObjectiveByID(Integer id, EntityManager em) {
+    public  Objective getObjectiveByID(Integer id) {
 
         Objective c = em.find(Objective.class, id);
         return c;
     }
 
-    public static LessonResource getLessonResourceByID(Integer id, EntityManager em) {
+    public  LessonResource getLessonResourceByID(Integer id) {
 
         LessonResource c = em.find(LessonResource.class, id);
         return c;
     }
 
-    public static Activity getActivityByID(Integer id, EntityManager em) {
+    public  Activity getActivityByID(Integer id) {
 
         Activity c = em.find(Activity.class, id);
         return c;
     }
 
-    public static Country getCountryByID(Integer id, EntityManager em) {
+    public  Country getCountryByID(Integer id) {
 
         Country c = em.find(Country.class, id);
         return c;
     }
 
-    public static Province getProvinceByID(Integer id, EntityManager em) {
+    public  Province getProvinceByID(Integer id) {
 
         Province c = em.find(Province.class, id);
         return c;
     }
 
-    public static CourseTrainee getCourseTraineeByID(Integer id, EntityManager em) {
+    public  CourseTrainee getCourseTraineeByID(Integer id) {
 
         CourseTrainee c = em.find(CourseTrainee.class, id);
         return c;
     }
 
-    public static CourseTraineeActivity getCourseTraineeActivityByID(Integer id, EntityManager em) {
+    public  CourseTraineeActivity getCourseTraineeActivityByID(Integer id) {
 
         CourseTraineeActivity c = em.find(CourseTraineeActivity.class, id);
         return c;
     }
 
-    public static Rating getRatingByID(Integer id, EntityManager em) {
+    public  Rating getRatingByID(Integer id) {
 
         Rating c = em.find(Rating.class, id);
         return c;
     }
 
-    public static TraineeEquipment getTraineeEquipmentByID(Integer id, EntityManager em) {
+    public  TraineeEquipment getTraineeEquipmentByID(Integer id) {
 
         TraineeEquipment c = em.find(TraineeEquipment.class, id);
         return c;
     }
 
-    public static Equipment getEquipmentByID(Integer id, EntityManager em) {
+    public  Equipment getEquipmentByID(Integer id) {
 
         Equipment c = em.find(Equipment.class, id);
         return c;
     }
 
-    public static Course getCourseByID(Integer id, EntityManager em) {
+    public  Course getCourseByID(Integer id) {
 
         Course c = em.find(Course.class, id);
         return c;
     }
 
-    public static TrainingClass getTrainingClassByID(Integer id, EntityManager em) {
+    public  TrainingClass getTrainingClassByID(Integer id) {
 
         TrainingClass c = em.find(TrainingClass.class, id);
         return c;
     }
 
-    public static Trainee getTraineeByID(Integer id, EntityManager em) {
+    public  Trainee getTraineeByID(Integer id) {
 
         Trainee c = em.find(Trainee.class, id);
         return c;
     }
 
-    public static HelpType getHelpTypeByID(Integer id, EntityManager em) {
+    public  HelpType getHelpTypeByID(Integer id) {
 
         HelpType c = em.find(HelpType.class, id);
         return c;
     }
 
-    public static Instructor getInstructorByID(Integer id, EntityManager em) {
+    public  Instructor getInstructorByID(Integer id) {
 
         Instructor c = em.find(Instructor.class, id);
         return c;
     }
 
-    public static InstructorClass getInstructorClassByID(Integer id, EntityManager em) {
+    public  InstructorClass getInstructorClassByID(Integer id) {
 
         InstructorClass c = em.find(InstructorClass.class, id);
         return c;
     }
 
-    public static Inventory getInventoryByID(Integer id, EntityManager em) {
+    public  Inventory getInventoryByID(Integer id) {
 
         Inventory c = em.find(Inventory.class, id);
         return c;
     }
 
-    public static Administrator getAdministratorByID(Integer id, EntityManager em) {
+    public  Administrator getAdministratorByID(Integer id) {
 
         Administrator c = em.find(Administrator.class, id);
         return c;
     }
 
-    public static TrainingClassCourse getTrainingClassCourseByID(Integer id, EntityManager em) {
+    public  TrainingClassCourse getTrainingClassCourseByID(Integer id) {
 
         TrainingClassCourse c = em.find(TrainingClassCourse.class, id);
         return c;
     }
 
-    public static Category getCategoryByID(Integer id, EntityManager em) {
+    public  Category getCategoryByID(Integer id) {
 
         Category c = em.find(Category.class, id);
         return c;
     }
 
-    public static HelpRequest getHelpRequestByID(Integer id, EntityManager em) {
+    public  HelpRequest getHelpRequestByID(Integer id) {
 
         HelpRequest c = em.find(HelpRequest.class, id);
         return c;
     }
 
-    public static HelpResponse getHelpResponseByID(Integer id, EntityManager em) {
+    public  HelpResponse getHelpResponseByID(Integer id) {
 
         HelpResponse c = em.find(HelpResponse.class, id);
         return c;
     }
 
-    public static double getPercentage(int total, int complete) {
+    public  double getPercentage(int total, int complete) {
         if (total == 0) {
             return 0;
         }
@@ -437,37 +444,34 @@ public class DataUtil {
         return p.doubleValue();
     }
 
-    public static String getPassword(Integer id, int type, EntityManager em)
+    public  String getPassword(Integer id, int type)
             throws DataException {
-
+        log.log(Level.OFF, "getPassword, id = " + id);
         String password = createPassword();
         try {
 
-            //update trainee
-            em.getTransaction().begin();
             switch (type) {
                 case AUTHOR:
-                    Author author = DataUtil.getAuthorByID(id, em);
+                    Author author = getAuthorByID(id);
                     author.setPassword(password);
                     em.merge(author);
                     break;
                 case TRAINEE:
-                    Trainee trainee = DataUtil.getTraineeByID(id, em);
+                    Trainee trainee = getTraineeByID(id);
                     trainee.setPassword(password);
                     em.merge(trainee);
                     break;
                 case INSTRUCTOR:
-                    Instructor instructor = DataUtil.getInstructorByID(id, em);
+                    Instructor instructor = getInstructorByID(id);
                     instructor.setPassword(password);
                     em.merge(instructor);
                     break;
                 case ADMIN:
-                    Administrator a = DataUtil.getAdministratorByID(id, em);
+                    Administrator a = getAdministratorByID(id);
                     a.setPassword(password);
                     em.merge(a);
                     break;
             }
-            em.getTransaction().commit();
             log.log(Level.INFO, "User password updated");
 
         } catch (Exception ex) {
@@ -477,7 +481,7 @@ public class DataUtil {
         return password;
     }
 
-    public static String createPassword() {
+    public  String createPassword() {
         StringBuilder sb = new StringBuilder();
         Random rand = new Random(System.currentTimeMillis());
 
@@ -495,8 +499,8 @@ public class DataUtil {
 
         return sb.toString();
     }
-    private static final String[] alphabet = {"a", "b", "c", "d", "e", "f", "g", "h",
+    private  final String[] alphabet = {"a", "b", "c", "d", "e", "f", "g", "h",
         "i", "j", "k", "l", "m", "n", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
-    private static final int[] numbers = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-    private static final String[] special = {"@", "#", "$", "&"};
+    private  final int[] numbers = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    private  final String[] special = {"@", "#", "$", "&"};
 }

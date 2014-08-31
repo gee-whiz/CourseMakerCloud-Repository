@@ -48,6 +48,9 @@ import javax.validation.constraints.Size;
                     + "from Course a "
                     + " GROUP BY a.company"),
     
+    @NamedQuery(name = "Company.findByNameAndEmail", 
+        query = "select a from Company a where a.companyName = :companyName and a.email = :email "),
+    
      
      
      @NamedQuery(name = "Company.countActivities", 

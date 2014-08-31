@@ -42,6 +42,8 @@ import org.apache.commons.fileupload.util.Streams;
 public class PhotoServlet extends HttpServlet {
     @EJB
     PlatformUtil platformUtil;
+    @EJB
+    DataUtil dataUtil;
     /**
      * Processes requests for both HTTP
      * <code>GET</code> and
@@ -115,7 +117,7 @@ public class PhotoServlet extends HttpServlet {
             resp.setMessage("Server file unavailable. Please try later");
             resp.setStatusCode(ResponseDTO.ERROR_SERVER);
             platformUtil.addErrorStore(99, "Failed to uplaod photo\n" 
-                    + DataUtil.getErrorString(ex), "PhotoServlet");
+                    + dataUtil.getErrorString(ex), "PhotoServlet");
             return resp;
         }
 
@@ -165,14 +167,14 @@ public class PhotoServlet extends HttpServlet {
                                         adminDir = new File(companyDir, ADMIN_PREFIX);
                                         if (!adminDir.exists()) {
                                             adminDir.mkdir();
-                                            logger.log(Level.INFO, "admin directory created - {0}", traineeDir.getAbsolutePath());
+                                            logger.log(Level.INFO, "admin directory created - {0}", adminDir.getAbsolutePath());
                                         }
                                     case PhotoUploadDTO.AUTHOR:
                                         logger.log(Level.INFO, "author photo to be downloaded");
                                         authorDir = new File(companyDir, AUTHOR_PREFIX);
                                         if (!authorDir.exists()) {
                                             authorDir.mkdir();
-                                            logger.log(Level.INFO, "author directory created - {0}", traineeDir.getAbsolutePath());
+                                            logger.log(Level.INFO, "author directory created - {0}", authorDir.getAbsolutePath());
                                         }
                                         break;
 
@@ -235,7 +237,7 @@ public class PhotoServlet extends HttpServlet {
         } catch (FileUploadException | IOException | JsonSyntaxException ex) {
             logger.log(Level.SEVERE, "Servlet failed on IOException, images NOT uploaded", ex);
             platformUtil.addErrorStore(99, "Photo upload failed\n" 
-                    + DataUtil.getErrorString(ex), "PhotoServlet");
+                    + dataUtil.getErrorString(ex), "PhotoServlet");
             throw new FileUploadException();
         } finally {
             try {

@@ -38,6 +38,8 @@ public class TeamServlet extends HttpServlet {
     PlatformUtil platformUtil;
     @EJB
     TeamUtil teamUtil;
+    @EJB
+    DataUtil dataUtil;
 
     /**
      * Processes requests for both HTTP
@@ -65,30 +67,30 @@ public class TeamServlet extends HttpServlet {
             } else {
                 switch (dto.getRequestType()) {
                     case RequestDTO.ADD_TEAM:
-                        resp = teamUtil.addTeam(dto.getTeam());
+                        resp = teamUtil.addTeam(dto.getTeam(),dataUtil);
                         break;
                     case RequestDTO.ADD_TEAM_MEMBER:
-                        resp = teamUtil.addTeamMember(dto.getTeamMember());
+                        resp = teamUtil.addTeamMember(dto.getTeamMember(),dataUtil);
                         break;
                     case RequestDTO.ADD_DEMO_ANNOUNCEMENT:
-                        resp = teamUtil.addDemoAnnouncement(dto.getDemoAnnouncement());
+                        resp = teamUtil.addDemoAnnouncement(dto.getDemoAnnouncement(),dataUtil);
                         break;
 
                     case RequestDTO.CANCEL_DEMO_ANNOUNCEMENT:
-                        resp = teamUtil.cancelDemoAnnouncement(dto.getDemoAnnouncementID());
+                        resp = teamUtil.cancelDemoAnnouncement(dto.getDemoAnnouncementID(),dataUtil);
                         break;
 
                     case RequestDTO.GET_TEAMS_BY_CLASS:
-                        resp = teamUtil.getTeamsByClass(dto.getTrainingClassID());
+                        resp = teamUtil.getTeamsByClass(dto.getTrainingClassID(),dataUtil);
                         break;
                     case RequestDTO.GET_TEAMS_BY_COMPANY:
-                        resp = teamUtil.getTeamsByCompany(dto.getCompanyID());
+                        resp = teamUtil.getTeamsByCompany(dto.getCompanyID(),dataUtil);
                         break;
                     case RequestDTO.GET_DEMO_ANNOUNCEMENTS_BY_CLASS:
-                        resp = teamUtil.getDemoAnnouncementsByClass(dto.getTrainingClassID());
+                        resp = teamUtil.getDemoAnnouncementsByClass(dto.getTrainingClassID(),dataUtil);
                         break;
                     case RequestDTO.GET_DEMO_ANNOUNCEMENTS_BY_COMPANY:
-                        resp = teamUtil.getDemoAnnouncementsByCompany(dto.getCompanyID());
+                        resp = teamUtil.getDemoAnnouncementsByCompany(dto.getCompanyID(),dataUtil);
                         break;
 
                     default:
@@ -110,7 +112,7 @@ public class TeamServlet extends HttpServlet {
             resp.setStatusCode(ResponseDTO.ERROR_INVALID_REQUEST);
             resp.setMessage("Server Error");
             platformUtil.addErrorStore(resp.getStatusCode(),
-                    "Unexpected Server Exception\n" + DataUtil.getErrorString(ex), "Team Services");
+                    "Unexpected Server Exception\n" + dataUtil.getErrorString(ex), "Team Services");
         } finally {
             addCorsHeaders(response);
             Gson gson = new Gson();

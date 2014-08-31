@@ -52,7 +52,8 @@ public class TraineeWebSocket {
     InstructorUtil instructorUtil;
     @EJB
     TeamUtil teamUtil;
-    
+    @EJB
+    DataUtil dataUtil;
 
     private static final Set<Session> peers
             = Collections.synchronizedSet(new HashSet<Session>());
@@ -88,24 +89,27 @@ public class TraineeWebSocket {
             switch (dto.getRequestType()) {
                 
                 case RequestDTO.GET_COUNTRY_LIST:
-                    resp = DataUtil.getProvinceListByCountryCode(dto.getCountryCode(), traineeUtil.getEntityManager());
+                    resp = dataUtil.getProvinceListByCountryCode(dto.getCountryCode());
                     break;
                 case RequestDTO.GCM_SEND_TRAINEE_TO_INSTRUCTOR_MSG:
                     resp = cloudMsgUtil.sendTraineeToInstructorMessage(
-                            dto.getHelpRequest(), null, dto.getTrainingClassID(), platformUtil, instructorUtil);
+                            dto.getHelpRequest(), null, dto.getTrainingClassID(), 
+                            platformUtil, instructorUtil, dataUtil);
                     break;
                 case RequestDTO.SEND_TRAINEE_SHOUT:
                     resp = cloudMsgUtil.sendTraineeToInstructorMessage(
-                            null, dto.getTraineeShout(), dto.getTrainingClassID(), platformUtil, instructorUtil);
+                            null, dto.getTraineeShout(), dto.getTrainingClassID(), 
+                            platformUtil, instructorUtil, dataUtil);
                     break;
 
                 case RequestDTO.EVALUATE_TRAINEE_ACTIVITY:
                     resp = traineeUtil.traineeActivityEvaluation(
-                            dto.getCourseTraineeActivity(), dto.getTraineeID());
+                            dto.getCourseTraineeActivity(), dto.getTraineeID(), dataUtil);
                     break;
                 case RequestDTO.LOGIN_TRAINEE:
                     resp = traineeUtil.loginTrainee(dto.getEmail(),
-                            dto.getPassword(), dto.getGcmDevice(), platformUtil);
+                            dto.getPassword(), dataUtil);
+                    resp.setProvinceList(dataUtil.getProvinceListByCountryCode(dto.getCountryCode()).getProvinceList());
                     if (resp.getStatusCode() == 0) {
                         StringBuilder sb = new StringBuilder();
                         sb.append("Trainee logging in with new device").append("\n");
@@ -117,28 +121,28 @@ public class TraineeWebSocket {
                     break;
                     
                 case RequestDTO.ADD_HELP_REQUEST:
-                    resp = traineeUtil.addHelpRequest(dto.getHelpRequest());
+                    resp = traineeUtil.addHelpRequest(dto.getHelpRequest(), dataUtil);
                     break;
                 case RequestDTO.UPDATE_TRAINEE:
-                    resp = traineeUtil.updateTraineeProfile(dto.getTrainee());
+                    resp = traineeUtil.updateTraineeProfile(dto.getTrainee(), dataUtil);
                     break;
                 case RequestDTO.GET_TRAINEE_DATA:
                     resp = traineeUtil.getTraineeData(dto.getTrainingClassID(),
                             dto.getTraineeID(), dto.getCompanyID(), 
-                            dto.getCountryCode());
-                    resp.setTeamList(teamUtil.getTeamsByClass(dto.getTrainingClassID()).getTeamList());        
+                            dto.getCountryCode(), dataUtil);
+                    resp.setTeamList(teamUtil.getTeamsByClass(dto.getTrainingClassID(), dataUtil).getTeamList());        
                     break;
                 case RequestDTO.GET_RATING_LIST:
-                    resp = DataUtil.getRatingList(dto.getCompanyID(), traineeUtil.getEntityManager());
+                    resp = dataUtil.getRatingAndHelpList(dto.getCompanyID());
                     break;
                 case RequestDTO.GET_INSTRUCTOR_LIST_BY_CLASS:
-                    resp = traineeUtil.getInstructorsByClass(dto.getTrainingClassID());
+                    resp = traineeUtil.getInstructorsByClass(dto.getTrainingClassID(), dataUtil);
                     break;
                 case RequestDTO.GET_TEAMS_BY_CLASS:
-                    resp = teamUtil.getTeamsByClass(dto.getTrainingClassID());
+                    resp = teamUtil.getTeamsByClass(dto.getTrainingClassID(), dataUtil);
                     break;
                 case RequestDTO.GET_TEAMS_BY_COMPANY:
-                    resp = teamUtil.getTeamsByCompany(dto.getCompanyID());
+                    resp = teamUtil.getTeamsByCompany(dto.getCompanyID(), dataUtil);
                     break;
 
                 default:

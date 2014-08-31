@@ -13,6 +13,7 @@ import com.boha.coursemaker.util.DataUtil;
 import com.boha.coursemaker.util.PlatformUtil;
 import com.boha.coursemaker.util.GZipUtility;
 import com.boha.coursemaker.util.InstructorUtil;
+import com.boha.coursemaker.util.TeamUtil;
 import com.boha.coursemaker.util.TraineeUtil;
 import com.google.gson.Gson;
 import com.oreilly.servlet.ServletUtils;
@@ -45,6 +46,10 @@ public class TraineeServlet extends HttpServlet {
     InstructorUtil instructorUtil;
     @EJB
     CloudMsgUtil cloudMsgUtil;
+    @EJB
+    DataUtil dataUtil;
+    @EJB
+    TeamUtil teamUtil;
     /**
      * Processes requests for both HTTP
      * <code>GET</code> and
@@ -70,60 +75,68 @@ public class TraineeServlet extends HttpServlet {
                         "Intruder request detected. Ignored", "Trainee Services");
             } else {
                 switch (dto.getRequestType()) {
-                    case RequestDTO.GET_COUNTRY_LIST:
-                        resp = DataUtil.getProvinceListByCountryCode(dto.getCountryCode(), traineeUtil.getEntityManager());
-                        break;
-                    case RequestDTO.GCM_SEND_TRAINEE_TO_INSTRUCTOR_MSG:
-                        resp = cloudMsgUtil.sendTraineeToInstructorMessage(
-                                dto.getHelpRequest(), null, dto.getTrainingClassID(), platformUtil, instructorUtil);
-                        break;
-                    case RequestDTO.SEND_TRAINEE_SHOUT:
-                        resp = cloudMsgUtil.sendTraineeToInstructorMessage(
-                                null, dto.getTraineeShout(), dto.getTrainingClassID(), platformUtil, instructorUtil);
-                        break;
+                     case RequestDTO.GET_COUNTRY_LIST:
+                    resp = dataUtil.getProvinceListByCountryCode(dto.getCountryCode());
+                    break;
+                case RequestDTO.GCM_SEND_TRAINEE_TO_INSTRUCTOR_MSG:
+                    resp = cloudMsgUtil.sendTraineeToInstructorMessage(
+                            dto.getHelpRequest(), null, dto.getTrainingClassID(), 
+                            platformUtil, instructorUtil, dataUtil);
+                    break;
+                case RequestDTO.SEND_TRAINEE_SHOUT:
+                    resp = cloudMsgUtil.sendTraineeToInstructorMessage(
+                            null, dto.getTraineeShout(), dto.getTrainingClassID(), 
+                            platformUtil, instructorUtil, dataUtil);
+                    break;
+
+                case RequestDTO.EVALUATE_TRAINEE_ACTIVITY:
+                    resp = traineeUtil.traineeActivityEvaluation(
+                            dto.getCourseTraineeActivity(), dto.getTraineeID(), dataUtil);
+                    break;
+                case RequestDTO.LOGIN_TRAINEE:
+                    resp = traineeUtil.loginTrainee(dto.getEmail(),
+                            dto.getPassword(), dataUtil);
+                    resp.setProvinceList(dataUtil.getProvinceListByCountryCode(dto.getCountryCode()).getProvinceList());
+                    if (resp.getStatusCode() == 0) {
+                        StringBuilder sb = new StringBuilder();
+                        sb.append("Trainee logging in with new device").append("\n");
+                        sb.append(resp.getCompany().getCompanyName()).append("\n\n");
+                        sb.append(resp.getTrainee().getFirstName()).append(" ").append(resp.getTrainee().getLastName())
+                                .append("\n");
+                        platformUtil.addErrorStore(0, sb.toString(), "Trainee Services");
+                    }
+                    break;
                     
-
-                    case RequestDTO.EVALUATE_TRAINEE_ACTIVITY:
-                        resp = traineeUtil.traineeActivityEvaluation(
-                                dto.getCourseTraineeActivity(), dto.getTraineeID());
-                        break;
-                    case RequestDTO.LOGIN_TRAINEE:
-                        resp = traineeUtil.loginTrainee(dto.getEmail(),
-                                dto.getPassword(), dto.getGcmDevice(), platformUtil);
-                        if (resp.getStatusCode() == 0) {
-                            StringBuilder sb = new StringBuilder();
-                            sb.append("Trainee logging in with new device").append("\n");
-                            sb.append(resp.getCompany().getCompanyName()).append("\n\n");
-                            sb.append(resp.getTrainee().getFirstName()).append(" ").append(resp.getTrainee().getLastName())
-                                    .append("\n");
-                            platformUtil.addErrorStore(0, sb.toString(), "Trainee Services");
-                        }
-                        break;
-                    case RequestDTO.ADD_HELP_REQUEST:
-                        resp = traineeUtil.addHelpRequest(dto.getHelpRequest());
-                        break;
-                    case RequestDTO.UPDATE_TRAINEE:
-                        resp = traineeUtil.updateTraineeProfile(dto.getTrainee());
-                        break;
-                    case RequestDTO.GET_TRAINEE_DATA:
-                        resp = traineeUtil.getTraineeData(dto.getTrainingClassID(),
-                                dto.getTraineeID(), dto.getCompanyID(), dto.getCountryCode());
-                        break;
-                    case RequestDTO.GET_RATING_LIST:
-                        resp = DataUtil.getRatingList(dto.getCompanyID(), traineeUtil.getEntityManager());
-                        break;
-                    case RequestDTO.GET_INSTRUCTOR_LIST_BY_CLASS:
-                        resp = traineeUtil.getInstructorsByClass(dto.getTrainingClassID());
-                        break;
-
-
-
-                    default:
-                        resp.setStatusCode(ResponseDTO.ERROR_UNKNOWN_REQUEST);
-                        resp.setMessage("Unknown request. Verboten!!");
-                        platformUtil.addErrorStore(resp.getStatusCode(),
-                                "Unknown request detected. Whazzup??", "Trainee Services");
-                        break;
+                case RequestDTO.ADD_HELP_REQUEST:
+                    resp = traineeUtil.addHelpRequest(dto.getHelpRequest(), dataUtil);
+                    break;
+                case RequestDTO.UPDATE_TRAINEE:
+                    resp = traineeUtil.updateTraineeProfile(dto.getTrainee(), dataUtil);
+                    break;
+                case RequestDTO.GET_TRAINEE_DATA:
+                    resp = traineeUtil.getTraineeData(dto.getTrainingClassID(),
+                            dto.getTraineeID(), dto.getCompanyID(), 
+                            dto.getCountryCode(), dataUtil);
+                    resp.setTeamList(teamUtil.getTeamsByClass(dto.getTrainingClassID(), dataUtil).getTeamList());        
+                    break;
+                case RequestDTO.GET_RATING_LIST:
+                    resp = dataUtil.getRatingAndHelpList(dto.getCompanyID());
+                    break;
+                case RequestDTO.GET_INSTRUCTOR_LIST_BY_CLASS:
+                    resp = traineeUtil.getInstructorsByClass(dto.getTrainingClassID(), dataUtil);
+                    break;
+                case RequestDTO.GET_TEAMS_BY_CLASS:
+                    resp = teamUtil.getTeamsByClass(dto.getTrainingClassID(), dataUtil);
+                    break;
+                case RequestDTO.GET_TEAMS_BY_COMPANY:
+                    resp = teamUtil.getTeamsByCompany(dto.getCompanyID(), dataUtil);
+                    break;
+                default:
+                    resp.setStatusCode(ResponseDTO.ERROR_UNKNOWN_REQUEST);
+                    resp.setMessage("Unknown request. Verboten!!");
+                    platformUtil.addErrorStore(resp.getStatusCode(),
+                            "Unknown request detected. Whazzup??", "Trainee Services");
+                    break;
                 }
             }
         } catch (DataException e) {
@@ -137,7 +150,7 @@ public class TraineeServlet extends HttpServlet {
             resp.setStatusCode(ResponseDTO.ERROR_INVALID_REQUEST);
             resp.setMessage("Server Error");
             platformUtil.addErrorStore(resp.getStatusCode(),
-                    "Unexpected Server Exception\n" + DataUtil.getErrorString(ex), "Trainee Services");
+                    "Unexpected Server Exception\n" + dataUtil.getErrorString(ex), "Trainee Services");
         } finally {
             addCorsHeaders(response);
             Gson gson = new Gson();

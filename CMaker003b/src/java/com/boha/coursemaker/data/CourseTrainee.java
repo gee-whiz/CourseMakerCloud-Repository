@@ -42,6 +42,8 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "CourseTrainee.findByClassCourse", 
         query = "select a from CourseTrainee a "
                 + "where a.trainingClassCourse.trainingClassCourseID = :id"),
+    @NamedQuery(name = "CourseTrainee.findByClassCourseTrainee", 
+        query = "select a from CourseTrainee a where a.trainee.traineeID = :traineeID and  a.trainingClassCourse.trainingClassCourseID = :id"),
     
     @NamedQuery(name = "CourseTrainee.findByTrainee", 
         query = "select a from CourseTrainee a "

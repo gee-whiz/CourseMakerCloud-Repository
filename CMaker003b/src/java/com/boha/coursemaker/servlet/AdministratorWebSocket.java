@@ -18,7 +18,6 @@ import com.boha.coursemaker.util.InstructorUtil;
 import com.boha.coursemaker.util.PlatformUtil;
 import com.boha.coursemaker.util.TraineeUtil;
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -57,6 +56,8 @@ public class AdministratorWebSocket {
     TraineeUtil traineeUtil;
     @EJB
     CloudMsgUtil cloudMsgUtil;
+    @EJB
+    DataUtil dataUtil;
 
     private static final Set<Session> peers
             = Collections.synchronizedSet(new HashSet<Session>());
@@ -91,18 +92,19 @@ public class AdministratorWebSocket {
             RequestDTO dto = gson.fromJson(message, RequestDTO.class);
             switch (dto.getRequestType()) {
                 case RequestDTO.GET_COMPANY_DATA:
-                    resp = administratorUtil.getCompanyData(dto.getCompanyID());
+                    resp = administratorUtil.getCompanyData(dto.getCompanyID(), dataUtil);
                     break;
                 case RequestDTO.ADD_COURSES_TO_CLASS:
-                    resp = administratorUtil.addClassCourses(dto.getTrainingClassID(), dto.getCourseList(), null);
+                    resp = administratorUtil.addClassCourses(dto.getTrainingClassID(), dto.getCourseList(), null, dataUtil);
                     break;
                 case RequestDTO.GET_COUNTRY_LIST:
-                    resp = DataUtil.getProvinceListByCountryCode(dto.getCountryCode(), administratorUtil.getEm());
+                    resp = dataUtil.getProvinceListByCountryCode(dto.getCountryCode());
                     break;
                 case RequestDTO.LOGIN_ADMINISTRATOR:
                     resp = administratorUtil.loginAdministrator(dto.getEmail(),
                             dto.getPassword(),
-                            dto.getGcmDevice(), platformUtil);
+                            dto.getGcmDevice(), platformUtil, dataUtil);
+
                     if (resp.getStatusCode() == 0) {
                         StringBuilder sb = new StringBuilder();
                         sb.append("Administrator signing in and registering device").append("\n");
@@ -114,7 +116,7 @@ public class AdministratorWebSocket {
                     break;
                 case RequestDTO.REGISTER_TRAINING_COMPANY:
                     resp = administratorUtil.registerCompany(dto.getCompany(),
-                            dto.getAdministrator(), dto.getGcmDevice(), platformUtil);
+                            dto.getAdministrator(), dto.getGcmDevice(), platformUtil, dataUtil);
 
                     if (resp.getStatusCode() == 0) {
                         StringBuilder sb = new StringBuilder();
@@ -128,7 +130,7 @@ public class AdministratorWebSocket {
                     break;
 
                 case RequestDTO.REGISTER_AUTHOR:
-                    resp = administratorUtil.addAuthor(dto.getAuthor(), dto.getCompanyID(), authorUtil);
+                    resp = administratorUtil.addAuthor(dto.getAuthor(), dto.getCompanyID(), authorUtil,dataUtil);
                     if (resp.getStatusCode() == 0) {
                         StringBuilder sb = new StringBuilder();
                         sb.append("New CourseMaker Author Registered").append("\n\n");
@@ -140,7 +142,7 @@ public class AdministratorWebSocket {
                     break;
                 case RequestDTO.REGISTER_TRAINEE:
                     resp = administratorUtil.addTrainee(dto.getTrainee(),
-                            dto.getTrainingClassID(), dto.getCityID(), traineeUtil);
+                            dto.getTrainingClassID(), dto.getCityID(), traineeUtil,dataUtil);
                     if (resp.getStatusCode() == 0) {
                         StringBuilder sb = new StringBuilder();
                         sb.append("New Trainee Registered").append("\n\n");
@@ -152,8 +154,7 @@ public class AdministratorWebSocket {
                     }
                     break;
                 case RequestDTO.REGISTER_INSTRUCTOR:
-                    resp = administratorUtil.addInstructor(dto.getInstructor(),
-                            dto.getTrainingClassID(), dto.getCityID(), instructorUtil);
+                    resp = administratorUtil.addInstructor(dto.getInstructor(), instructorUtil,dataUtil);
                     if (resp.getStatusCode() == 0) {
                         StringBuilder sb = new StringBuilder();
                         sb.append("New Instructor Registered").append("\n\n");
@@ -161,13 +162,13 @@ public class AdministratorWebSocket {
                                 .append("\n");
                         sb.append(resp.getCompany().getCompanyName());
                         platformUtil.addErrorStore(0, sb.toString(), "Administrator Services");
-                        ResponseDTO r = administratorUtil.getInstructorList(dto.getInstructor().getCompanyID());
+                        ResponseDTO r = administratorUtil.getInstructorList(dto.getInstructor().getCompanyID(), dataUtil);
                         resp.setInstructorList(r.getInstructorList());
                     }
 
                     break;
                 case RequestDTO.REGISTER_ADMINISTRATOR:
-                    resp = administratorUtil.addAdministrator(dto.getAdministrator());
+                    resp = administratorUtil.addAdministrator(dto.getAdministrator(), dataUtil);
                     if (resp.getStatusCode() == 0) {
                         StringBuilder sb = new StringBuilder();
                         sb.append("New Administrator Registered").append("\n\n");
@@ -179,157 +180,158 @@ public class AdministratorWebSocket {
                     break;
 
                 case RequestDTO.GET_COMPANY_CLASS_LIST:
-                    resp = DataUtil.getTrainingClassList(dto.getCompanyID(), administratorUtil.getEm());
+                    resp = dataUtil.getTrainingClassList(dto.getCompanyID());
                     break;
                 case RequestDTO.GET_COMPANY_COURSE_LIST:
                     resp = authorUtil.getCompanyCourseList(
-                            dto.getCompanyID());
+                            dto.getCompanyID(),dataUtil);
                     break;
                 case RequestDTO.ADD_TRAINING_CLASS:
                     resp = administratorUtil.registerClass(dto.getCompanyID(),
-                            dto.getTrainingClass(), dto.getAdministratorID());
+                            dto.getTrainingClass(), dto.getAdministratorID(), dataUtil);
                     break;
                 case RequestDTO.UPDATE_CLASS:
-                    resp = administratorUtil.updateClass(dto.getTrainingClass());
+                    resp = administratorUtil.updateClass(dto.getTrainingClass(), dataUtil);
                     break;
                 case RequestDTO.DELETE_CLASS:
-                    resp = administratorUtil.deleteClass(dto.getTrainingClassID());
+                    resp = administratorUtil.deleteClass(dto.getTrainingClassID(), dataUtil);
                     break;
                 case RequestDTO.ASSIGN_INSTRUCTOR_CLASS:
                     resp = administratorUtil.assignInstructorClass(dto.getInstructorID(),
-                            dto.getTrainingClassID());
+                            dto.getTrainingClassID(), dataUtil);
                     break;
                 case RequestDTO.DELETE_INSTRUCTOR_CLASS:
-                    resp = instructorUtil.deleteInstructorClass(dto.getInstructorClassID());
+                    resp = instructorUtil.deleteInstructorClass(dto.getInstructorClassID(),dataUtil);
                     break;
                 case RequestDTO.ADD_TRAINEE_EQUPIMENT:
                     resp = administratorUtil.addTraineeEquipment(
                             dto.getTraineeID(),
                             dto.getInventoryID(),
-                            dto.getAdministratorID());
+                            dto.getAdministratorID(), dataUtil);
                     break;
                 case RequestDTO.UPDATE_TRAINEE_EQUPIMENT:
                     resp = administratorUtil.updateTraineeEquipment(
                             dto.getTraineeEquipmentID(), dto.getConditionFlag(),
                             dto.isReturnEquipment(),
-                            dto.getAdministratorID());
+                            dto.getAdministratorID(), dataUtil);
                     break;
                 case RequestDTO.ADD_EQUIPMENT:
                     resp = administratorUtil.addEquipment(dto.getEquipment(),
-                            dto.getCompanyID(), dto.getAdministratorID());
+                            dto.getCompanyID(), dto.getAdministratorID(), dataUtil);
                     break;
                 case RequestDTO.UPDATE_EQUIPMENT:
-                    resp = administratorUtil.updateEquipment(dto.getEquipment(), dto.getAdministratorID());
+                    resp = administratorUtil.updateEquipment(dto.getEquipment(), dto.getAdministratorID(), dataUtil);
                     break;
                 //deactivate
                 case RequestDTO.DEACTIVATE_INSTRUCTOR:
                     resp = administratorUtil.deactivateInstructor(dto.getInstructor(),
-                            dto.getAdministratorID());
+                            dto.getAdministratorID(), dataUtil);
                     break;
                 case RequestDTO.DEACTIVATE_TRAINEE:
                     resp = administratorUtil.deactivateTrainee(dto.getTrainee(),
-                            dto.getAdministratorID());
+                            dto.getAdministratorID(), dataUtil);
                     break;
                 //    
                 case RequestDTO.GET_INSTRUCTOR_LIST:
-                    resp = administratorUtil.getInstructorList(dto.getCompanyID());
+                    resp = administratorUtil.getInstructorList(dto.getCompanyID(), dataUtil);
                     break;
                 case RequestDTO.GET_CLASS_TRAINEE_LIST:
-                    resp = administratorUtil.getClassTraineeList(dto.getTrainingClassID());
+                    resp = administratorUtil.getClassTraineeList(dto.getTrainingClassID(), dataUtil);
                     break;
                 case RequestDTO.GET_CLASS_COURSE_LIST:
-                    resp = administratorUtil.getClassCourseList(dto.getTrainingClassID());
+                    resp = administratorUtil.getClassCourseList(dto.getTrainingClassID(), dataUtil);
                     break;
                 case RequestDTO.GET_CLASS_TRAINEE_EQUIPMENT_LIST:
-                    resp = administratorUtil.getTraineeEquipmentListByClass(dto.getTrainingClassID());
+                    resp = administratorUtil.getTraineeEquipmentListByClass(dto.getTrainingClassID(), dataUtil);
                     break;
                 case RequestDTO.GET_CLASS_COURSE_TRAINEE_ACTIVITY_LIST:
-                    resp = administratorUtil.getCourseTraineeActivityList(dto.getTrainingClassCourseID());
+                    resp = administratorUtil.getCourseTraineeActivityList(dto.getTrainingClassCourseID(), dataUtil);
                     break;
                 case RequestDTO.GET_TRAINEE_EQUIPMENT_LIST_BY_EQUPMENTID:
-                    resp = administratorUtil.getTraineeEquipmentListByEquipmentID(dto.getEquipmentID());
+                    resp = administratorUtil.getTraineeEquipmentListByEquipmentID(dto.getEquipmentID(), dataUtil);
                     break;
                 case RequestDTO.GET_TRAINEE_EQUIPMENT_LIST_BY_INVENTORYID:
                     resp = administratorUtil.getTraineeEquipmentListByInventory(
-                            dto.getInventoryID());
+                            dto.getInventoryID(), dataUtil);
                     break;
                 case RequestDTO.ADD_INVENTORY:
                     resp = administratorUtil.addInventory(dto.getInventory(),
-                            dto.getAdministratorID());
+                            dto.getAdministratorID(), dataUtil);
                     break;
                 case RequestDTO.UPDATE_INVENTORY:
                     resp = administratorUtil.updateInventory(dto.getInventory(),
-                            dto.getAdministratorID());
+                            dto.getAdministratorID(), dataUtil);
                     break;
 
                 case RequestDTO.GET_COMPANY_EQUIPMENT_LIST:
-                    resp = administratorUtil.getEquipmentList(dto.getCompanyID());
+                    resp = administratorUtil.getEquipmentList(dto.getCompanyID(), dataUtil);
                     break;
                 case RequestDTO.GET_INVENTORY_LIST:
-                    resp = administratorUtil.getInventoryList(dto.getCompanyID());
+                    resp = administratorUtil.getInventoryList(dto.getCompanyID(), dataUtil);
                     break;
                 case RequestDTO.GET_INVENTORY_LIST_BY_CLASS:
-                    resp = administratorUtil.getInventoryListByClass(dto.getTrainingClassID());
+                    resp = administratorUtil.getInventoryListByClass(dto.getTrainingClassID(), dataUtil);
                     break;
                 case RequestDTO.GET_INVENTORY_LIST_BY_EQUIPMENT:
-                    resp = administratorUtil.getEquipmentInventory(dto.getEquipmentID());
+                    resp = administratorUtil.getEquipmentInventory(dto.getEquipmentID(), dataUtil);
                     break;
                 case RequestDTO.GET_HELP_REQUEST_LIST:
                     resp = administratorUtil.getHelpRequestListByPeriod(dto.getTrainingClassID(),
-                            dto.getStartDate(), dto.getEndDate());
+                            dto.getStartDate(), dto.getEndDate(), dataUtil);
                     break;
                 case RequestDTO.UPDATE_AUTHOR:
-                    resp = administratorUtil.updateAuthor(dto.getAuthor());
+                    resp = administratorUtil.updateAuthor(dto.getAuthor(), dataUtil);
                     break;
                 case RequestDTO.UPDATE_INSTRUCTOR:
-                    resp = administratorUtil.updateInstructor(dto.getInstructor());
+                    resp = administratorUtil.updateInstructor(dto.getInstructor(), dataUtil);
                     break;
                 case RequestDTO.UPDATE_TRAINEE:
-                    resp = administratorUtil.updateTrainee(dto.getTrainee(), dto.getTrainingClassID(), dto.getCityID());
+                    resp = administratorUtil.updateTrainee(dto.getTrainee(), dto.getTrainingClassID(), dto.getCityID(), dataUtil);
                     break;
                 case RequestDTO.UPDATE_ADMIN:
-                    resp = administratorUtil.updateAdmin(dto.getAdministrator());
+                    resp = administratorUtil.updateAdmin(dto.getAdministrator(), dataUtil);
                     break;
 
                 case RequestDTO.SEND_PASSWORD_ADMIN:
                     resp = administratorUtil.updatePassword(dto.getAdministratorID(),
-                            EmailUtil.ADMINISTRATOR);
+                            EmailUtil.ADMINISTRATOR, dataUtil);
                     break;
                 case RequestDTO.SEND_PASSWORD_AUTHOR:
                     resp = administratorUtil.updatePassword(dto.getAuthorID(),
-                            EmailUtil.AUTHOR);
+                            EmailUtil.AUTHOR, dataUtil);
                     break;
                 case RequestDTO.SEND_PASSWORD_INSTRUCTOR:
                     resp = administratorUtil.updatePassword(dto.getInstructorID(),
-                            EmailUtil.INSTRUCTOR);
+                            EmailUtil.INSTRUCTOR, dataUtil);
                     break;
                 case RequestDTO.SEND_PASSWORD_TRAINEE:
                     resp = administratorUtil.updatePassword(dto.getTraineeID(),
-                            EmailUtil.TRAINEE);
+                            EmailUtil.TRAINEE, dataUtil);
                     break;
                 case RequestDTO.SEND_PASSWORD_EXECUTIVE:
 
                     break;
-
+                case RequestDTO.GET_RATING_LIST:
+                    resp = dataUtil.getRatingAndHelpList(dto.getCompanyID());
+                    break;
                 case RequestDTO.ADD_RATING:
-                    resp = administratorUtil.addRating(dto.getRating());
+                    resp = administratorUtil.addRating(dto.getRating(), dataUtil);
                     break;
                 case RequestDTO.DELETE_RATING:
-                    resp = administratorUtil.deleteRating(dto.getRating());
+                    resp = administratorUtil.deleteRating(dto.getRating(), dataUtil);
                     break;
                 case RequestDTO.UPDATE_RATING:
-                    resp = administratorUtil.updateRating(dto.getRating());
+                    resp = administratorUtil.updateRating(dto.getRating(), dataUtil);
                     break;
 
                 case RequestDTO.ADD_HELPTYPE:
-
-                    resp = administratorUtil.addHelpType(dto.getHelpType());
+                    resp = administratorUtil.addHelpType(dto.getHelpType(), dataUtil);
                     break;
                 case RequestDTO.DELETE_HELPTYPE:
-                    resp = administratorUtil.deleteHelpType(dto.getHelpType());
+                    resp = administratorUtil.deleteHelpType(dto.getHelpType(), dataUtil);
                     break;
                 case RequestDTO.UPDATE_HELPTYPE:
-                    resp = administratorUtil.updateHelpType(dto.getHelpType());
+                    resp = administratorUtil.updateHelpType(dto.getHelpType(), dataUtil);
                     break;
 
                 default:
@@ -345,7 +347,7 @@ public class AdministratorWebSocket {
             resp.setMessage("Data service failed to process your request");
             log.log(Level.SEVERE, null, ex);
             platformUtil.addErrorStore(ResponseDTO.ERROR_DATABASE, ex.getDescription(), SOURCE);
-        } catch (JsonSyntaxException ex) {
+        } catch (Exception ex) {
             resp.setStatusCode(112);
             resp.setMessage("Service failed to process your request");
             log.log(Level.SEVERE, null, ex);
