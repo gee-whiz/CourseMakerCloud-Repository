@@ -392,6 +392,7 @@ public class AdministratorServlet extends HttpServlet {
     }
 
     private RequestDTO getRequest(HttpServletRequest req) {
+        //http://localhost:8050/cm/admin?JSON={requestType:100,%20countryCode:ZA}
         String json = req.getParameter("JSON");
         Gson gson = new Gson();
         RequestDTO dto;

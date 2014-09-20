@@ -5,6 +5,7 @@
 package com.boha.coursemaker.util;
 
 import com.boha.coursemaker.data.Company;
+import com.boha.coursemaker.data.Course;
 import com.boha.coursemaker.data.ErrorStore;
 import com.boha.coursemaker.data.ErrorStoreAndroid;
 import com.boha.coursemaker.dto.ErrorStoreAndroidDTO;
@@ -71,10 +72,10 @@ public class PlatformUtil {
 
             for (Object[] objects : list) {
                 Company c = (Company) objects[0];
-                int count = (int) ((Number) objects[1]);
+                long count = (long) ((Long) objects[1]);
                 for (CompanyStatsDTO cs : sList) {
                     if (cs.getCompanyID() == c.getCompanyID()) {
-                        cs.setNumberOfCategories(count);
+                        cs.setNumberOfCategories((int) count);
                         break;
                     }
                 }
@@ -84,10 +85,10 @@ public class PlatformUtil {
             List<Object[]> listc = q.getResultList();
             for (Object[] objects : listc) {
                 Company c = (Company) objects[0];
-                int count = (int) ((Number) objects[1]);
+                long count = (long) ((Number) objects[1]);
                 for (CompanyStatsDTO cs : sList) {
                     if (cs.getCompanyID() == c.getCompanyID()) {
-                        cs.setNumberOfCourses(count);
+                        cs.setNumberOfCourses((int) count);
                         break;
                     }
                 }
@@ -97,11 +98,11 @@ public class PlatformUtil {
             q = em.createNamedQuery("Company.countActivities");
             List<Object[]> liste = q.getResultList();
             for (Object[] objects : liste) {
-                Company c = (Company) objects[0];
-                int count = (int) ((Number) objects[1]);
+                Course c = (Course) objects[0];
+                long count = (long) ((Number) objects[1]);
                 for (CompanyStatsDTO cs : sList) {
-                    if (cs.getCompanyID() == c.getCompanyID()) {
-                        cs.setNumberOfActivities(count);
+                    if (cs.getCompanyID() == c.getCompany().getCompanyID()) {
+                        cs.setNumberOfActivities(cs.getNumberOfActivities() + (int) count);
                         break;
                     }
                 }
@@ -110,36 +111,36 @@ public class PlatformUtil {
             q = em.createNamedQuery("Company.countLinks");
             List<Object[]> listf = q.getResultList();
             for (Object[] objects : listf) {
-                Company c = (Company) objects[0];
-                int count = (int) ((Number) objects[1]);
+                Course c = (Course) objects[0];
+                long count = (long) ((Number) objects[1]);
                 for (CompanyStatsDTO cs : sList) {
-                    if (cs.getCompanyID() == c.getCompanyID()) {
-                        cs.setNumberOfResourceLinks(count);
+                    if (cs.getCompanyID() == c.getCompany().getCompanyID()) {
+                        cs.setNumberOfResourceLinks(cs.getNumberOfResourceLinks() +          (int) count);
                         break;
                     }
                 }
             }//count objectives
-            q = em.createNamedQuery("Company.countObjectives");
-            List<Object[]> listg = q.getResultList();
-            for (Object[] objects : listg) {
-                Company c = (Company) objects[0];
-                int count = (int) ((Number) objects[1]);
-                for (CompanyStatsDTO cs : sList) {
-                    if (cs.getCompanyID() == c.getCompanyID()) {
-                        cs.setNumberOfObjectives(count);
-                        break;
-                    }
-                }
-            }
+//            q = em.createNamedQuery("Company.countObjectives");
+//            List<Object[]> listg = q.getResultList();
+//            for (Object[] objects : listg) {
+//                Company c = (Company) objects[0];
+//                long count = (long) ((Number) objects[1]);
+//                for (CompanyStatsDTO cs : sList) {
+//                    if (cs.getCompanyID() == c.getCompanyID()) {
+//                        cs.setNumberOfObjectives((int) count);
+//                        break;
+//                    }
+//                }
+//            }
             //count trainees
             q = em.createNamedQuery("Company.countTrainees");
             List<Object[]> listh = q.getResultList();
             for (Object[] objects : listh) {
                 Company c = (Company) objects[0];
-                int count = (int) ((Number) objects[1]);
+                long count = (long) ((Number) objects[1]);
                 for (CompanyStatsDTO cs : sList) {
                     if (cs.getCompanyID() == c.getCompanyID()) {
-                        cs.setNumberOfTrainees(count);
+                        cs.setNumberOfTrainees((int) count);
                         break;
                     }
                 }
@@ -149,10 +150,10 @@ public class PlatformUtil {
             List<Object[]> listk = q.getResultList();
             for (Object[] objects : listk) {
                 Company c = (Company) objects[0];
-                int count = (int) ((Number) objects[1]);
+                long count = (long) ((Number) objects[1]);
                 for (CompanyStatsDTO cs : sList) {
                     if (cs.getCompanyID() == c.getCompanyID()) {
-                        cs.setNumberOfActiveTrainees(count);
+                        cs.setNumberOfActiveTrainees((int) count);
                         break;
                     }
                 }
@@ -162,10 +163,10 @@ public class PlatformUtil {
             List<Object[]> listi = q.getResultList();
             for (Object[] objects : listi) {
                 Company c = (Company) objects[0];
-                int count = (int) ((Number) objects[1]);
+                long count = (long) ((Number) objects[1]);
                 for (CompanyStatsDTO cs : sList) {
                     if (cs.getCompanyID() == c.getCompanyID()) {
-                        cs.setNumberOfTraineeRatings(count);
+                        cs.setNumberOfTraineeRatings((int) count);
                         break;
                     }
                 }
@@ -175,10 +176,10 @@ public class PlatformUtil {
             List<Object[]> listj = q.getResultList();
             for (Object[] objects : listj) {
                 Company c = (Company) objects[0];
-                int count = (int) ((Number) objects[1]);
+                long count = (long) ((Number) objects[1]);
                 for (CompanyStatsDTO cs : sList) {
                     if (cs.getCompanyID() == c.getCompanyID()) {
-                        cs.setNumberOfInstructorRatings(count);
+                        cs.setNumberOfInstructorRatings((int) count);
                         break;
                     }
                 }
@@ -188,10 +189,10 @@ public class PlatformUtil {
             List<Object[]> listm = q.getResultList();
             for (Object[] objects : listm) {
                 Company c = (Company) objects[0];
-                int count = (int) ((Number) objects[1]);
+                long count = (long) ((Number) objects[1]);
                 for (CompanyStatsDTO cs : sList) {
                     if (cs.getCompanyID() == c.getCompanyID()) {
-                        cs.setNumberOfAuthors(count);
+                        cs.setNumberOfAuthors((int) count);
                         break;
                     }
                 }
@@ -201,10 +202,10 @@ public class PlatformUtil {
             List<Object[]> listn = q.getResultList();
             for (Object[] objects : listn) {
                 Company c = (Company) objects[0];
-                int count = (int) ((Number) objects[1]);
+                long count = (long) ((Number) objects[1]);
                 for (CompanyStatsDTO cs : sList) {
                     if (cs.getCompanyID() == c.getCompanyID()) {
-                        cs.setNumberOfAdmins(count);
+                        cs.setNumberOfAdmins((int) count);
                         break;
                     }
                 }
@@ -215,10 +216,10 @@ public class PlatformUtil {
             List<Object[]> listp = q.getResultList();
             for (Object[] objects : listp) {
                 Company c = (Company) objects[0];
-                int count = (int) ((Number) objects[1]);
+                long count = (long) ((Number) objects[1]);
                 for (CompanyStatsDTO cs : sList) {
                     if (cs.getCompanyID() == c.getCompanyID()) {
-                        cs.setNumberOfInstructors(count);
+                        cs.setNumberOfInstructors((int) count);
                         break;
                     }
                 }
@@ -228,10 +229,10 @@ public class PlatformUtil {
             List<Object[]> listo = q.getResultList();
             for (Object[] objects : listo) {
                 Company c = (Company) objects[0];
-                int count = (int) ((Number) objects[1]);
+                long count = (long) ((Number) objects[1]);
                 for (CompanyStatsDTO cs : sList) {
                     if (cs.getCompanyID() == c.getCompanyID()) {
-                        cs.setNumberOfClasses(count);
+                        cs.setNumberOfClasses((int) count);
                         break;
                     }
                 }
@@ -241,10 +242,10 @@ public class PlatformUtil {
             List<Object[]> listq = q.getResultList();
             for (Object[] objects : listq) {
                 Company c = (Company) objects[0];
-                int count = (int) ((Number) objects[1]);
+                long count = (long) ((Number) objects[1]);
                 for (CompanyStatsDTO cs : sList) {
                     if (cs.getCompanyID() == c.getCompanyID()) {
-                        cs.setNunmberOfActiveClasses(count);
+                        cs.setNunmberOfActiveClasses((int) count);
                         break;
                     }
                 }
@@ -254,10 +255,10 @@ public class PlatformUtil {
             List<Object[]> listr = q.getResultList();
             for (Object[] objects : listr) {
                 Company c = (Company) objects[0];
-                int count = (int) ((Number) objects[1]);
+                long count = (long) ((Number) objects[1]);
                 for (CompanyStatsDTO cs : sList) {
                     if (cs.getCompanyID() == c.getCompanyID()) {
-                        cs.setNumberOfTrainingClassCourses(count);
+                        cs.setNumberOfTrainingClassCourses((int) count);
                         break;
                     }
                 }
@@ -267,10 +268,10 @@ public class PlatformUtil {
             List<Object[]> lists = q.getResultList();
             for (Object[] objects : lists) {
                 Company c = (Company) objects[0];
-                int count = (int) ((Number) objects[1]);
+                long count = (long) ((Number) objects[1]);
                 for (CompanyStatsDTO cs : sList) {
                     if (cs.getCompanyID() == c.getCompanyID()) {
-                        cs.setNumberOfCourseTraineeActivities(count);
+                        cs.setNumberOfCourseTraineeActivities((int) count);
                         break;
                     }
                 }
@@ -378,12 +379,12 @@ public class PlatformUtil {
             List<CompanyStatsDTO> sList = new ArrayList<>();
             for (Object[] objects : list) {
                 Company c = (Company) objects[0];
-                int count = (int) ((Number) objects[1]);
+                long count = (long) ((Number) objects[1]);
                 CompanyStatsDTO cs = new CompanyStatsDTO();
                 cs.setCompanyID(c.getCompanyID());
                 cs.setCompanyName(c.getCompanyName());
                 cs.setDateRegistered(c.getDateRegistered().getTime());
-                cs.setNumberOfCategories(count);
+                cs.setNumberOfCategories((int) count);
                 sList.add(cs);
             }
             //count courses
@@ -392,10 +393,10 @@ public class PlatformUtil {
             List<Object[]> listc = q.getResultList();
             for (Object[] objects : listc) {
                 Company c = (Company) objects[0];
-                int count = (int) ((Number) objects[1]);
+                long count = (long) ((Number) objects[1]);
                 for (CompanyStatsDTO cs : sList) {
                     if (cs.getCompanyID() == c.getCompanyID()) {
-                        cs.setNumberOfCourses(count);
+                        cs.setNumberOfCourses((int) count);
                         break;
                     }
                 }
@@ -406,10 +407,10 @@ public class PlatformUtil {
             List<Object[]> listd = q.getResultList();
             for (Object[] objects : listd) {
                 Company c = (Company) objects[0];
-                int count = (int) ((Number) objects[1]);
+                long count = (long) ((Number) objects[1]);
                 for (CompanyStatsDTO cs : sList) {
                     if (cs.getCompanyID() == c.getCompanyID()) {
-                        cs.setNumberOfLessons(count);
+                        cs.setNumberOfLessons((int) count);
                         break;
                     }
                 }
@@ -420,10 +421,10 @@ public class PlatformUtil {
             List<Object[]> liste = q.getResultList();
             for (Object[] objects : liste) {
                 Company c = (Company) objects[0];
-                int count = (int) ((Number) objects[1]);
+                long count = (long) ((Number) objects[1]);
                 for (CompanyStatsDTO cs : sList) {
                     if (cs.getCompanyID() == c.getCompanyID()) {
-                        cs.setNumberOfActivities(count);
+                        cs.setNumberOfActivities((int) count);
                         break;
                     }
                 }
@@ -434,10 +435,10 @@ public class PlatformUtil {
             List<Object[]> listf = q.getResultList();
             for (Object[] objects : listf) {
                 Company c = (Company) objects[0];
-                int count = (int) ((Number) objects[1]);
+                long count = (long) ((Number) objects[1]);
                 for (CompanyStatsDTO cs : sList) {
                     if (cs.getCompanyID() == c.getCompanyID()) {
-                        cs.setNumberOfResourceLinks(count);
+                        cs.setNumberOfResourceLinks((int) count);
                         break;
                     }
                 }
@@ -447,10 +448,10 @@ public class PlatformUtil {
             List<Object[]> listg = q.getResultList();
             for (Object[] objects : listg) {
                 Company c = (Company) objects[0];
-                int count = (int) ((Number) objects[1]);
+                long count = (long) ((Number) objects[1]);
                 for (CompanyStatsDTO cs : sList) {
                     if (cs.getCompanyID() == c.getCompanyID()) {
-                        cs.setNumberOfObjectives(count);
+                        cs.setNumberOfObjectives((int) count);
                         break;
                     }
                 }
@@ -461,10 +462,10 @@ public class PlatformUtil {
             List<Object[]> listh = q.getResultList();
             for (Object[] objects : listh) {
                 Company c = (Company) objects[0];
-                int count = (int) ((Number) objects[1]);
+                long count = (long) ((Number) objects[1]);
                 for (CompanyStatsDTO cs : sList) {
                     if (cs.getCompanyID() == c.getCompanyID()) {
-                        cs.setNumberOfTrainees(count);
+                        cs.setNumberOfTrainees((int) count);
                         break;
                     }
                 }
@@ -475,10 +476,10 @@ public class PlatformUtil {
             List<Object[]> listk = q.getResultList();
             for (Object[] objects : listk) {
                 Company c = (Company) objects[0];
-                int count = (int) ((Number) objects[1]);
+                long count = (long) ((Number) objects[1]);
                 for (CompanyStatsDTO cs : sList) {
                     if (cs.getCompanyID() == c.getCompanyID()) {
-                        cs.setNumberOfActiveTrainees(count);
+                        cs.setNumberOfActiveTrainees((int) count);
                         break;
                     }
                 }
@@ -489,10 +490,10 @@ public class PlatformUtil {
             List<Object[]> listi = q.getResultList();
             for (Object[] objects : listi) {
                 Company c = (Company) objects[0];
-                int count = (int) ((Number) objects[1]);
+                long count = (long) ((Number) objects[1]);
                 for (CompanyStatsDTO cs : sList) {
                     if (cs.getCompanyID() == c.getCompanyID()) {
-                        cs.setNumberOfTraineeRatings(count);
+                        cs.setNumberOfTraineeRatings((int) count);
                         break;
                     }
                 }
@@ -503,10 +504,10 @@ public class PlatformUtil {
             List<Object[]> listj = q.getResultList();
             for (Object[] objects : listj) {
                 Company c = (Company) objects[0];
-                int count = (int) ((Number) objects[1]);
+                long count = (long) ((Number) objects[1]);
                 for (CompanyStatsDTO cs : sList) {
                     if (cs.getCompanyID() == c.getCompanyID()) {
-                        cs.setNumberOfInstructorRatings(count);
+                        cs.setNumberOfInstructorRatings((int) count);
                         break;
                     }
                 }
@@ -517,10 +518,10 @@ public class PlatformUtil {
             List<Object[]> listm = q.getResultList();
             for (Object[] objects : listm) {
                 Company c = (Company) objects[0];
-                int count = (int) ((Number) objects[1]);
+                long count = (long) ((Number) objects[1]);
                 for (CompanyStatsDTO cs : sList) {
                     if (cs.getCompanyID() == c.getCompanyID()) {
-                        cs.setNumberOfAuthors(count);
+                        cs.setNumberOfAuthors((int) count);
                         break;
                     }
                 }
@@ -531,10 +532,10 @@ public class PlatformUtil {
             List<Object[]> listn = q.getResultList();
             for (Object[] objects : listn) {
                 Company c = (Company) objects[0];
-                int count = (int) ((Number) objects[1]);
+                long count = (long) ((Number) objects[1]);
                 for (CompanyStatsDTO cs : sList) {
                     if (cs.getCompanyID() == c.getCompanyID()) {
-                        cs.setNumberOfAdmins(count);
+                        cs.setNumberOfAdmins((int) count);
                         break;
                     }
                 }
@@ -545,10 +546,10 @@ public class PlatformUtil {
             List<Object[]> listp = q.getResultList();
             for (Object[] objects : listp) {
                 Company c = (Company) objects[0];
-                int count = (int) ((Number) objects[1]);
+                long count = (long) ((Number) objects[1]);
                 for (CompanyStatsDTO cs : sList) {
                     if (cs.getCompanyID() == c.getCompanyID()) {
-                        cs.setNumberOfInstructors(count);
+                        cs.setNumberOfInstructors((int) count);
                         break;
                     }
                 }
@@ -559,10 +560,10 @@ public class PlatformUtil {
             List<Object[]> listo = q.getResultList();
             for (Object[] objects : listo) {
                 Company c = (Company) objects[0];
-                int count = (int) ((Number) objects[1]);
+                long count = (long) ((Number) objects[1]);
                 for (CompanyStatsDTO cs : sList) {
                     if (cs.getCompanyID() == c.getCompanyID()) {
-                        cs.setNumberOfClasses(count);
+                        cs.setNumberOfClasses((int) count);
                         break;
                     }
                 }
@@ -573,10 +574,10 @@ public class PlatformUtil {
             List<Object[]> listq = q.getResultList();
             for (Object[] objects : listq) {
                 Company c = (Company) objects[0];
-                int count = (int) ((Number) objects[1]);
+                long count = (long) ((Number) objects[1]);
                 for (CompanyStatsDTO cs : sList) {
                     if (cs.getCompanyID() == c.getCompanyID()) {
-                        cs.setNunmberOfActiveClasses(count);
+                        cs.setNunmberOfActiveClasses((int) count);
                         break;
                     }
                 }
@@ -587,10 +588,10 @@ public class PlatformUtil {
             List<Object[]> listr = q.getResultList();
             for (Object[] objects : listr) {
                 Company c = (Company) objects[0];
-                int count = (int) ((Number) objects[1]);
+                long count = (long) ((Number) objects[1]);
                 for (CompanyStatsDTO cs : sList) {
                     if (cs.getCompanyID() == c.getCompanyID()) {
-                        cs.setNumberOfTrainingClassCourses(count);
+                        cs.setNumberOfTrainingClassCourses((int) count);
                         break;
                     }
                 }
@@ -601,10 +602,10 @@ public class PlatformUtil {
             List<Object[]> lists = q.getResultList();
             for (Object[] objects : lists) {
                 Company c = (Company) objects[0];
-                int count = (int) ((Number) objects[1]);
+                long count = (long) ((Number) objects[1]);
                 for (CompanyStatsDTO cs : sList) {
                     if (cs.getCompanyID() == c.getCompanyID()) {
-                        cs.setNumberOfCourseTraineeActivities(count);
+                        cs.setNumberOfCourseTraineeActivities((int) count);
                         break;
                     }
                 }

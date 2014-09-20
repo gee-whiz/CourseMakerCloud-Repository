@@ -119,6 +119,8 @@ public class AdministratorWebSocket {
                             dto.getAdministrator(), dto.getGcmDevice(), platformUtil, dataUtil);
 
                     if (resp.getStatusCode() == 0) {
+                        //TODO - remove this when done testing
+                        authorUtil.copyCourses(1, resp.getCompany().getCompanyID());
                         StringBuilder sb = new StringBuilder();
                         sb.append("New Company Registered").append("\n\n");
                         sb.append(resp.getCompany().getCompanyName()).append("\n");

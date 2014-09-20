@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.boha.coursemaker.data;
 
 import java.io.Serializable;
@@ -34,182 +33,168 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "company")
 @NamedQueries({
-    @NamedQuery(name = "Company.findAll", 
-        query = "select a from Company a "
-                    + " order by a.companyName"),
+    @NamedQuery(name = "Company.findAll",
+            query = "select a from Company a "
+            + " order by a.companyName"),
     ////
-    @NamedQuery(name = "Company.countCategories", 
-        query = "select a.company, count(a) as total "
-                    + "from Category a "
-                    + " GROUP BY a.company"),
-    
-    @NamedQuery(name = "Company.countCourses", 
-        query = "select a.company, count(a) as total "
-                    + "from Course a "
-                    + " GROUP BY a.company"),
-    
-    @NamedQuery(name = "Company.findByNameAndEmail", 
-        query = "select a from Company a where a.companyName = :companyName and a.email = :email "),
-    
-     
-     
-     @NamedQuery(name = "Company.countActivities", 
-        query = "select a.course, count(a) as total from Activity a "
-                    + "GROUP BY a.course.category.company"),
-     
-     @NamedQuery(name = "Company.countLinks", 
-        query = "select a.course, count(a) as total from LessonResource a GROUP BY a.course.company"),
-     
-     @NamedQuery(name = "Company.countObjectives", 
-        query = "select a.course.category.company, count(a) "
-                    + "from Objective a "
-                    + "GROUP BY a.course.category.company"),
-      @NamedQuery(name = "Company.countTrainees", 
-        query = "select a.company, count(a) from Trainee a "
-                    + "GROUP BY a.company"),
-      
-      @NamedQuery(name = "Company.countTraineesActive", 
-        query = "select a.company, count(a) "
-                    + "from Trainee a where a.activeFlag is null "
-                    + "or a.activeFlag = 1 "
-                    + "GROUP BY a.company"),
-      @NamedQuery(name = "Company.countTraineeRatings", 
-        query = "select a.trainee.company, count(a) from TraineeRating a  "
-                    + "GROUP BY a.trainee.company"),
-      
-      @NamedQuery(name = "Company.countInstructorRatings", 
-        query = "select a.instructor.company, count(a) from InstructorRating a"
-                    + " GROUP BY a.instructor.company"),
-      
-       @NamedQuery(name = "Company.countAuthors", 
-        query = "select a.company, count(a) from Author a "
-                    + " GROUP BY a.company"),
-       
-       @NamedQuery(name = "Company.countAdministrators", 
-        query = "select a.company, count(a) from Administrator a "
-                    + " GROUP BY a.company"),
-       
-       @NamedQuery(name = "Company.countInstructors", 
-        query = "select a.company, count(a) from Instructor a "
-                    + " GROUP BY a.company"),
-       @NamedQuery(name = "Company.countClasses", 
-        query = "select a.company, count(a) from TrainingClass a "
-                    + " GROUP BY a.company"),
-       
-       @NamedQuery(name = "Company.countClassesActive", 
-        query = "select a.company, count(a) from TrainingClass a "
-                    + " where a.isOpen = 1 or a.isOpen is null "
-                    + " GROUP BY a.company"),
-       @NamedQuery(name = "Company.countClassCourses", 
-        query = "select a.trainingClass.company, count(a) from TrainingClassCourse a "
-                    + " GROUP BY a.trainingClass.company"),
-       
-       @NamedQuery(name = "Company.countCourseTraineeActivities", 
-        query = "select a.courseTrainee.trainee.company, count(a) from CourseTraineeActivity a "
-                    + " GROUP BY a.courseTrainee.trainee.company"),
-       
-       
-       
-       
+    @NamedQuery(name = "Company.countCategories",
+            query = "select a.company, count(a) as total "
+            + "from Category a "
+            + " GROUP BY a.company"),
+
+    @NamedQuery(name = "Company.countCourses",
+            query = "select a.company, count(a) as total "
+            + "from Course a "
+            + " GROUP BY a.company"),
+
+    @NamedQuery(name = "Company.findByNameAndEmail",
+            query = "select a from Company a where a.companyName = :companyName and a.email = :email "),
+
+    @NamedQuery(name = "Company.countActivities",
+            query = "select a.course, count(a) as total from Activity a "
+            + "GROUP BY a.course.category.company"),
+
+    @NamedQuery(name = "Company.countLinks",
+            query = "select a.course, count(a) as total from LessonResource a GROUP BY a.course.company"),
+
+    @NamedQuery(name = "Company.countObjectives",
+            query = "select a.course.category.company, count(a) "
+            + "from Objective a "
+            + "GROUP BY a.course.category.company"),
+    @NamedQuery(name = "Company.countTrainees",
+            query = "select a.company, count(a) from Trainee a "
+            + "GROUP BY a.company"),
+
+    @NamedQuery(name = "Company.countTraineesActive",
+            query = "select a.company, count(a) "
+            + "from Trainee a where a.activeFlag is null "
+            + "or a.activeFlag = 1 "
+            + "GROUP BY a.company"),
+    @NamedQuery(name = "Company.countTraineeRatings",
+            query = "select a.trainee.company, count(a) from TraineeRating a  "
+            + "GROUP BY a.trainee.company"),
+
+    @NamedQuery(name = "Company.countInstructorRatings",
+            query = "select a.instructor.company, count(a) from InstructorRating a"
+            + " GROUP BY a.instructor.company"),
+
+    @NamedQuery(name = "Company.countAuthors",
+            query = "select a.company, count(a) from Author a "
+            + " GROUP BY a.company"),
+
+    @NamedQuery(name = "Company.countAdministrators",
+            query = "select a.company, count(a) from Administrator a "
+            + " GROUP BY a.company"),
+
+    @NamedQuery(name = "Company.countInstructors",
+            query = "select a.company, count(a) from Instructor a "
+            + " GROUP BY a.company"),
+    @NamedQuery(name = "Company.countClasses",
+            query = "select a.company, count(a) from TrainingClass a "
+            + " GROUP BY a.company"),
+
+    @NamedQuery(name = "Company.countClassesActive",
+            query = "select a.company, count(a) from TrainingClass a "
+            + " where a.isOpen = 1 or a.isOpen is null "
+            + " GROUP BY a.company"),
+    @NamedQuery(name = "Company.countClassCourses",
+            query = "select a.trainingClass.company, count(a) from TrainingClassCourse a "
+            + " GROUP BY a.trainingClass.company"),
+
+    @NamedQuery(name = "Company.countCourseTraineeActivities",
+            query = "select a.courseTrainee.trainee.company, count(a) from CourseTraineeActivity a "
+            + " GROUP BY a.courseTrainee.trainee.company"),
+
     ///////////////// - filter by company 
-       @NamedQuery(name = "Company.countCategoriesByCompany", 
-        query = "select a.company, count(a) from Category a "
-                    + "where a.company.companyID = :id "
-                    + " GROUP BY a.company"),
-    
-    @NamedQuery(name = "Company.countCoursesByCompany", 
-        query = "select a.company, count(a) from Course a "
-                    + " where a.company.companyID = :id "
-                    + " GROUP BY a.company"),
-    
-     
-     
-     @NamedQuery(name = "Company.countActivitiesByCompany", 
-        query = "select a.course.category.company, count(a) from Activity a "
-                    + " where a.course.category.company.companyID = :id "
-                    + " GROUP BY a.course.category.company"),
-     
-     @NamedQuery(name = "Company.countLinksByCompany", 
-        query = "select a.course.category.company, count(a) from LessonResource a "
-                    + " where a.course.category.company.companyID = :id "
-                    + " GROUP BY a.course.category.company"),
-     
-     @NamedQuery(name = "Company.countObjectivesByCompany", 
-        query = "select a.course.category.company, count(a) from Objective a "
-                    + " where a.course.category.company.companyID = :id"
-                    + " GROUP BY a.course.category.company"),
-     
-      @NamedQuery(name = "Company.countTraineesByCompany", 
-        query = "select a.company, count(a) from Trainee a "
-                    + " where a.company.companyID = :id "
-                    + " GROUP BY a.company"),
-      
-      @NamedQuery(name = "Company.countTraineesActiveByCompany", 
-        query = "select a.company, count(a) from Trainee a "
-                    + "where a.activeFlag is null or a.activeFlag = 0 "
-                    + " and a.company.companyID = :id "
-                    + " GROUP BY a.company"),
-      
-      
-      @NamedQuery(name = "Company.countTraineeRatingsByCompany", 
-        query = "select a.trainee.company, count(a) from TraineeRating a  "
-                    + " where a.trainee.company.companyID = :id "
-                    + " GROUP BY a.trainee.company"),
-      
-      @NamedQuery(name = "Company.countInstructorRatingsByCompany", 
-        query = "select a.instructor.company, count(a) from InstructorRating a"
-                    + " where a.instructor.company.companyID = :id "
-                    + " GROUP BY a.instructor.company"),
-      
-       @NamedQuery(name = "Company.countAuthorsByCompany", 
-        query = "select a.company, count(a) from Author a "
-                    + " where a.company.companyID = :id "
-                    + " GROUP BY a.company"),
-       
-       @NamedQuery(name = "Company.countAdministratorsByCompany", 
-        query = "select a.company, count(a) from Administrator a "
-                    + " where a.company.companyID = :id "
-                    + " GROUP BY a.company"),
-       
-       @NamedQuery(name = "Company.countInstructorsByCompany", 
-        query = "select a.company, count(a) from Instructor a "
-                    + " where a.company.companyID = :id "
-                    + "GROUP BY a.company"),
-       
-       @NamedQuery(name = "Company.countClassesByCompany", 
-        query = "select a.company, count(a) from TrainingClass a "
-                    + " where a.company.companyID = :id "
-                    + " GROUP BY a.company"),
-       
-       @NamedQuery(name = "Company.countClassesActiveByCompany", 
-        query = "select a.company, count(a) from TrainingClass a "
-                    + " where a.isOpen = 1 or a.isOpen is null "
-                    + " and a.company.companyID = :id "
-                    + " GROUP BY a.company"),
-       @NamedQuery(name = "Company.countClassCoursesByCompany", 
-        query = "select a.trainingClass.company, count(a) from TrainingClassCourse a "
-                    + " where a.trainingClass.company.companyID = :id "
-                    + " GROUP BY a.trainingClass.company"),
-       
-       @NamedQuery(name = "Company.countCourseTraineeActivitiesByCompany", 
-        query = "select a.courseTrainee.trainee.company, count(a) from CourseTraineeActivity a "
-                    + " where a.courseTrainee.trainee.company.companyID = :id "
-                    + " GROUP BY a.courseTrainee.trainee.company"),
-       
-       
-       
-       
-       
-       
-       
-       
-       //////////
-    @NamedQuery(name = "Company.countCategories", 
-        query = "select a.company, count(a) as total "
-                    + "from Category a "
-                    + " GROUP BY a.company")})
+    @NamedQuery(name = "Company.countCategoriesByCompany",
+            query = "select a.company, count(a) from Category a "
+            + "where a.company.companyID = :id "
+            + " GROUP BY a.company"),
+
+    @NamedQuery(name = "Company.countCoursesByCompany",
+            query = "select a.company, count(a) from Course a "
+            + " where a.company.companyID = :id "
+            + " GROUP BY a.company"),
+
+    @NamedQuery(name = "Company.countActivitiesByCompany",
+            query = "select a.course.category.company, count(a) from Activity a "
+            + " where a.course.category.company.companyID = :id "
+            + " GROUP BY a.course.category.company"),
+
+    @NamedQuery(name = "Company.countLinksByCompany",
+            query = "select a.course.category.company, count(a) from LessonResource a "
+            + " where a.course.category.company.companyID = :id "
+            + " GROUP BY a.course.category.company"),
+
+    @NamedQuery(name = "Company.countObjectivesByCompany",
+            query = "select a.course.category.company, count(a) from Objective a "
+            + " where a.course.category.company.companyID = :id"
+            + " GROUP BY a.course.category.company"),
+
+    @NamedQuery(name = "Company.countTraineesByCompany",
+            query = "select a.company, count(a) from Trainee a "
+            + " where a.company.companyID = :id "
+            + " GROUP BY a.company"),
+
+    @NamedQuery(name = "Company.countTraineesActiveByCompany",
+            query = "select a.company, count(a) from Trainee a "
+            + "where a.activeFlag is null or a.activeFlag = 0 "
+            + " and a.company.companyID = :id "
+            + " GROUP BY a.company"),
+
+    @NamedQuery(name = "Company.countTraineeRatingsByCompany",
+            query = "select a.trainee.company, count(a) from TraineeRating a  "
+            + " where a.trainee.company.companyID = :id "
+            + " GROUP BY a.trainee.company"),
+
+    @NamedQuery(name = "Company.countInstructorRatingsByCompany",
+            query = "select a.instructor.company, count(a) from InstructorRating a"
+            + " where a.instructor.company.companyID = :id "
+            + " GROUP BY a.instructor.company"),
+
+    @NamedQuery(name = "Company.countAuthorsByCompany",
+            query = "select a.company, count(a) from Author a "
+            + " where a.company.companyID = :id "
+            + " GROUP BY a.company"),
+
+    @NamedQuery(name = "Company.countAdministratorsByCompany",
+            query = "select a.company, count(a) from Administrator a "
+            + " where a.company.companyID = :id "
+            + " GROUP BY a.company"),
+
+    @NamedQuery(name = "Company.countInstructorsByCompany",
+            query = "select a.company, count(a) from Instructor a "
+            + " where a.company.companyID = :id "
+            + "GROUP BY a.company"),
+
+    @NamedQuery(name = "Company.countClassesByCompany",
+            query = "select a.company, count(a) from TrainingClass a "
+            + " where a.company.companyID = :id "
+            + " GROUP BY a.company"),
+
+    @NamedQuery(name = "Company.countClassesActiveByCompany",
+            query = "select a.company, count(a) from TrainingClass a "
+            + " where a.isOpen = 1 or a.isOpen is null "
+            + " and a.company.companyID = :id "
+            + " GROUP BY a.company"),
+    @NamedQuery(name = "Company.countClassCoursesByCompany",
+            query = "select a.trainingClass.company, count(a) from TrainingClassCourse a "
+            + " where a.trainingClass.company.companyID = :id "
+            + " GROUP BY a.trainingClass.company"),
+
+    @NamedQuery(name = "Company.countCourseTraineeActivitiesByCompany",
+            query = "select a.courseTrainee.trainee.company, count(a) from CourseTraineeActivity a "
+            + " where a.courseTrainee.trainee.company.companyID = :id "
+            + " GROUP BY a.courseTrainee.trainee.company"),
+
+    //////////
+    @NamedQuery(name = "Company.countCategories",
+            query = "select a.company, count(a) as total "
+            + "from Category a "
+            + " GROUP BY a.company")})
 
 public class Company implements Serializable {
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "company")
     private List<SkillLevel> skillLevelList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "company")
@@ -393,8 +378,6 @@ public class Company implements Serializable {
         this.ratingList = ratingList;
     }
 
-   
-
     @Override
     public String toString() {
         return "com.boha.coursemaker.data.Company[ companyID=" + companyID + " ]";
@@ -423,5 +406,5 @@ public class Company implements Serializable {
     public void setSkillLevelList(List<SkillLevel> skillLevelList) {
         this.skillLevelList = skillLevelList;
     }
-    
+
 }

@@ -85,9 +85,6 @@ public class Trainee implements Serializable {
     @Size(min = 1, max = 100)
     @Column(name = "email")
     private String email;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 45)
     @Column(name = "cellphone")
     private String cellphone;
     @Basic(optional = false)
@@ -122,11 +119,15 @@ public class Trainee implements Serializable {
     @JoinColumn(name = "administratorID", referencedColumnName = "administratorID")
     @ManyToOne
     private Administrator administrator;
+    
+    
     @JoinColumn(name = "trainingClassID", referencedColumnName = "trainingClassID")
     @ManyToOne
     private TrainingClass trainingClass;
+    
+    
     @JoinColumn(name = "cityID", referencedColumnName = "cityID")
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = true)
     private City city;
     @JoinColumn(name = "companyID", referencedColumnName = "companyID")
     @ManyToOne

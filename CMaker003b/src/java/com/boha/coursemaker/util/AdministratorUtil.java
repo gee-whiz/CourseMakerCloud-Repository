@@ -1226,6 +1226,11 @@ public class AdministratorUtil {
             }
 
             em.persist(tc);
+            Query q = em.createNamedQuery("Company.findByNameAndEmail");
+            q.setParameter("companyName", tc.getCompanyName());
+            q.setParameter("email", tc.getEmail());
+            q.setMaxResults(1);
+            Company nc = (Company)q.getSingleResult();
 
             log.log(Level.INFO, "Company added ... Yay!");
             //add superUser administrator ...
@@ -1238,7 +1243,7 @@ public class AdministratorUtil {
             if (administrator.getCellphone() == null) {
                 administrator.setCellphone("");
             }
-            administrator.setCompany(tc);
+            administrator.setCompany(nc);
             administrator.setPassword(admin.getPassword());
             administrator.setDateRegistered(new Date());
             administrator.setSuperUserFlag(1);
@@ -1247,15 +1252,8 @@ public class AdministratorUtil {
             //log.log(Level.INFO, "Super Admin added {0} {1}", new Object[]{admin.getFirstName(), admin.getLastName()});
             //add basic ratings
             d.setRatingList(addBasicRating(tc, dataUtil));
-            d.setHelpTypeList(addBasicHelpType(tc,dataUtil));
-
-            //
-            Query q = em.createNamedQuery("Company.findByNameAndEmail", Company.class);
-            q.setParameter("companyName", tc.getCompanyName());
-            q.setParameter("email", tc.getEmail());
-            q.setMaxResults(1);
-            Company cc = (Company) q.getSingleResult();
-            d.setCompany(new CompanyDTO(cc));
+            d.setHelpTypeList(addBasicHelpType(tc,dataUtil));           
+            d.setCompany(new CompanyDTO(nc));
 
             q = em.createNamedQuery("Administrator.loginAdmin", Administrator.class);
             q.setParameter("email", administrator.getEmail());
@@ -1264,10 +1262,10 @@ public class AdministratorUtil {
             Administrator ad = (Administrator) q.getSingleResult();
             d.setAdministrator(new AdministratorDTO(ad));
             d.setEquipmentList(addCompanyEquipment(tc, administrator, dataUtil));
-            d.setHelpTypeList(addInitialHelpTypes(cc));
-            d.setRatingList(addInitialRatings(cc));
-            d.setSkillList(addInitialSkills(cc));
-            d.setSkillLevelList(addInitialSkillLevels(cc));
+            d.setHelpTypeList(addInitialHelpTypes(nc));
+            d.setRatingList(addInitialRatings(nc));
+            d.setSkillList(addInitialSkills(nc));
+            d.setSkillLevelList(addInitialSkillLevels(nc));
 
             log.log(Level.INFO, "Training Company registered OK");
         } catch (PersistenceException e) {

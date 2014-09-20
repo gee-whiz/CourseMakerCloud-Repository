@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.boha.coursemaker.data;
 
 import java.io.Serializable;
@@ -34,17 +33,18 @@ import javax.validation.constraints.Size;
  */
 @Entity
 @Table(name = "administrator")
+
 @NamedQueries({
     @NamedQuery(name = "Administrator.findByCompanyID", query = "select a from Administrator a "
             + " where a.company.companyID = :id "
             + " order by a.lastName, a.firstName"),
-    @NamedQuery(name = "Administrator.loginAdmin", query = 
-        "select a from Administrator a where a.email = :email "
-                    + " and a.password = :pswd"),
-@NamedQuery(name = "Administrator.loginAdmin", query = 
-        "select a from Administrator a where a.email = :email "
-                    + " and a.password = :pswd")})
+    @NamedQuery(name = "Administrator.loginAdmin", query
+            = "select a from Administrator a where a.email = :email "
+            + " and a.password = :pswd"),
+    })
+
 public class Administrator implements Serializable {
+
     @Column(name = "activeFlag")
     private Integer activeFlag;
     @Column(name = "superUserFlag")
@@ -65,15 +65,11 @@ public class Administrator implements Serializable {
     @Size(min = 1, max = 45)
     @Column(name = "lastName")
     private String lastName;
-    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 100)
     @Column(name = "email")
     private String email;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 45)
     @Column(name = "cellphone")
     private String cellphone;
     @Basic(optional = false)
@@ -181,7 +177,6 @@ public class Administrator implements Serializable {
         this.dateRegistered = dateRegistered;
     }
 
-
     public String getGCMRegistrationID() {
         return gCMRegistrationID;
     }
@@ -254,7 +249,6 @@ public class Administrator implements Serializable {
         this.gcmDeviceList = gcmDeviceList;
     }
 
-   
     @Override
     public String toString() {
         return "com.boha.coursemaker.data.Administrator[ administratorID=" + administratorID + " ]";
@@ -275,5 +269,5 @@ public class Administrator implements Serializable {
     public void setSuperUserFlag(Integer superUserFlag) {
         this.superUserFlag = superUserFlag;
     }
-    
+
 }
