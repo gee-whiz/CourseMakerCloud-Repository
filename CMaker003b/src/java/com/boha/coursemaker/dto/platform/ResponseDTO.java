@@ -64,6 +64,7 @@ public class ResponseDTO {
     public static final int ERROR_DELETE_NOT_POSSIBLE = 190;
     public static final int ERROR_WEBSOCKET = 200;
     private int statusCode;
+    
     private String message, GCMRegistrationID;
     private CategoryDTO category;
     private AdministratorDTO administrator;
@@ -143,8 +144,7 @@ public class ResponseDTO {
     public void setSessionID(String sessionID) {
         this.sessionID = sessionID;
     }
-    
-    
+
 
     public List<SkillDTO> getSkillList() {
         return skillList;
